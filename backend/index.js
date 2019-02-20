@@ -2,6 +2,7 @@ var spawnSync = require('child_process').spawnSync;
 
 const express = require('express')
 var quote = require('shell-quote').quote;
+var cors = require('cors')
 
 var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
@@ -9,6 +10,7 @@ var OUTPUT_FILTER = "output{stdout{}}";
 const app = express()
 
 app.use(express.json());
+app.use(cors())
 
 app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -21,14 +23,14 @@ function getResult(input, filter) {
         timeout: 60000
     });
     var ret = {
-        stdout: res.stdout.toString('utf8').split(/\r?\n/),
-        stderr: res.stderr.toString('utf8').split(/\r?\n/),
+        stdout: res.stdout.toString('utf8'),
+        stderr: res.stderr.toString('utf8'),
         status: res.status
     };
     return ret;
 }
 
-app.get('/start_job', function (req, res) {
+app.post('/start_job', function (req, res) {
 
     var input_data=quote([ req.body.input_data ]);
 
