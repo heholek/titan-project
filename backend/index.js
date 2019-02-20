@@ -1,11 +1,7 @@
 var spawnSync = require('child_process').spawnSync;
-var fs = require('fs');
 
 const express = require('express')
-const bodyParser = require("body-parser");
 var quote = require('shell-quote').quote;
-
-var TEMP_DIR = "/tmp/titan_project"
 
 var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
@@ -13,12 +9,6 @@ var OUTPUT_FILTER = "output{stdout{}}";
 const app = express()
 
 app.use(express.json());
-
-// Create the temp directory if needed
-if (!fs.existsSync(TEMP_DIR)) {
-    console.log("Creating the temp directory")
-    fs.mkdirSync(TEMP_DIR);
-}
 
 app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
