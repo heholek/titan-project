@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha ./tests --recursive",
     "nodemon": "nodemon ./index.js"
   },
   "author": "",
@@ -16,6 +16,11 @@
     "shell-quote": "^1.6.1"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.0",
     "nodemon": "^1.18.10"
+  },
+  "nodemonConfig": {
+    "ignore": ["tests/*"]
   }
 }
