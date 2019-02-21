@@ -3,65 +3,55 @@
 
 <head>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <title>Bare - Start Bootstrap Template</title>
+    <title>Bare - Start Bootstrap Template</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/custom.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <!-- Page Content -->
     <div class="container">
-      <a class="navbar-brand" href="#">Start Bootstrap</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="mt-5">Logstash filter tester</h1>
+                <p class="lead">A simple way to test your Logstash's configurations files</p>
+            </div>
+            <div class="col-lg-12" style="margin-top: 5em">
+                <div class="form-row">
+                    <h4>Logs:</h4>
+                    <textarea id="input_data_textarea" class="form-control col-lg-12" rows="5" placeholder="Copy/Paste your logs file here !"></textarea>
+                    
+                    <h4 style="margin-top: 2em">Logstash filter:</h4>
+                    <textarea id="logstash_filter_textarea" class="form-control col-lg-12" rows="15" placeholder="Write your logstash filter here !"></textarea>
 
-  <!-- Page Content -->
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h1 class="mt-5">A Bootstrap 4 Starter Template</h1>
-        <p class="lead">Complete with pre-defined file paths and responsive navigation!</p>
-        <ul class="list-unstyled">
-          <li>Bootstrap 4.2.1</li>
-          <li>jQuery 3.3.1</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+                    <h4 style="margin-top: 2em">Logstash output:</h4>
+                    <textarea id="output" class="form-control col-lg-12" rows="10" placeholder="The Logstash output will be show here !" readonly="readonly"></textarea>
 
-  <!-- Bootstrap core JavaScript -->
-  <script src="./js/jquery.min.js"></script>
-  <script src="./js/bootstrap.bundle.min.js"></script>
+                    <div class="col-lg-12" style="margin-top: 1em"></div>
+                    <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
+                    <button type="submit" class="btn btn-primary" id="start_process">Start process</button>
+                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="wait_spinner" class="loading" style="display: none">Loading&#8230;</div>
+    
+    <!-- Bootstrap core JavaScript -->
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/custom.js"></script>
 
 </body>
 
