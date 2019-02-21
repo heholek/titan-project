@@ -21,6 +21,8 @@ app.get('/', function (req, res) {
 })
 
 function getResult(input, filter) {
+    console.log("Starting logstash process");
+
     res = spawnSync('echo ' + input + ' | /usr/share/logstash/bin/logstash -e ' + filter + ' -i', {
         shell: true,
         timeout: MAX_EXEC_TIMEOUT
@@ -30,10 +32,14 @@ function getResult(input, filter) {
         stderr: res.stderr.toString('utf8'),
         status: res.status
     };
+
+    console.log("Ended Logstash process");
     return ret;
 }
 
 function failBadParameters(res, missing_fields) {
+    console.log("Bad parameters for request");
+
     res.setHeader('Content-Type', 'application/json');
     res.status(400);
     res.send(JSON.stringify({ "succeed": false, "missing_fields": missing_fields}));
@@ -62,6 +68,8 @@ function argumentsValids(req, res) {
 }
 
 app.post('/start_process', function (req, res) {
+
+    console.log("Start a process hit");
 
     if(argumentsValids(req, res)) {
         var input_data=quote([ req.body.input_data ]);
