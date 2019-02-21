@@ -7,6 +7,9 @@ var cors = require('cors')
 var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
 
+const PORT = process.env.PORT || 3000;
+const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
+
 const app = express()
 
 app.use(express.json());
@@ -20,7 +23,7 @@ app.get('/', function (req, res) {
 function getResult(input, filter) {
     res = spawnSync('echo ' + input + ' | /usr/share/logstash/bin/logstash -e ' + filter + ' -i', {
         shell: true,
-        timeout: 60000
+        timeout: MAX_EXEC_TIMEOUT
     });
     var ret = {
         stdout: res.stdout.toString('utf8'),
@@ -30,19 +33,49 @@ function getResult(input, filter) {
     return ret;
 }
 
-app.post('/start_job', function (req, res) {
-
-    var input_data=quote([ req.body.input_data ]);
-
-    var logstash_filter=quote([ INPUT_FILTER + req.body.logstash_filter + OUTPUT_FILTER ]);
-
-
-    var job_result = getResult(input_data, logstash_filter)
-
+function failBadParameters(res, missing_fields) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ "job_result": job_result}));
+    res.status(400);
+    res.send(JSON.stringify({ "succeed": false, "missing_fields": missing_fields}));
+}
+
+function argumentsValids(req, res) {
+    var ok = true
+
+    var missing_fields = []
+
+    if(req.body.input_data == undefined) {
+        missing_fields.push("input_data")
+        ok = false
+    }
+
+    if(req.body.logstash_filter == undefined) {
+        missing_fields.push("logstash_filter")
+        ok = false
+    }
+
+    if(!ok) {
+        failBadParameters(res, missing_fields)
+    }
+
+    return ok
+}
+
+app.post('/start_process', function (req, res) {
+
+    if(argumentsValids(req, res)) {
+        var input_data=quote([ req.body.input_data ]);
+
+        var logstash_filter=quote([ INPUT_FILTER + req.body.logstash_filter + OUTPUT_FILTER ]);
+    
+    
+        var job_result = getResult(input_data, logstash_filter);
+    
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ "succeed": true, "job_result": job_result}));
+    }
 })
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!')
+app.listen(PORT, function () {
+    console.log('App listening on port ' + PORT);
 })
