@@ -74,7 +74,7 @@ app.listen(PORT, function () {
 function computeResult(id, res, input, filter) {
     log.info(id + " - Starting logstash process");
 
-    var command = 'echo ' + input + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + filter + ' -i';
+    var command = 'echo ' + input + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + filter + ' -i | tail -n +2';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT
