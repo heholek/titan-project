@@ -22,6 +22,19 @@ RUN npm install --production
 # If you are building your code for production
 # RUN npm ci --only=production
 
+# Create the cron to clean logstash data directory
+RUN apt-get install cron -y
+RUN echo "0 0 * * * rm -rf /tmp/logstash/data/*" >> clean_cron
+RUN crontab -u root clean_cron
+RUN crontab clean_cron
+RUN rm clean_cron
+
+# Clean the image
+RUN apt-get clean autoclean
+RUN apt-get autoremove --yes
+RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN rm -rf /var/lib/apt/lists/*
+
 # Bundle app source
 COPY . .
 
