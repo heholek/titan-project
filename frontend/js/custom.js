@@ -12,6 +12,17 @@ const example_filter =
   }
 }`;
 
+function enableBlackTheme() {
+  $('#css_theme').attr('href','./css/bootstrap-black.min.css');
+  console.log("enable black theme")
+}
+
+function enableWhiteTheme() {
+  $('#css_theme').attr('href','./css/bootstrap.min.css');
+  console.log("enable white theme")
+
+}
+
 function jobFailed(reason, data) {
   alert("reason")
   disableWaitSpinner()
@@ -83,4 +94,15 @@ $('#start_process').click(function () {
 
   }
 
+});
+
+
+// Change theme button
+
+$('#change_theme').click(function (){
+  if($('#css_theme').attr('href').includes('bootstrap.min.css')) {
+    enableBlackTheme()
+  } else {
+    enableWhiteTheme()
+  }
 });
