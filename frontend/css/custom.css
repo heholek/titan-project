@@ -117,3 +117,19 @@
       transform: rotate(360deg);
     }
   }
+
+  .log-display {
+    background-color: #fff;
+    color: #212529;
+  }
+  
+  .log-display:focus { 
+    background-color: #fff;
+    color: #212529;
+  }
+  
+  .form-control:disabled, .form-control[readonly] {
+    background-color: #fff;
+    color: #212529;
+  }
+  

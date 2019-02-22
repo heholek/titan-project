@@ -3,115 +3,127 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title>Bare - Start Bootstrap Template</title>
+  <title>Bare - Start Bootstrap Template</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link id="css_theme" href="./css/bootstrap.min.css" rel="stylesheet">
-    <link href="./css/custom.css" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+    crossorigin="anonymous">
+  <link id="css_theme_bootstrap" href="./css/bootstrap.min.css" rel="stylesheet">
+  <link id="css_theme_custom" href="./css/custom.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-     <!-- Navigation -->
+  <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary static-top">
-        <div class="container">
-          <a class="navbar-brand" href="#">Titan project</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        Home
-                    </a>
-             </li>
-              <li class="nav-item">
-                <a class="nav-link" id="change_theme" href="#">
-                    <i class="fas fa-adjust"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-    <!-- Page Content -->
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h1 class="mt-5">Logstash filter tester</h1>
-                <p class="lead">A simple way to test your Logstash's configurations files</p>
-            </div>
-
-            <!-- Accordion -->
-
-            <div class="col-lg-12 text-center" style="margin-top: 2em">
-            <div id="accordion">
-                <div class="card">
-                  <div class="card-header" id="headingOne">
-                    <h5 class="mb-0">
-                      <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                        More informations
-                      </button>
-                    </h5>
-                  </div>
-              
-                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                    <div class="card-body">
-                      The goal of this site is to provide you a Logstash instance to test the parsing of a log file.
-                      <br/>It is and will never be aimed to read or write to an external source, such as Elasticsearch, Redis, Kafka, etc.
-                    </div>
-                  </div>
-                </div>
-            </div>
-            </div>
-
-            <div class="col-lg-12" style="margin-top: 5em">
-                <div class="form-row">
-                    <h4>Logs:</h4>
-                    <textarea id="input_data_textarea" class="form-control col-lg-12" rows="5" placeholder="Copy/Paste your logs file here !"></textarea>
-                    
-                    <h4 style="margin-top: 2em">Logstash filter:</h4>
-                    <textarea id="logstash_filter_textarea" class="form-control col-lg-12" rows="15" placeholder="Write your logstash filter here !"></textarea>
-
-                    <h4 style="margin-top: 2em">Logstash output:</h4>
-                    <textarea id="output" class="form-control col-lg-12" rows="10" placeholder="The Logstash output will be shown here !" readonly="readonly"></textarea>
-
-                    <div class="col-lg-12" style="margin-top: 1em"></div>
-                    <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
-                    <button type="button" class="btn btn-danger" id="clean_form">Clean forms</button>
-                    <button type="submit" class="btn btn-primary" id="start_process">Start process</button>
-                </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="wait_spinner" class="loading" style="display: none">Loading&#8230;</div>
-    
-
-        <!-- Navigation -->
-  <nav class="bg-primary static-bot" style="margin-top: 5em">
-      <div class="col-lg-12 text-center">
-        <p class="navbar-brand">Made with <i class="fas fa-heart"> by <a href="mailto:valentin.bourdier@mail.com">Valentin Bourdier</a></i></p>
+      <a class="navbar-brand" href="#">Titan project</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="change_theme" href="#">
+              <i class="fas fa-adjust"> Theme</i>
+            </a>
+          </li>
+        </ul>
       </div>
+    </div>
   </nav>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/bootstrap.bundle.min.js"></script>
-    <script src="./js/js.cookie-2.2.0.min.js"></script>
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h1 class="mt-5">Logstash filter tester</h1>
+        <p class="lead">A simple way to test your Logstash's configurations files</p>
+      </div>
 
-    <script src="./js/custom.js"></script>
+      <!-- Accordion -->
+
+      <div class="col-lg-12 text-center" style="margin-top: 2em">
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
+                  aria-controls="collapseOne">
+                  More informations
+                </button>
+              </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body">
+                The goal of this site is to provide you a Logstash instance to test the parsing of a log file.
+                <br />It is and will never be aimed to read or write to an external source, such as Elasticsearch,
+                Redis, Kafka, etc.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-12" style="margin-top: 5em">
+        <div class="form-row">
+          <h4>Logs:</h4>
+          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="5" placeholder="Copy/Paste your logs file here !"></textarea>
+
+          <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
+          <div class="col-lg-12" >
+          <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
+            placeholder="Write your logstash filter here !"></pre>
+          </div>
+
+          <h4 style="margin-top: 30em">Logstash output:</h4>
+          <textarea id="output" class="form-control col-lg-12 log-display" rows="10" placeholder="The Logstash output will be shown here !"
+            readonly="readonly" spellcheck="false"></textarea>
+
+          <div class="col-lg-12" style="margin-top: 1em"></div>
+          <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
+          <button type="button" class="btn btn-danger" id="clean_form">Clean forms</button>
+          <button type="submit" class="btn btn-primary" id="start_process">Start process</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <div id="wait_spinner" class="loading" style="display: none">Loading&#8230;</div>
+
+
+  <!-- Navigation -->
+  <nav class="bg-primary static-bot" style="margin-top: 5em">
+    <div class="col-lg-12 text-center">
+      <p class="navbar-brand">Made with <i class="fas fa-heart"> by <a href="mailto:valentin.bourdier@mail.com">Valentin
+            Bourdier</a></i></p>
+    </div>
+  </nav>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+  <script src="./js/js.cookie-2.2.0.min.js"></script>
+
+  <script src="./js/ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/ace-min-noconflict/ext-language_tools.js"></script>
+
+  <script src="./js/custom.js"></script>
 
 </body>
 
