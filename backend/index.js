@@ -5,6 +5,8 @@ var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
 
+const log = require('simple-node-logger').createSimpleLogger();
+
 var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
 
@@ -12,6 +14,9 @@ const PORT = process.env.PORT || 8081;
 const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
+const LOG_LEVEL = process.env.LOG_LEVEL || "info";
+
+log.setLevel(LOG_LEVEL);
 
 const app = express()
 
@@ -24,7 +29,7 @@ app.get('/', function (req, res) {
 })
 
 function computeResult(id, res, input, filter) {
-    console.log(id + " - Starting logstash process");
+    log.info(id + " - Starting logstash process");
 
     var command = 'echo ' + input + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + filter + ' -i';
 
@@ -33,7 +38,7 @@ function computeResult(id, res, input, filter) {
     }
 
     exec(command, options, (err, stdout, stderr) => {
-        console.log(id + " - Ended logstash process");
+        log.info(id + " - Ended logstash process");
 
         var status = 0;
 
@@ -55,7 +60,7 @@ function computeResult(id, res, input, filter) {
 }
 
 function failBadParameters(id, res, missing_fields) {
-    console.log(id + " - Bad parameters for request");
+    log.warn(id + " - Bad parameters for request");
 
     res.setHeader('Content-Type', 'application/json');
     res.status(400);
@@ -88,7 +93,7 @@ app.post('/start_process', function (req, res) {
     
     id = uniqid()
 
-    console.log(id + " - Start a process hit");
+    log.info(id + " - Start a process hit");
 
     if (argumentsValids(req, res)) {
         var input_data = quote([req.body.input_data]);
@@ -101,5 +106,5 @@ app.post('/start_process', function (req, res) {
 })
 
 app.listen(PORT, function () {
-    console.log('App listening on port ' + PORT);
+    log.info('App listening on port ' + PORT);
 })
