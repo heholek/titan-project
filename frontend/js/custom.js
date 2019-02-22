@@ -20,7 +20,6 @@ function enableBlackTheme() {
 function enableWhiteTheme() {
   $('#css_theme').attr('href','./css/bootstrap.min.css');
   console.log("enable white theme")
-
 }
 
 function jobFailed(reason, data) {
@@ -63,6 +62,8 @@ function userInputValid() {
 
 $('#start_process').click(function () {
 
+  saveSession()
+
   if (userInputValid()) {
 
     var body = {
@@ -96,13 +97,41 @@ $('#start_process').click(function () {
 
 });
 
+// Save and load user session
+
+function saveSession() {
+  console.log("Saving session into cookie")
+  var session = {
+    theme: ($('#css_theme').attr('href').includes('bootstrap.min.css')? "white" : "black"),
+    input_data: $('#input_data_textarea').val(),
+    logstash_filter: $('#logstash_filter_textarea').val()
+  }
+  Cookies.set('session', session, { expires: 7 });
+}
+
+function loadSession() {
+  var session = Cookies.get('session');
+  if (session != undefined) {
+    var session = JSON.parse(session)
+    console.log("Loading user session")
+    session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
+    $('#input_data_textarea').val(session.input_data)
+    $('#logstash_filter_textarea').val(session.logstash_filter)
+  } else {
+    console.log("No cookie for session found")
+  }
+}
 
 // Change theme button
 
 $('#change_theme').click(function (){
   if($('#css_theme').attr('href').includes('bootstrap.min.css')) {
     enableBlackTheme()
+    saveSession()
   } else {
     enableWhiteTheme()
+    saveSession()
   }
 });
+
+loadSession()
