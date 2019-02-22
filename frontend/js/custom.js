@@ -1,17 +1,5 @@
 const api_url = "http://localhost:8081";
 
-const example_log =
-  `ho
-hi
-ha`;
-
-const example_filter =
-  `filter {
-  mutate {
-    add_field => { "my_field" => "my-value" }
-  }
-}`;
-
 function enableBlackTheme() {
   $('#css_theme').attr('href','./css/bootstrap-black.min.css');
   console.log("enable black theme")
@@ -91,6 +79,8 @@ $('#start_process').click(function () {
     };
 
     $('#wait_spinner').show();
+
+    $('#output').val("");
 
     $.ajax({
       url: api_url + "/start_process",
