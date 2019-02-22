@@ -10,6 +10,7 @@ var OUTPUT_FILTER = "output{stdout{}}";
 const PORT = process.env.PORT || 8081;
 const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data";
+const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 
 const app = express()
 
@@ -24,7 +25,7 @@ app.get('/', function (req, res) {
 function getResult(input, filter) {
     console.log("Starting logstash process");
 
-    res = spawnSync('echo ' + input + ' | /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + ' -e ' + filter + ' -i', {
+    res = spawnSync('echo ' + input + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + ' -e ' + filter + ' -i', {
         shell: true,
         timeout: MAX_EXEC_TIMEOUT
     });
