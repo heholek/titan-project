@@ -28,8 +28,20 @@ function jobFailed(reason, data) {
 }
 
 $('#fill_form').click(function () {
-  $('#input_data_textarea').val(example_log);
-  $('#logstash_filter_textarea').val(example_filter);
+
+  $.ajax({
+    url: "./sample/data.txt",
+    success: function (data){
+      $('#input_data_textarea').val(data);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/filter.conf",
+    success: function (data){
+      $('#logstash_filter_textarea').val(data);
+    }
+  });
 
 });
 
