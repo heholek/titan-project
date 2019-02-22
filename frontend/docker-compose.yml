@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+
+  titan-project-frontend:
+    build: 
+      context: .
+      args:
+        BACKENDHOST: "localhost:8081"
+    ports:
+     - "8080:80"
+
