@@ -1,1 +1,29 @@
+################
+# Vagrant part #
+################
+
+# Vagrant data folder
+
+.vagrant/
+
+# Vagrant machine logs
+
+/ubuntu-*.log
+
+################
+# Ansible part #
+################
+
+# Ansible retry files
+*.retry
+
+# Ansible Galaxy roles
+provisioning/roles/nginx/*
+provisioning/roles/docker/*
+
+###############
+# VSCode part #
+###############
+
+# Sftp config
 /.vscode/sftp.json

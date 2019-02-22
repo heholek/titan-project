@@ -1,0 +1,6 @@
+---
+logstash_version: 6.5.4
+
+logstash_java_heap_size: 1024m
+
+logstash_debug_mode: false

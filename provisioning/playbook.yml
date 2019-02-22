@@ -1,0 +1,58 @@
+# Install Python if needed
+
+- name: Install Python 2 if needed
+  hosts: all
+  gather_facts: False
+  become: true
+  tasks:
+    - name: Install Python 2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: False
+
+# Install prerequisits
+
+- name: Update the system
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Update the system
+      apt:
+        update_cache: yes
+        upgrade: dist
+  roles:
+    - system-utils
+
+# Install the backend
+
+- name: Installing backend
+  hosts: backend
+  become: true
+  roles:
+    - nodejs
+    - logstash
+
+# Install the frontend
+
+- name: Installing frontend
+  hosts: frontend
+  become: true
+  vars:
+    nginx_vhosts:
+        - listen: "8080"
+          server_name: "_"
+          root: "/vagrant/frontend"
+          index: "index.html"
+          state: "present"
+  roles:
+    - nginx
+
+# Install for both frontend and backend
+
+- name: Installing communs
+  hosts: frontend:backend
+  become: true
+  vars:
+    docker_users:
+      - "{{ lookup('env','USER') }}"
+  roles:
+    - docker

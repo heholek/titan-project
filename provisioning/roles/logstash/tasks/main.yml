@@ -1,0 +1,14 @@
+---
+#####################
+# Installation part #
+#####################
+
+- name: Include Logstash installation file
+  import_tasks: install.yml
+
+######################
+# Configuration part #
+######################
+
+- name: Include Logstash configuration file
+  import_tasks: configure.yml

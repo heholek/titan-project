@@ -1,4 +1,4 @@
-const api_url = "http://192.168.1.88:3000";
+const api_url = "http://localhost:8081";
 
 const example_log =
   `ho
@@ -67,6 +67,7 @@ $('#start_process').click(function () {
       data: JSON.stringify(body),
       contentType: "application/json",
       dataType: "json",
+      timeout: 60000,
       success: function (data) {
         if (!data.succeed) {
           jobFailed("Problem with your request", data)

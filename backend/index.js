@@ -7,7 +7,7 @@ var cors = require('cors')
 var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8081;
 const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 
 const app = express()

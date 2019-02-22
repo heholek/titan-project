@@ -9,7 +9,7 @@ describe("API Testing", function () {
 
   describe("Root page", function () {
 
-    var url = "http://localhost:3000/";
+    var url = "http://localhost:8081/";
 
     it("returns status 200", function (done) {
       request(url, function (error, response, body) {
@@ -24,7 +24,7 @@ describe("API Testing", function () {
 
   describe("Start process", function () {
 
-    var url = "http://localhost:3000/start_process";
+    var url = "http://localhost:8081/start_process";
 
     describe("with bad parameters", function () {
       this.timeout(MAX_TIMEOUT);
