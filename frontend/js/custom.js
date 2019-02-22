@@ -27,6 +27,13 @@ function jobFailed(reason, data) {
   disableWaitSpinner()
 }
 
+$('#clean_form').click(function () {
+  $('#input_data_textarea').val("");
+  $('#logstash_filter_textarea').val("");
+  $('#output').val("");
+  saveSession();
+});
+
 $('#fill_form').click(function () {
 
   $.ajax({
