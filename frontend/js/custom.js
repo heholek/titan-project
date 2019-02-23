@@ -119,8 +119,10 @@ $('#start_process').click(function () {
       success: function (data) {
         $('#output').text(data.job_result.stdout);
         $("#start_process").removeClass('disabled');
-        if (data.job_result.status != 0) {
-          jobFailed("Your Logstash configuration failed.")
+        if (data.job_result.status != 0 || data.job_result.stdout.startsWith("[ERROR]")) {
+          toastr.error('There was a problem in your configuration.', 'Error')
+        } else {
+          toastr.success('Configuration parsing is done !', 'Success')
         }
       },
       error: function () {
