@@ -1,5 +1,5 @@
 ---
-logstash_version: 6.5.4
+logstash_version: 5.6.15
 
 logstash_java_heap_size: 1024m
 
