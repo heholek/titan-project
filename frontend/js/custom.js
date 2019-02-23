@@ -43,13 +43,13 @@ function jobFailed(reason) {
   $('#failModal').modal('show');
   $('#failModalReason').html(reason);
   
-  disableWaitSpinner()
+  $('#output').text('No data was receive from Logstash :(');
 }
 
 $('#clean_form').click(function () {
   $('#input_data_textarea').val("");
   editor.setValue("", -1);
-  $('#output').val("");
+  $('#output').text("The Logstash output will be shown here !");
   saveSession();
 });
 
@@ -70,10 +70,6 @@ $('#fill_form').click(function () {
   });
 
 });
-
-function disableWaitSpinner() {
-  $('#wait_spinner').hide();
-}
 
 function userInputValid() {
   input_valid = true;
@@ -109,9 +105,7 @@ $('#start_process').click(function () {
       logstash_filter: editor.getValue()
     };
 
-    $('#wait_spinner').show();
-
-    $('#output').val("");
+    $('#output').html('<div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div>');
 
     $.ajax({
       url: api_url + "/start_process",
@@ -121,11 +115,9 @@ $('#start_process').click(function () {
       dataType: "json",
       timeout: 60000,
       success: function (data) {
-        $('#output').val(data.job_result.stdout);
-        if (data.job_result.code != 0) {
+        $('#output').text(data.job_result.stdout);
+        if (data.job_result.status != 0) {
           jobFailed("Your Logstash configuration failed.")
-        } else {
-          disableWaitSpinner()
         }
       },
       error: function () {

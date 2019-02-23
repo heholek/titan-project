@@ -76,7 +76,7 @@
       <div class="col-lg-12" style="margin-top: 5em">
         <div class="form-row">
           <h4>Logs:</h4>
-          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="5" placeholder="Copy/Paste your logs file here !"></textarea>
+          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10" placeholder="Copy/Paste your logs file here !"></textarea>
 
           <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
           <div class="col-lg-12" >
@@ -84,14 +84,15 @@
             placeholder="Write your logstash filter here !"></pre>
           </div>
 
-          <h4 style="margin-top: 30em">Logstash output:</h4>
-          <textarea id="output" class="form-control col-lg-12 log-display" rows="10" placeholder="The Logstash output will be shown here !"
-            readonly="readonly" spellcheck="false"></textarea>
+          <div class="col-lg-12" style="margin-top: 45em">
+            <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
+            <button type="button" class="btn btn-danger" id="clean_form">Clean forms</button>
+            <button type="submit" class="btn btn-primary" id="start_process">Start process</button>
+            </div>
 
-          <div class="col-lg-12" style="margin-top: 1em"></div>
-          <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
-          <button type="button" class="btn btn-danger" id="clean_form">Clean forms</button>
-          <button type="submit" class="btn btn-primary" id="start_process">Start process</button>
+          <h4 style="margin-top: 1em">Logstash output:</h4>
+          <pre id="output" class="form-control col-lg-12 log-display" style="height: max-content">The Logstash output will be shown here !</pre>
+
         </div>
       </div>
 
