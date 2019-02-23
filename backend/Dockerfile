@@ -1,5 +1,6 @@
 FROM node:8-stretch
 
+
 # Install Logstash
 RUN apt-get update
 RUN apt-get install openjdk-8-jdk-headless -y
@@ -8,7 +9,14 @@ RUN apt-get install apt-transport-https
 RUN echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-5.x.list
 RUN apt-get update
 RUN apt-get install logstash=1:5.6.15-1 -y
+
+# We remove unussed Logstash plugins
+COPY ./scripts/remove_logstash_plugins.sh .
+RUN ./remove_logstash_plugins.sh
+
+# We then update remaining plugins
 RUN /usr/share/logstash/bin/logstash-plugin update
+
 
 # Create app directory
 WORKDIR /usr/src/app
