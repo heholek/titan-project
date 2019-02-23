@@ -39,6 +39,46 @@ function enableWhiteTheme() {
   console.log("enable white theme")
 }
 
+function applyFieldsAttributes(conf) {
+  var oldValues = "";
+  var number = "";
+  
+  if(conf == undefined) {
+    oldValues = getFieldsAttributesValues()
+    number = $('#fields_attributes_number').val();
+  } else {
+    oldValues = conf;
+    number = conf.length;
+    $('#fields_attributes_number').val(number);
+  }
+
+  $('#fields_attributes').empty();
+  for(var i = 0 ; i < number ; i++) {
+    var attr = "";
+    var val = "";
+    if (i < oldValues.length) {
+      attr = oldValues[i].attribute != undefined ? oldValues[i].attribute : ""
+      val = oldValues[i].value != undefined ? oldValues[i].value : ""
+    }
+    var str = '<div class="form-group row col-lg-12" style="margin-top: 1em">';
+    str += '<div class="col-xs-3"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute '+ (i + 1) + '" /></div>';
+    str += '<div class="col-xs-3"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value '+ (i + 1) + '" /></div>';
+    str += '</div>';
+    $('#fields_attributes').append(str);
+  }
+}
+
+function getFieldsAttributesValues() {
+  var number = $('#fields_attributes_number').val();
+  var values = []
+  for(var i = 0 ; i < number ; i++) {
+    values.push({
+      attribute: $('#field_attribute_key_' + i).val(),
+      value: $('#field_attribute_value_' + i).val()
+    });
+  }
+  return values
+}
 
 function jobFailed(reason) {
   $("#start_process").removeClass('disabled');
@@ -53,6 +93,8 @@ $('#clean_form').click(function () {
   $('#input_data_textarea').val("");
   editor.setValue("", -1);
   $('#output').text("The Logstash output will be shown here !");
+  $('#fields_attributes_number').val(0);
+  applyFieldsAttributes()
   saveSession();
 });
 
@@ -71,6 +113,9 @@ $('#fill_form').click(function () {
       editor.setValue(data, -1);
     }
   });
+
+  $('#fields_attributes_number').val(0);
+  applyFieldsAttributes()
 
 });
 
@@ -94,6 +139,26 @@ function userInputValid() {
     $('#logstash_filter_title').removeClass("text-danger");
   }
 
+  fieldsAttributes = getFieldsAttributesValues()
+  fieldsAttributesValids = true
+
+  for(var i = 0 ; i < fieldsAttributes.length ; i++) {
+    if(fieldsAttributes[i].attribute == "" || fieldsAttributes[i].value == "") {
+      input_valid = false;
+      fieldsAttributesValids = false;
+      $('#input_extra_attributes').addClass("text-danger");
+      break;
+    }
+  }
+
+  if(fieldsAttributesValids) {
+    $('#input_extra_attributes').removeClass("text-danger");
+  }
+
+  if(!input_valid) {
+    toastr.error('All fields need to be fill !', 'Informations missings')
+  }
+
   return input_valid
 }
 
@@ -105,7 +170,8 @@ $('#start_process').click(function () {
 
     var body = {
       input_data: $('#input_data_textarea').val(),
-      logstash_filter: editor.getValue()
+      logstash_filter: editor.getValue(),
+      input_extra_fields: getFieldsAttributesValues()
     };
 
     $('#output').html('<div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div>');
@@ -143,7 +209,8 @@ function saveSession() {
   var session = {
     theme: ($('#css_theme_bootstrap').attr('href').includes('bootstrap.min.css')? "white" : "black"),
     input_data: $('#input_data_textarea').val(),
-    logstash_filter: editor.getValue()
+    logstash_filter: editor.getValue(),
+    input_fields: getFieldsAttributesValues()
   }
   Cookies.set('session', session, { expires: 7 });
 }
@@ -156,10 +223,15 @@ function loadSession() {
     session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
     $('#input_data_textarea').val(session.input_data)
     editor.setValue(session.logstash_filter, -1)
+    applyFieldsAttributes(session.input_fields)
   } else {
     console.log("No cookie for session found")
   }
 }
+
+$( "#fields_attributes_number" ).change(function() {
+  applyFieldsAttributes()
+});
 
 // Change theme button
 
@@ -173,4 +245,5 @@ $('#change_theme').click(function (){
   }
 });
 
+applyFieldsAttributes()
 loadSession()
