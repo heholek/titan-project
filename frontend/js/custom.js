@@ -17,6 +17,7 @@ editor.setOptions({
   enableSnippets: false,
   navigateWithinSoftTabs: true
 })
+
 // Theme color
 
 function enableBlackTheme() {
@@ -38,8 +39,10 @@ function enableWhiteTheme() {
 }
 
 
-function jobFailed(reason, data) {
-  alert("reason")
+function jobFailed(reason) {
+  $('#failModal').modal('show');
+  $('#failModalReason').html(reason);
+  
   disableWaitSpinner()
 }
 
@@ -118,15 +121,15 @@ $('#start_process').click(function () {
       dataType: "json",
       timeout: 60000,
       success: function (data) {
-        if (!data.succeed) {
-          jobFailed("Problem with your request", data)
+        $('#output').val(data.job_result.stdout);
+        if (data.job_result.code != 0) {
+          jobFailed("Your Logstash configuration failed.")
         } else {
-          $('#output').val(data.job_result.stdout);
           disableWaitSpinner()
         }
       },
       error: function () {
-        jobFailed("Unable to obtain a response from the server")
+        jobFailed("Unable to obtain a response from the server<br/>You cannot do anything to solve it, please contact the maintainer of this project.")
       }
     });
 
