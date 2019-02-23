@@ -40,9 +40,10 @@ function enableWhiteTheme() {
 
 
 function jobFailed(reason) {
+  $("#start_process").removeClass('disabled');
   $('#failModal').modal('show');
-  $('#failModalReason').html(reason);
   
+  $("#start_process").removeClass('disabled');
   $('#output').text('No data was receive from Logstash :(');
 }
 
@@ -106,6 +107,7 @@ $('#start_process').click(function () {
     };
 
     $('#output').html('<div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div>');
+    $("#start_process").addClass('disabled');
 
     $.ajax({
       url: api_url + "/start_process",
@@ -116,6 +118,7 @@ $('#start_process').click(function () {
       timeout: 60000,
       success: function (data) {
         $('#output').text(data.job_result.stdout);
+        $("#start_process").removeClass('disabled');
         if (data.job_result.status != 0) {
           jobFailed("Your Logstash configuration failed.")
         }
