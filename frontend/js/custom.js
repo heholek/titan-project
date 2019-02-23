@@ -42,7 +42,8 @@ function enableWhiteTheme() {
 function jobFailed(reason) {
   $("#start_process").removeClass('disabled');
   $('#failModal').modal('show');
-  
+  $('#failModalReason').html(reason);
+
   $("#start_process").removeClass('disabled');
   $('#output').text('No data was receive from Logstash :(');
 }
@@ -126,7 +127,7 @@ $('#start_process').click(function () {
         }
       },
       error: function () {
-        jobFailed("Unable to obtain a response from the server<br/>You cannot do anything to solve it, please contact the maintainer of this project.")
+        jobFailed("Unable to obtain a response from the backend server.<br/>You cannot do anything to solve it, please contact the maintainer of this project.")
       }
     });
 
