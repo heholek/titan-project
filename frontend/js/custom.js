@@ -15,7 +15,8 @@ editor.setOptions({
   useSoftTabs: true,
   showPrintMargin: false,
   enableSnippets: false,
-  navigateWithinSoftTabs: true
+  navigateWithinSoftTabs: true,
+  keyboardHandler: "ace/keyboard/sublime"
 })
 
 // Theme color
