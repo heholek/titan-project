@@ -89,7 +89,7 @@ function jobFailed(reason) {
   $('#output').text('No data was receive from backend sever :(');
 }
 
-$('#clean_form').click(function () {
+$('#clear_form').click(function () {
   $('#input_data_textarea').val("");
   editor.setValue("", -1);
   $('#output').text("The Logstash output will be shown here !");
