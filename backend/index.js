@@ -3,6 +3,7 @@
 var exec = require('child_process').exec;
 
 const express = require('express')
+var bodyParser = require('body-parser')
 var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
@@ -47,8 +48,8 @@ function buildLogstashInput(attributes) {
 log.setLevel(LOG_LEVEL);
 
 const app = express()
-app.use(express.json());
 app.use(cors())
+app.use(bodyParser.json({limit: '10mb'}))
 
 // Home rooting
 
@@ -72,7 +73,6 @@ app.post('/start_process', function (req, res) {
         var logstash_input = buildLogstashInput(req.body.input_extra_fields)
 
         var logstash_conf = quote([logstash_input + req.body.logstash_filter + OUTPUT_FILTER]);
-        console.log(logstash_conf)
 
         computeResult(id, res, input_data, logstash_conf);
     }
