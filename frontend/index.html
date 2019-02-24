@@ -94,7 +94,7 @@
                     href="mailto:valentin.bourdier@mail.com">valentin.bourdier@mail.com</a>&nbsp;to talk about it.</p>
 
                 <div class="text-center" style="margin-top: 2em">
-                  <button type="button" class="btn btn-info" id="fill_form">Show me an example</button>
+                  <button type="button" class="btn btn-info" id="fill_form">Show me an example !</button>
                 </div>
 
               </div>
@@ -107,6 +107,11 @@
         <div class="form-row">
 
           <h4 class="col-lg-12" id="input_extra_attributes">Input extra attributes:</h4>
+          <p class="form-text text-muted">
+            If you need to add some <strong>extra fields</strong> in the input of the configuration file, such as the
+            type, pilote, filepath, etc.
+          </p>
+
           <input class="form-control log-display col-lg-6" style="margin-top: 1em" id="fields_attributes_number" type="number"
             min="0" max="10" value="1">
 
@@ -134,11 +139,22 @@
           </div>
 
           <h4 class="col-lg-12" style="margin-top: 1em">Logs:</h4>
-          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10"
-            placeholder="Copy/Paste your logs file here !"></textarea>
+          <p class="form-text text-muted">
+            You can copy/paste here your logs. You don't need to have lots of them, <strong>only keep representative
+              logs</strong> of your formats. You should not have more than about 100 lines of logs.
+          </p>
 
-          <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
-          <div class="col-lg-12">
+          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10"
+            placeholder="Copy/Paste your logs file here !" style="margin-top: 1em"></textarea>
+
+          <div>
+            <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
+            <p class="form-text text-muted">
+              Here is the place where you can create your Logstash filter.
+            </p>
+          </div>
+
+          <div class="col-lg-12" style="margin-top: 1em">
             <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
               placeholder="Write your logstash filter here !"></pre>
           </div>
@@ -148,7 +164,13 @@
             <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
           </div>
 
-          <h4 style="margin-top: 2em">Logstash output:</h4>
+          <div>
+            <h4 style="margin-top: 2em">Logstash output:</h4>
+            <p class="form-text text-muted">
+              The input data process by Logstash will be displayed here.
+            </p>
+          </div>
+
           <pre id="output" class="form-control col-lg-12 log-display" style="height: auto; margin-top: 1em">The Logstash output will be shown here !</pre>
 
         </div>
@@ -158,7 +180,7 @@
   </div>
   </div>
 
-  <input type="file" id="filter_input_loading" style="display:none"/>
+  <input type="file" id="filter_input_loading" style="display:none" />
 
   <!-- Modal for errors -->
 
