@@ -262,7 +262,7 @@ $('#start_process').click(function () {
 function saveSession() {
   console.log("Saving session into cookie")
   var session = {
-    theme: ($('#css_theme_bootstrap').attr('href').includes('bootstrap.min.css')? "white" : "black"),
+    theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1? "white" : "black"),
     input_data: $('#input_data_textarea').val(),
     logstash_filter: editor.getValue(),
     input_fields: getFieldsAttributesValues()
