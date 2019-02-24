@@ -37,6 +37,7 @@ app.use(cors())
 // Home rooting
 
 app.get('/', function (req, res) {
+    log.info(id + " - Someone hit slash");
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "message": "Nothing here !" }));
 })
@@ -47,7 +48,7 @@ app.post('/start_process', function (req, res) {
     
     id = uniqid()
 
-    log.info(id + " - Start a process hit");
+    log.info(id + " - Start a Logstash process");
 
     if (argumentsValids(req, res)) {
         var input_data = quote([req.body.input_data]);
@@ -81,7 +82,7 @@ function computeResult(id, res, input, filter) {
     }
 
     exec(command, options, (err, stdout, stderr) => {
-        log.info(id + " - Ended logstash process");
+        log.info(id + " - Ended a Logstash process");
 
         var status = 0;
 
@@ -96,7 +97,7 @@ function computeResult(id, res, input, filter) {
         };
 
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ "succeed": true, "job_result": job_result}));
+        res.send(JSON.stringify({ "config_ok": true, "job_result": job_result}));
     });
 
 }
@@ -108,7 +109,7 @@ function failBadParameters(id, res, missing_fields) {
 
     res.setHeader('Content-Type', 'application/json');
     res.status(400);
-    res.send(JSON.stringify({ "succeed": false, "missing_fields": missing_fields }));
+    res.send(JSON.stringify({ "config_ok": false, "missing_fields": missing_fields }));
 }
 
 // Check if provided arguments are valids

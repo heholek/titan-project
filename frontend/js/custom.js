@@ -192,6 +192,9 @@ $('#start_process').click(function () {
         } else {
           toastr.success('Configuration parsing is done !', 'Success')
         }
+        if (!data.config_ok) {
+          toastr.error('All fields need to be fill !', 'Informations missings')
+        }
       },
       error: function () {
         jobFailed("Unable to obtain a response from the backend server.<br/>You cannot do anything to solve it, please contact the maintainer of this project.")

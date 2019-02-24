@@ -40,13 +40,13 @@ describe("API Testing", function () {
         });
       });
 
-      it("should be succeed", function (done) {
+      it("should be config_ok", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
           logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}"
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.succeed).to.equal(true);
+          expect(body.config_ok).to.equal(true);
           done();
         });
       });
@@ -83,13 +83,13 @@ describe("API Testing", function () {
         });
       });
 
-      it("should be succeed", function (done) {
+      it("should be config_ok", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
           logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}"
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.succeed).to.equal(true);
+          expect(body.config_ok).to.equal(true);
           done();
         });
       });
@@ -127,7 +127,7 @@ describe("API Testing", function () {
         formData = {
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.succeed).to.equal(false);
+          expect(body.config_ok).to.equal(false);
           done();
         });
       });
@@ -165,7 +165,7 @@ describe("API Testing", function () {
           input_data: "hi\nho\nha\nhou\nlol"
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.succeed).to.equal(false);
+          expect(body.config_ok).to.equal(false);
           done();
         });
       });
