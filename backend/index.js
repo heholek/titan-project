@@ -54,6 +54,8 @@ app.use(bodyParser.json({limit: '10mb'}))
 // Home rooting
 
 app.get('/', function (req, res) {
+    var id = uniqid()
+
     log.info(id + " - Someone hit slash");
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "message": "Nothing here !" }));
@@ -63,7 +65,7 @@ app.get('/', function (req, res) {
 
 app.post('/start_process', function (req, res) {
     
-    id = uniqid()
+    var id = uniqid()
 
     log.info(id + " - Start a Logstash process");
 
