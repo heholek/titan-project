@@ -226,7 +226,7 @@ $('#start_process').click(function () {
       input_extra_fields: getFieldsAttributesValues()
     };
 
-    $('#output').html('<div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div>');
+    $('#output').html('<div style="padding-top: 1em; padding-bottom: 1em"><div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div></div>');
     $("#start_process").addClass('disabled');
 
     $.ajax({
