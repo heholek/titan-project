@@ -169,6 +169,8 @@ $('#fill_form').click(function () {
     { attribute: "type", value: "syslog"}
   ])
 
+  $('#collapseOne').removeClass("show");
+
 });
 
 function userInputValid() {
