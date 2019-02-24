@@ -32,7 +32,8 @@ describe("API Testing", function () {
       it("returns status 200", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(response.statusCode).to.equal(200);
@@ -43,7 +44,8 @@ describe("API Testing", function () {
       it("should be config_ok", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -54,10 +56,11 @@ describe("API Testing", function () {
       it("should't have anything related to data in the output'", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.job_result.status).not.to.equal(0);
+          expect(body.job_result.status).to.equal(0);
           expect(body.job_result.stdout).not.to.match(/hou/);
           expect(body.job_result.stdout).not.to.match(/test2/);
 
@@ -75,7 +78,8 @@ describe("API Testing", function () {
       it("returns status 200", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(response.statusCode).to.equal(200);
@@ -86,7 +90,8 @@ describe("API Testing", function () {
       it("should be config_ok", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -97,12 +102,14 @@ describe("API Testing", function () {
       it("should have the right output", function (done) {
         formData = {
           input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}"
+          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
+          input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.job_result.status).to.equal(0);
           expect(body.job_result.stdout).to.match(/hou/);
           expect(body.job_result.stdout).to.match(/test2/);
+          expect(body.job_result.stdout).to.match(/superTest/);
 
           done();
         });

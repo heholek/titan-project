@@ -86,7 +86,7 @@ function jobFailed(reason) {
   $('#failModalReason').html(reason);
 
   $("#start_process").removeClass('disabled');
-  $('#output').text('No data was receive from Logstash :(');
+  $('#output').text('No data was receive from backend sever :(');
 }
 
 $('#clean_form').click(function () {
@@ -114,8 +114,10 @@ $('#fill_form').click(function () {
     }
   });
 
-  $('#fields_attributes_number').val(0);
-  applyFieldsAttributes()
+  applyFieldsAttributes([
+    { attribute: "pilote", value: "system"},
+    { attribute: "type", value: "syslog"}
+  ])
 
 });
 

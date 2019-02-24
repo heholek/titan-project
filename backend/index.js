@@ -11,7 +11,6 @@ const log = require('simple-node-logger').createSimpleLogger();
 
 // Some constants
 
-var INPUT_FILTER = "input{stdin{}}";
 var OUTPUT_FILTER = "output{stdout{}}";
 
 // Environments variables
@@ -21,6 +20,23 @@ const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
+
+/////////////////////////////
+// Logstash util functions //
+/////////////////////////////
+
+// Build the Logstash input
+
+function buildLogstashInput(attributes) {
+    var input = "input{stdin{";
+
+    for(var i = 0 ; i < attributes.length ; i++) {
+        input += ' add_field => { "' + attributes[i].attribute + '" => "' + attributes[i].value + '" }';
+    }
+
+    input += "}}";
+    return input;
+}
 
 //////////////////
 //  Server part //
@@ -53,10 +69,12 @@ app.post('/start_process', function (req, res) {
     if (argumentsValids(req, res)) {
         var input_data = quote([req.body.input_data]);
 
-        var logstash_filter = quote([INPUT_FILTER + req.body.logstash_filter + OUTPUT_FILTER]);
+        var logstash_input = buildLogstashInput(req.body.input_extra_fields)
 
+        var logstash_conf = quote([logstash_input + req.body.logstash_filter + OUTPUT_FILTER]);
+        console.log(logstash_conf)
 
-        computeResult(id, res, input_data, logstash_filter);
+        computeResult(id, res, input_data, logstash_conf);
     }
 })
 
@@ -72,10 +90,10 @@ app.listen(PORT, function () {
 
 // Compute the logstash result
 
-function computeResult(id, res, input, filter) {
+function computeResult(id, res, input_data, logstash_conf) {
     log.info(id + " - Starting logstash process");
 
-    var command = 'echo ' + input + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + filter + ' -i | tail -n +2';
+    var command = 'echo ' + input_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + logstash_conf + ' -i | tail -n +2';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT
@@ -131,6 +149,14 @@ function argumentsValids(req, res) {
 
     if (!ok) {
         failBadParameters(id, res, missing_fields)
+    }
+
+    for (var i = 0 ; i < req.body.input_extra_fields.length ; i++) {
+        if (req.body.input_extra_fields[i].attribute == "" || req.body.input_extra_fields[i].value == "") {
+            ok = false;
+            missing_fields.push("input_extra_fields")
+            break;
+        }
     }
 
     return ok
