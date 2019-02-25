@@ -110,9 +110,9 @@ function applyFieldsAttributes(conf) {
       attr = oldValues[i].attribute != undefined ? oldValues[i].attribute : ""
       val = oldValues[i].value != undefined ? oldValues[i].value : ""
     }
-    var str = '<div class="form-group row col-lg-12" style="margin-top: 1em">';
-    str += '<div class="col-xs-3"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute '+ (i + 1) + '" /></div>';
-    str += '<div class="col-xs-3"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value '+ (i + 1) + '" /></div>';
+    var str = '<div class="form-group row" style="margin-top: 1em">';
+    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute '+ (i + 1) + '" /></div>';
+    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value '+ (i + 1) + '" /></div>';
     str += '</div>';
     $('#fields_attributes').append(str);
   }
@@ -148,17 +148,48 @@ $('#clear_form').click(function () {
   saveSession();
 });
 
-$('#fill_form').click(function () {
+$('#multiline_example').click(function () {
 
   $.ajax({
-    url: "./sample/data.txt",
+    url: "./sample/multiline/data.txt",
     success: function (data){
       $('#input_data_textarea').val(data);
     }
   });
 
   $.ajax({
-    url: "./sample/filter.conf",
+    url: "./sample/multiline/filter.conf",
+    success: function (data){
+      editor.setValue(data, -1);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/multiline/multiline.codec",
+    success: function (data){
+      enableMultilineCodec(data)
+    }
+  });
+
+  applyFieldsAttributes([
+    { attribute: "type", value: "java-stack-trace"}
+  ])
+
+  $('#more_informations_colapse').removeClass("show");
+
+});
+
+$('#simple_example').click(function () {
+
+  $.ajax({
+    url: "./sample/simple/data.txt",
+    success: function (data){
+      $('#input_data_textarea').val(data);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/simple/filter.conf",
     success: function (data){
       editor.setValue(data, -1);
     }
@@ -169,9 +200,32 @@ $('#fill_form').click(function () {
     { attribute: "type", value: "syslog"}
   ])
 
-  $('#collapseOne').removeClass("show");
+  disableMultilineCodec()
+
+  $('#more_informations_colapse').removeClass("show");
 
 });
+
+function enableMultilineCodec(value) {
+  if(value != undefined) {
+    $('#custom_codec_field').val(value)
+  }
+  $('#enable_custom_codec').attr('checked',true);
+  $('#custom_codec_field').removeClass('d-none');
+}
+
+function disableMultilineCodec() {
+  $('#custom_codec_field').addClass('d-none');
+  $('#custom_codec_field').val("")
+}
+
+$('#enable_custom_codec').change(function() {
+  if(this.checked) {
+    enableMultilineCodec()
+  } else {
+    disableMultilineCodec()
+  }
+}); 
 
 function userInputValid() {
   input_valid = true;
@@ -209,6 +263,16 @@ function userInputValid() {
     $('#input_extra_attributes').removeClass("text-danger");
   }
 
+  if ($('#enable_custom_codec').is(':checked')) {
+    var custom_codec_value = $('#custom_codec_field').val()
+    if(custom_codec_value.length == 0) {
+      input_valid = false;
+      $('#custom_codec_field').addClass("is-invalid");
+    } else {
+      $('#custom_codec_field').removeClass("is-invalid");
+    }
+  }
+
   if(!input_valid) {
     toastr.error('All fields need to be fill !', 'Informations missings')
   }
@@ -227,6 +291,10 @@ $('#start_process').click(function () {
       logstash_filter: editor.getValue(),
       input_extra_fields: getFieldsAttributesValues()
     };
+
+    if ($('#enable_custom_codec').is(':checked')) {
+      body.custom_codec = $('#custom_codec_field').val();
+    }
 
     $('#output').html('<div style="padding-top: 1em; padding-bottom: 1em"><div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div></div>');
     $("#start_process").addClass('disabled');
@@ -267,7 +335,8 @@ function saveSession() {
     theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1? "white" : "black"),
     input_data: $('#input_data_textarea').val(),
     logstash_filter: editor.getValue(),
-    input_fields: getFieldsAttributesValues()
+    input_fields: getFieldsAttributesValues(),
+    custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
   }
   Cookies.set('session', session, { expires: 7 });
 }
@@ -281,6 +350,11 @@ function loadSession() {
     $('#input_data_textarea').val(session.input_data)
     editor.setValue(session.logstash_filter, -1)
     applyFieldsAttributes(session.input_fields)
+    if(session.custom_codec != "") {
+      enableMultilineCodec(session.custom_codec)
+    } else {
+      disableMultilineCodec()
+    }
   } else {
     console.log("No cookie for session found")
   }

@@ -99,17 +99,24 @@ describe("API Testing", function () {
         });
       });
 
-      it("should have the right output", function (done) {
+      it("should have the right output with multiline codec", function (done) {
         formData = {
-          input_data: "hi\nho\nha\nhou\nlol",
+          input_data: "hi\n ho\n ha\nhou\ lol",
           logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
+          custom_codec: 'multiline { pattern => "^\\s" what => "previous" }',
           input_extra_fields: [{attribute: "type", value: "superTest"}]
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.job_result.status).to.equal(0);
-          expect(body.job_result.stdout).to.match(/hou/);
-          expect(body.job_result.stdout).to.match(/test2/);
+          var accolade_left_number = (body.job_result.stdout.match(/{/g) || []).length
+          var accolade_right_number = (body.job_result.stdout.match(/{/g) || []).length
+          expect(accolade_left_number).to.equal(1);
+          expect(accolade_right_number).to.equal(1);
+          expect(body.job_result.stdout).to.match(/hi/);
+          expect(body.job_result.stdout).to.match(/ho/);
           expect(body.job_result.stdout).to.match(/superTest/);
+          expect(body.job_result.stdout).not.to.match(/hou/);
+          expect(body.job_result.stdout).not.to.match(/lol/);
 
           done();
         });

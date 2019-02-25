@@ -1,6 +1,7 @@
 // Includes
 
 var exec = require('child_process').exec;
+const fs = require('fs');
 
 const express = require('express')
 var bodyParser = require('body-parser')
@@ -28,15 +29,30 @@ const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 
 // Build the Logstash input
 
-function buildLogstashInput(attributes) {
+function buildLogstashInput(attributes, custom_codec) {
     var input = "input{stdin{";
 
-    for(var i = 0 ; i < attributes.length ; i++) {
+    for (var i = 0; i < attributes.length; i++) {
         input += ' add_field => { "' + attributes[i].attribute + '" => "' + attributes[i].value + '" }';
+    }
+
+    if (custom_codec != undefined) {
+        input += " codec => " + custom_codec;
     }
 
     input += "}}";
     return input;
+}
+
+// Write a string content to file
+
+function writeStringToFile(id, filepath, data, callback) {
+    fs.writeFile(filepath, data, function (err) {
+        if (err) {
+            log.err(id + " - Unable to write data to file '" + filepath + "'");
+        }
+        callback()
+    });
 }
 
 //////////////////
@@ -49,7 +65,7 @@ log.setLevel(LOG_LEVEL);
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json({limit: '10mb'}))
+app.use(bodyParser.json({ limit: '10mb' }))
 
 // Home rooting
 
@@ -64,19 +80,30 @@ app.get('/', function (req, res) {
 // Rooting for process starting
 
 app.post('/start_process', function (req, res) {
-    
+
     var id = uniqid()
 
     log.info(id + " - Start a Logstash process");
 
-    if (argumentsValids(req, res)) {
+    if (argumentsValids(id, req, res)) {
         var input_data = quote([req.body.input_data]);
 
-        var logstash_input = buildLogstashInput(req.body.input_extra_fields)
+        var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
 
-        var logstash_conf = quote([logstash_input + req.body.logstash_filter + OUTPUT_FILTER]);
+        var logstash_conf = logstash_input + req.body.logstash_filter + OUTPUT_FILTER;
 
-        computeResult(id, res, input_data, logstash_conf);
+        var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
+
+        if (!fs.existsSync(instanceDirectory)){
+            fs.mkdirSync(instanceDirectory);
+        }
+
+        var logstash_conf_filepath = instanceDirectory + "logstash.conf"
+
+        writeStringToFile(id, logstash_conf_filepath, logstash_conf, function() {
+            computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath);
+        })
+
     }
 })
 
@@ -92,10 +119,11 @@ app.listen(PORT, function () {
 
 // Compute the logstash result
 
-function computeResult(id, res, input_data, logstash_conf) {
+function computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath) {
     log.info(id + " - Starting logstash process");
 
-    var command = 'echo ' + input_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + LOGSTASH_DATA_DIR + id + ' -e ' + logstash_conf + ' -i | tail -n +2';
+    var logstash_temp_datadir = instanceDirectory + "temp_data"
+    var command = 'echo ' + input_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i | tail -n +2';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT
@@ -117,7 +145,7 @@ function computeResult(id, res, input_data, logstash_conf) {
         };
 
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ "config_ok": true, "job_result": job_result}));
+        res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
     });
 
 }
@@ -134,7 +162,7 @@ function failBadParameters(id, res, missing_fields) {
 
 // Check if provided arguments are valids
 
-function argumentsValids(req, res) {
+function argumentsValids(id, req, res) {
     var ok = true
 
     var missing_fields = []
@@ -149,16 +177,25 @@ function argumentsValids(req, res) {
         ok = false
     }
 
-    if (!ok) {
-        failBadParameters(id, res, missing_fields)
+    if (req.body['custom_codec'] != undefined && req.body.custom_codec == "") {
+        missing_fields.push("custom_codec")
+        ok = false
     }
 
-    for (var i = 0 ; i < req.body.input_extra_fields.length ; i++) {
-        if (req.body.input_extra_fields[i].attribute == "" || req.body.input_extra_fields[i].value == "") {
-            ok = false;
-            missing_fields.push("input_extra_fields")
-            break;
+    if(req.body['input_extra_fields'] == undefined) {
+        ok = false
+    } else {
+        for (var i = 0; i < req.body.input_extra_fields.length; i++) {
+            if (req.body.input_extra_fields[i].attribute == "" || req.body.input_extra_fields[i].value == "") {
+                ok = false;
+                missing_fields.push("input_extra_fields")
+                break;
+            }
         }
+    }
+
+    if (!ok) {
+        failBadParameters(id, res, missing_fields)
     }
 
     return ok

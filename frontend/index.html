@@ -56,20 +56,20 @@
           <div class="card">
             <div class="card-header" id="headingOne">
               <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
-                  aria-controls="collapseOne">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#more_informations_colapse" aria-expanded="false"
+                  aria-controls="more_informations_colapse">
                   More informations
                 </button>
               </h5>
             </div>
 
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div id="more_informations_colapse" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
               <div class="card-body text-left">
 
                 <div>The goal of this site is to provide you a Logstash instance to <strong>test the parsing</strong>
                   of a log file.</div>
                 <div>&nbsp;</div>
-                <div>It is and will <strong>never</strong> be aimed to <strong>read or write to an external source</strong>,
+                <div>It was and will <strong>never</strong> be mean to <strong>read or write to an external source</strong>,
                   such as Elasticsearch, Redis, Kafka, etc.</div>
                 <div>&nbsp;</div>
                 <div>Each time you <strong>launch the processing</strong> of your configuration, your full
@@ -86,103 +86,135 @@
                 <ul>
                   <li><strong>Logstash</strong> if package as a light version, with a limited number of input, output
                     and codecs ; and is optimized to <strong>run faster</strong> than usual instances</li>
+                  <li>Logstash is version <strong>5.6.15</strong>, with all it's plugins updated to <strong>latest
+                      version</strong></li>
                   <li>Each Logstash job is launch with <strong>1Go</strong> of memory</li>
-                  <li>No <strong>user data is store</strong>&nbsp;before, during or after the process</li>
                 </ul>
                 <p>As it is currently in beta, if you <strong>encounter a bug</strong>, need a <strong>new
                     functionnality</strong> or have a <strong>specific need</strong>, feel free to contact me at <a
-                    href="mailto:valentin.bourdier@mail.com">valentin.bourdier@mail.com</a>&nbsp;to talk about it.</p>
+                    href="mailto:valentin.bourdier@mail.com">this mail address</a>&nbsp;to talk about it.</p>
 
 
-                    <div class="text-center" style="margin-top: 2em; margin-bottom: 1.5em">
-                      <button type="button" class="btn btn-info" id="fill_form">Show me an example !</button>
-                    </div>
-
-                <hr>
-
-                <p style="margin-top: 1.5em">N.B. Currently use a <strong>custom codec</strong> for input, such the multiline codec, is <strong>not supported</strong></p>
-
-
+                <div class="row" style="margin-top: 2em; margin-bottom: 1em">
+                  <div class="col text-right">
+                    <button type="button" class="btn btn-info" id="simple_example">Show me a simple example !</button>
+                  </div>
+                  <div class="col text-left">
+                  <button type="button" class="btn btn-info" id="multiline_example">Show me an multiline example !</button>
+                </div>
+                </div>
               </div>
+
             </div>
           </div>
         </div>
       </div>
-
-      <div class="col-lg-12" style="margin-top: 4em">
-        <div class="form-row">
-
-          <h4 class="col-lg-12" id="input_extra_attributes">Input extra attributes:</h4>
-          <p class="form-text text-muted">
-            If you need to add some <strong>extra fields</strong> in the input of the configuration file, such as the
-            type, pilote, filepath, etc.
-          </p>
-
-          <input class="form-control log-display col-lg-6" style="margin-top: 1em" id="fields_attributes_number" type="number"
-            min="0" max="10" value="1">
-
-          <div id="fields_attributes" class="col-lg-12">
-            <div class="form-group row">
-              <div class="col-xs-3">
-                <input type="text" class="form-control log-display" id="field_attribute_key_1" size="20" name="p_scnt"
-                  value="" placeholder="Attribute" />
-              </div>
-              <div class="col-xs-3">
-                <input type="text" class="form-control log-display" id="field_attribute_value_1" size="20" name="p_scnt"
-                  value="" placeholder="Value" />
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-xs-3">
-                <input type="text" class="form-control log-display" id="field_attribute_key_1" size="20" name="p_scnt"
-                  value="" placeholder="Attribute" />
-              </div>
-              <div class="col-xs-3">
-                <input type="text" class="form-control log-display" id="field_attribute_value_1" size="20" name="p_scnt"
-                  value="" placeholder="Value" />
-              </div>
-            </div>
-          </div>
-
-          <h4 class="col-lg-12" style="margin-top: 1em">Logs:</h4>
-          <p class="form-text text-muted">
-            You can copy/paste here your logs. You don't need to have lots of them, <strong>only keep representative
-              logs</strong> of your formats. You should not have more than about 100 lines of logs.
-          </p>
-
-          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10"
-            placeholder="Copy/Paste your logs file here !" style="margin-top: 1em"></textarea>
-
-          <div>
-            <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
-            <p class="form-text text-muted">
-              Here is the place where you can create your Logstash filter.
-            </p>
-          </div>
-
-          <div class="col-lg-12" style="margin-top: 1em">
-            <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
-              placeholder="Write your logstash filter here !"></pre>
-          </div>
-
-          <div class="col-lg-12" style="margin-top: 45em">
-            <button type="button" class="btn btn-danger" id="clear_form">Clear forms</button>
-            <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
-          </div>
-
-          <div>
-            <h4 style="margin-top: 2em">Logstash output:</h4>
-            <p class="form-text text-muted">
-              The input data process by Logstash will be displayed here.
-            </p>
-          </div>
-
-          <pre id="output" class="form-control col-lg-12 log-display" style="height: auto; margin-top: 1em">The Logstash output will be shown here !</pre>
-
-        </div>
-      </div>
-
     </div>
+
+    <div class="col-lg-12" style="margin-top: 4em">
+      <div class="form-row">
+
+        <h4 class="col-lg-12" id="input_extra_attributes">Input extra attributes:</h4>
+        <p class="form-text text-muted col-lg-12">
+          If you need to add some <strong>extra fields</strong> in the input of the configuration file, such as the
+          type, pilote, filepath, etc.
+        </p>
+
+        <div class="row col-sm-12" style="margin-top: 2em">
+
+          <div class="col">
+
+            <div class="row text-center">
+              <div class="col-lg-6">
+                <label class="text-center">Number of extra fields:</label>
+              </div>
+              <div class="col-lg-6">
+                <input class="form-control log-display text-left" id="fields_attributes_number" type="number" min="0"
+                  max="10" value="1">
+              </div>
+            </div>
+
+            <div id="fields_attributes">
+
+              <div class="form-group row">
+                <div class="col-sm-3">
+                  <input type="text" class="form-control log-display" id="field_attribute_key_1" size="20" name="p_scnt"
+                    value="" placeholder="Attribute" />
+                </div>
+                <div class="col-sm-3">
+                  <input type="text" class="form-control log-display" id="field_attribute_value_1" size="20" name="p_scnt"
+                    value="" placeholder="Value" />
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-3">
+                  <input type="text" class="form-control log-display" id="field_attribute_key_1" size="20" name="p_scnt"
+                    value="" placeholder="Attribute" />
+                </div>
+                <div class="col-sm-3">
+                  <input type="text" class="form-control log-display" id="field_attribute_value_1" size="20" name="p_scnt"
+                    value="" placeholder="Value" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+
+            <div class="row">
+              <div class="col text-right">
+                <label>Use a custom input codec ?</label>
+              </div>
+              <div class="col text-center">
+                <input type="checkbox" class="form-check-input" id="enable_custom_codec">
+              </div>
+            </div>
+
+            <textarea spellcheck="false" id="custom_codec_field" class="d-none form-control log-display" rows="5"
+              placeholder="Enter your input codec here !" style="margin-top: 1em"></textarea>
+          </div>
+
+        </div>
+
+        <h4 class="col-lg-12" style="margin-top: 1em">Logs:</h4>
+        <p class="form-text text-muted">
+          You can copy/paste here your logs. You don't need to have lots of them, <strong>only keep representative
+            logs</strong> of your formats. You should not have more than about 100 lines of logs.
+        </p>
+
+        <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10"
+          placeholder="Copy/Paste your logs file here !" style="margin-top: 1em"></textarea>
+
+        <div>
+          <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
+          <p class="form-text text-muted">
+            Here is the place where you can create your Logstash filter.
+          </p>
+        </div>
+
+        <div class="col-lg-12" style="margin-top: 1em">
+          <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
+            placeholder="Write your logstash filter here !"></pre>
+        </div>
+
+        <div class="col-lg-12" style="margin-top: 45em">
+          <button type="button" class="btn btn-danger" id="clear_form">Clear forms</button>
+          <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
+        </div>
+
+        <div>
+          <h4 style="margin-top: 2em">Logstash output:</h4>
+          <p class="form-text text-muted">
+            The input data process by Logstash will be displayed here.
+          </p>
+        </div>
+
+        <pre id="output" class="form-control col-lg-12 log-display" style="height: auto; margin-top: 1em">The Logstash output will be shown here !</pre>
+
+      </div>
+    </div>
+
+  </div>
   </div>
   </div>
 
