@@ -3,6 +3,10 @@ version: '3'
 services:
 
   titan-project-backend:
-    build: .
+    build: 
+      context: .
+      #args:
+      #  http_proxy: ""
+      #  https_proxy: ""
     ports:
      - "8081:8081"

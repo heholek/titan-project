@@ -4,7 +4,11 @@ services:
 
   titan-project-backend:
     restart: always
-    build: ./backend
+    build: 
+      context: ./backend
+      #args:
+      #  http_proxy: ""
+      #  https_proxy: ""
     ports:
       - "8081:8081"
 
