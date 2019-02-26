@@ -23,6 +23,30 @@ const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/"
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 
+///////////////////////////////
+// Some system util function //
+///////////////////////////////
+
+// Create a directory (sync)
+
+function createDirectory(directory) {
+    if (!fs.existsSync(directory)){
+        fs.mkdirSync(directory);
+    }
+}
+
+
+// Write a string content to file
+
+function writeStringToFile(id, filepath, data, callback) {
+    fs.writeFile(filepath, data, function (err) {
+        if (err) {
+            log.err(id + " - Unable to write data to file '" + filepath + "'");
+        }
+        callback()
+    });
+}
+
 /////////////////////////////
 // Logstash util functions //
 /////////////////////////////
@@ -42,17 +66,6 @@ function buildLogstashInput(attributes, custom_codec) {
 
     input += "}}";
     return input;
-}
-
-// Write a string content to file
-
-function writeStringToFile(id, filepath, data, callback) {
-    fs.writeFile(filepath, data, function (err) {
-        if (err) {
-            log.err(id + " - Unable to write data to file '" + filepath + "'");
-        }
-        callback()
-    });
 }
 
 //////////////////
@@ -88,20 +101,27 @@ app.post('/start_process', function (req, res) {
     if (argumentsValids(id, req, res)) {
         var input_data = quote([req.body.input_data]);
 
-        var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
-
-        var logstash_conf = logstash_input + req.body.logstash_filter + OUTPUT_FILTER;
-
         var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
 
-        if (!fs.existsSync(instanceDirectory)){
-            fs.mkdirSync(instanceDirectory);
+        createDirectory(instanceDirectory)
+
+        var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
+        var logstash_filter = req.body.logstash_filter;
+
+        if(req.body['custom_logstash_patterns'] != undefined) {
+            var custom_logstash_patterns = req.body.custom_logstash_patterns;
+            var pattern_directory = instanceDirectory + "patterns/";
+            createDirectory(pattern_directory)
+            writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function() {});
+            logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["' + pattern_directory + '"] ')
         }
 
-        var logstash_conf_filepath = instanceDirectory + "logstash.conf"
+        var logstash_conf = logstash_input + logstash_filter + OUTPUT_FILTER;
 
+        var logstash_conf_filepath = instanceDirectory + "logstash.conf"
+       
         writeStringToFile(id, logstash_conf_filepath, logstash_conf, function() {
-            computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath);
+            computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath, custom_logstash_patterns);
         })
 
     }

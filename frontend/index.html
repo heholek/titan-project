@@ -56,8 +56,8 @@
           <div class="card">
             <div class="card-header" id="headingOne">
               <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#more_informations_colapse" aria-expanded="false"
-                  aria-controls="more_informations_colapse">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#more_informations_colapse"
+                  aria-expanded="false" aria-controls="more_informations_colapse">
                   More informations
                 </button>
               </h5>
@@ -100,13 +100,37 @@
                     <button type="button" class="btn btn-info" id="simple_example">Show me a simple example !</button>
                   </div>
                   <div class="col text-left">
-                  <button type="button" class="btn btn-info" id="multiline_example">Show me an multiline example !</button>
-                </div>
+                    <button type="button" class="btn btn-info" id="multiline_example">Show me an multiline example !</button>
+                  </div>
                 </div>
               </div>
-
             </div>
           </div>
+
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#custom_logstash_patterns"
+                  aria-expanded="false" aria-controls="custom_logstash_patterns">
+                  Custom Logstash patterns
+                </button>
+              </h5>
+            </div>
+
+            <div id="custom_logstash_patterns" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body text-left">
+
+                <p class="form-text text-muted col-lg-12">
+                  If you need to add some <strong>extra Logstash patterns</strong> for your parsing, you can add them here !
+                </p>
+
+                  <textarea spellcheck="false" id="custom_logstash_patterns_input" class="form-control log-display" rows="10"
+                  placeholder="Enter your custom Logstash patterns here !" style="margin-top: 1em"></textarea>
+                
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

@@ -296,6 +296,10 @@ $('#start_process').click(function () {
       body.custom_codec = $('#custom_codec_field').val();
     }
 
+    if ($('#custom_logstash_patterns_input').val() != "") {
+      body.custom_logstash_patterns = $('#custom_logstash_patterns_input').val();
+    }
+
     $('#output').html('<div style="padding-top: 1em; padding-bottom: 1em"><div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div></div>');
     $("#start_process").addClass('disabled');
 
@@ -336,6 +340,7 @@ function saveSession() {
     input_data: $('#input_data_textarea').val(),
     logstash_filter: editor.getValue(),
     input_fields: getFieldsAttributesValues(),
+    custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
     custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
   }
   Cookies.set('session', session, { expires: 7 });
@@ -348,6 +353,7 @@ function loadSession() {
     console.log("Loading user session")
     session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
     $('#input_data_textarea').val(session.input_data)
+    $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
     editor.setValue(session.logstash_filter, -1)
     applyFieldsAttributes(session.input_fields)
     if(session.custom_codec != "") {

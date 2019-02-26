@@ -71,9 +71,24 @@ describe("API Testing", function () {
     });
 
 
-
     describe("with good parameters", function () {
       this.timeout(MAX_TIMEOUT);
+
+      it("should take into account custom codec", function (done) {
+        formData = {
+          input_data: "HAHA\nHOHO",
+          logstash_filter: 'filter{ grok { match => { "message" => "%{STR_UPPER:test}" } }}',
+          input_extra_fields: []
+        }
+        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
+          expect(body.job_result.status).to.equal(0);
+          expect(body.job_result.stdout).to.match(/HAHA/);
+          expect(body.job_result.stdout).to.match(/HOHO/);
+          expect(body.job_result.stdout).to.match(/test/);
+
+          done();
+        });
+      });
 
       it("returns status 200", function (done) {
         formData = {
