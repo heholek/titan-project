@@ -3,8 +3,10 @@ FROM node:8-stretch
 # Add proxy variable on build if needed
 ARG http_proxy=""
 ARG https_proxy=""
+ARG no_proxy=""
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
+ENV no_proxy=$no_proxy
 
 # Install Logstash
 RUN apt-get update
