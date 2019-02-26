@@ -1,5 +1,12 @@
 FROM nginx:1.15.8
 
+# Add proxy variable on build if needed
+ARG http_proxy=""
+ARG https_proxy=""
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+
+# Install curl for healthcheck
 RUN apt-get update
 RUN apt-get install curl -y
 

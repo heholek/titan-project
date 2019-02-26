@@ -18,6 +18,8 @@ services:
       context: ./frontend
       args:
         BACKENDHOST: "localhost:8081"
+        #  http_proxy: ""
+        #  https_proxy: ""
     ports:
      - "8080:80"
 
