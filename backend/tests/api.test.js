@@ -77,6 +77,7 @@ describe("API Testing", function () {
       it("should take into account custom codec", function (done) {
         formData = {
           input_data: "HAHA\nHOHO",
+          custom_logstash_patterns: "STR_UPPER [A-Z]*\n",
           logstash_filter: 'filter{ grok { match => { "message" => "%{STR_UPPER:test}" } }}',
           input_extra_fields: []
         }
