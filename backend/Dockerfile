@@ -53,6 +53,9 @@ RUN rm -rf /var/lib/apt/lists/*
 # Bundle app source
 COPY . .
 
+# Temporary fix for directory creation
+RUN mkdir -p /tmp/logstash/data/
+
 EXPOSE 8081
 CMD [ "npm", "start" ]
 
