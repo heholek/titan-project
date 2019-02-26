@@ -53,3 +53,5 @@ COPY . .
 
 EXPOSE 8081
 CMD [ "npm", "start" ]
+
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8081/ || exit 1
