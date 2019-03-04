@@ -149,25 +149,35 @@ function computeResult(id, res, input_data, instanceDirectory, logstash_conf_fil
         timeout: MAX_EXEC_TIMEOUT
     }
 
-    exec(command, options, (err, stdout, stderr) => {
-        log.info(id + " - Ended a Logstash process");
-
-        var status = 0;
-
-        if (err instanceof Error) {
-            status = err.code;
-        }
-
+    try {
+        exec(command, options, (err, stdout, stderr) => {
+            log.info(id + " - Ended a Logstash process");
+    
+            var status = 0;
+    
+            if (err instanceof Error) {
+                status = err.code;
+            }
+    
+            var job_result = {
+                stdout: stdout.toString('utf8'),
+                stderr: stderr.toString('utf8'),
+                status: status
+            };
+    
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
+        });
+    } catch (ex) {
         var job_result = {
-            stdout: stdout.toString('utf8'),
-            stderr: stderr.toString('utf8'),
-            status: status
+            stderr: "",
+            stdout: ex.toString('utf8'),
+            status: -1
         };
-
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
-    });
-
+    }
+    
 }
 
 // Fail because of bad parameters

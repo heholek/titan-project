@@ -313,11 +313,15 @@ $('#start_process').click(function () {
       success: function (data) {
         $('#output').text(data.job_result.stdout);
         $("#start_process").removeClass('disabled');
-        if (data.job_result.status != 0 || data.job_result.stdout.startsWith("[ERROR]")) {
+
+        if (data.job_result.status == -1) {
+          toastr.error('Unable to execute the process on remote server.', 'Error')
+        } else if (data.job_result.status != 0 || data.job_result.stdout.startsWith("[ERROR]")) {
           toastr.error('There was a problem in your configuration.', 'Error')
         } else {
           toastr.success('Configuration parsing is done !', 'Success')
         }
+
         if (!data.config_ok) {
           toastr.error('All fields need to be fill !', 'Informations missings')
         }
