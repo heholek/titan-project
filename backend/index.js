@@ -31,7 +31,9 @@ const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 
 function createDirectory(directory) {
     if (!fs.existsSync(directory)){
-        fs.mkdirSync(directory);
+        fs.mkdirSync(directory, {
+            recursive: true
+        });
     }
 }
 

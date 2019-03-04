@@ -27,9 +27,16 @@
 - name: Installing backend
   hosts: backend
   become: true
+  vars:
+    nodejs_version: "10.x"
   roles:
-    - nodejs
+    - node
     - logstash
+  post_tasks:
+    - name: Install npm dependencies for backend
+      npm:
+        path: "/vagrant/backend"
+        state: present
 
 # Install the frontend
 

@@ -1,4 +1,4 @@
-FROM node:8-stretch
+FROM node:10-stretch
 
 # Add proxy variable on build if needed
 ARG http_proxy=""
@@ -17,9 +17,9 @@ RUN echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -
 RUN apt-get update
 RUN apt-get install logstash=1:5.6.15-1 -y
 
-# We remove unussed Logstash plugins
+# We remove unused Logstash plugins
 COPY ./scripts/remove_logstash_plugins.sh .
-RUN ./remove_logstash_plugins.sh
+RUN bash remove_logstash_plugins.sh
 
 # We then update remaining plugins
 RUN /usr/share/logstash/bin/logstash-plugin update
@@ -53,9 +53,7 @@ RUN rm -rf /var/lib/apt/lists/*
 # Bundle app source
 COPY . .
 
-# Temporary fix for directory creation
-RUN mkdir -p /tmp/logstash/data/
-
+# Image characteristics
 EXPOSE 8081
 CMD [ "npm", "start" ]
 
