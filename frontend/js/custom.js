@@ -175,8 +175,6 @@ $('#multiline_example').click(function () {
     { attribute: "type", value: "java-stack-trace"}
   ])
 
-  $('#more_informations_colapse').removeClass("show");
-
 });
 
 $('#simple_example').click(function () {
@@ -203,8 +201,6 @@ $('#simple_example').click(function () {
   ])
 
   disableMultilineCodec()
-
-  $('#more_informations_colapse').removeClass("show");
 
 });
 
