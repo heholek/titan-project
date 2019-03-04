@@ -344,6 +344,10 @@ function saveSession() {
     custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
   }
   store.set('session', session);
+
+  if(JSON.stringify(store.get('session')) != JSON.stringify(session)) {
+    toastr.warning('There was a problem while saving your work', 'Save problem')
+  }
 }
 
 function loadSession() {
