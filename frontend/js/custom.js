@@ -136,7 +136,7 @@ function jobFailed(reason) {
   $('#failModalReason').html(reason);
 
   $("#start_process").removeClass('disabled');
-  $('#output').text('No data was receive from backend sever :(');
+  $('#output').text('No data was receive from backend server :(');
 }
 
 $('#clear_form').click(function () {
