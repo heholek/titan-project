@@ -9,7 +9,7 @@ var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
 
-const log = require('simple-node-logger').createSimpleLogger();
+const log = require('simple-node-logger').createSimpleLogger({timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'});
 
 // Some constants
 
