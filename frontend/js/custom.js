@@ -311,13 +311,21 @@ $('#start_process').click(function () {
       dataType: "json",
       timeout: 60000,
       success: function (data) {
-        $('#output').text(data.job_result.stdout);
-        $("#start_process").removeClass('disabled');
-
         if (data.job_result.status == -1) {
           toastr.error('Unable to execute the process on remote server.', 'Error')
-        } else if (data.job_result.status != 0 || data.job_result.stdout.startsWith("[ERROR]")) {
+        } else if (data.job_result.status != 0 || data.job_result.stdout.indexOf("[ERROR]") != -1 || data.job_result.stdout.indexOf("[WARNING]") != -1) {
           toastr.error('There was a problem in your configuration.', 'Error')
+          res = ""
+          lines = data.job_result.stdout.split('\n')
+          for(var i =0 ; i < lines.length ; i++) {
+            line = lines[i]
+            if(line.startsWith("[")) {
+              line = line.replace(/\\r\\n/g, '\n')
+              line = line.replace(/\\n/g, '\n')
+            }
+            res += line + "\n"
+          }
+          data.job_result.stdout = res
         } else {
           toastr.success('Configuration parsing is done !', 'Success')
         }
@@ -325,6 +333,9 @@ $('#start_process').click(function () {
         if (!data.config_ok) {
           toastr.error('All fields need to be fill !', 'Informations missings')
         }
+
+        $('#output').text(data.job_result.stdout);
+        $("#start_process").removeClass('disabled');
       },
       error: function () {
         jobFailed("Unable to obtain a response from the backend server.<br/>You cannot do anything to solve it, please contact the maintainer of this project.")
