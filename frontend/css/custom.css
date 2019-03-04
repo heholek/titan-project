@@ -12,3 +12,9 @@
     background-color: #fff;
     color: #212529;
   }
+
+.string { color: #212529; }
+.number { color: #d10000; }
+.boolean { color: rgb(248, 94, 55); }
+.null { color: #009f6c; }
+.key { color: #2b7cc4; }

@@ -393,6 +393,60 @@ function userInputValid() {
 // Backend communication //
 ///////////////////////////
 
+// Escape a string to html
+function escapeHtml(unsafe) {
+  return unsafe
+       .replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#039;");
+}
+
+// A function to display beautiful json
+
+function jsonSyntaxHighlight(json) {
+  if (typeof json != 'string') {
+    json = JSON.stringify(json, undefined, 2);
+  }
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    var cls = 'number';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'key';
+      } else {
+        cls = 'string';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'boolean';
+    } else if (/null/.test(match)) {
+      cls = 'null';
+    }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
+// Format logstash log output
+
+function formatLogstashLog(log) {
+  res = ""
+  lines = log.split('\n')
+  for (var i = 0; i < lines.length; i++) {
+    line = lines[i]
+    if (line.startsWith("[")) {
+      line = line.replace(/\\r\\n/g, '\n')
+      line = line.replace(/\\n/g, '\n')
+      line = escapeHtml(line)
+    } else if (line.startsWith("{") && line.endsWith("}")) {
+      obj = JSON.stringify(JSON.parse(line),null,2);  
+      line = jsonSyntaxHighlight(obj)
+    }
+    res += line + "\n"
+  }
+  return res;
+}
+
 // Manage if backend fail to treat user input
 
 function jobFailed(reason) {
@@ -451,26 +505,17 @@ $('#start_process').click(function () {
           toastr.error('Unable to execute the process on remote server.', 'Error')
         } else if (data.job_result.status != 0 || data.job_result.stdout.indexOf("[ERROR]") != -1 || data.job_result.stdout.indexOf("[WARNING]") != -1) {
           toastr.error('There was a problem in your configuration.', 'Error')
-          res = ""
-          lines = data.job_result.stdout.split('\n')
-          for (var i = 0; i < lines.length; i++) {
-            line = lines[i]
-            if (line.startsWith("[")) {
-              line = line.replace(/\\r\\n/g, '\n')
-              line = line.replace(/\\n/g, '\n')
-            }
-            res += line + "\n"
-          }
-          data.job_result.stdout = res
+          data.job_result.stdout = formatLogstashLog(data.job_result.stdout)
         } else {
           toastr.success('Configuration parsing is done !', 'Success')
+          data.job_result.stdout = formatLogstashLog(data.job_result.stdout)
         }
 
         if (!data.config_ok) {
           toastr.error('All fields need to be fill !', 'Informations missings')
         }
 
-        $('#output').text(data.job_result.stdout);
+        $('#output').html(data.job_result.stdout);
         $("#start_process").removeClass('disabled');
       },
       error: function () {

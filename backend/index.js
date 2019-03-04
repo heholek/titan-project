@@ -13,7 +13,7 @@ const log = require('simple-node-logger').createSimpleLogger({timestampFormat: '
 
 // Some constants
 
-var OUTPUT_FILTER = "output{stdout{}}";
+var OUTPUT_FILTER = "output { stdout { codec => json_lines } }";
 
 // Environments variables
 

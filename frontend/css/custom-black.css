@@ -16,3 +16,9 @@
 .btn-link {
   color: #24bfff;
 }
+
+.string { color: #ffffff; }
+.number { color: #77e9ff; }
+.boolean { color: #ff37c1; }
+.null { color: #00c257; }
+.key { color: #e5ff87; }
