@@ -77,7 +77,7 @@ function enableBlackTheme() {
 
   editor.setTheme("ace/theme/dracula");
 
-  console.log("enable black theme")
+  console.log("Enable black theme")
 }
 
 function enableWhiteTheme() {
@@ -86,7 +86,21 @@ function enableWhiteTheme() {
 
   editor.setTheme("ace/theme/clouds");
 
-  console.log("enable white theme")
+  console.log("Enable white theme")
+}
+
+// Minimalist mode
+
+function enableMinimalistMode() {
+  $('#css_theme_minimalist').attr('href','./css/custom-minimalist.css');
+
+  console.log("Enable minimalist mode")
+}
+
+function disableMinimalistMode() {
+  $('#css_theme_minimalist').attr('href','./css/custom-nominimalist.css');
+
+  console.log("Disable minimalist mode")
 }
 
 function applyFieldsAttributes(conf) {
@@ -351,6 +365,7 @@ $('#start_process').click(function () {
 function saveSession() {
   console.log("Saving session into cookie")
   var session = {
+    minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1? false : true),
     theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1? "white" : "black"),
     input_data: $('#input_data_textarea').val(),
     logstash_filter: editor.getValue(),
@@ -379,6 +394,11 @@ function loadSession() {
     } else {
       disableMultilineCodec()
     }
+    if(session.minimalist) {
+      enableMinimalistMode()
+    } else {
+      disableMinimalistMode()
+    }
   } else {
     console.log("No cookie for session found")
   }
@@ -396,6 +416,18 @@ $('#change_theme').click(function (){
     saveSession()
   } else {
     enableWhiteTheme()
+    saveSession()
+  }
+});
+
+// Change minimalist mode
+
+$('#change_minimalist').click(function (){
+  if($('#css_theme_minimalist').attr('href').includes('nominimalist.css')) {
+    enableMinimalistMode()
+    saveSession()
+  } else {
+    disableMinimalistMode()
     saveSession()
   }
 });
