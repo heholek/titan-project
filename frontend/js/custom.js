@@ -1,113 +1,270 @@
 const api_url = "http://localhost:8081";
 
-// Init ace editor
-ace.require("ace/ext/language_tools");
+/////////////////////
+// Init ACE editor //
+/////////////////////
 
-var editor = ace.edit("logstash_filter_textarea");
-editor.session.setMode("ace/mode/ruby");
-editor.session.setTabSize(2);
+// Build the ACE editor to edit configuration
+function buildEditor() {
+  ace.require("ace/ext/language_tools");
 
-editor.setOptions({
-  fontSize: "12pt",
-  enableBasicAutocompletion: true,
-  enableLiveAutocompletion: true,
-  indentedSoftWrap: true,
-  useSoftTabs: true,
-  showPrintMargin: false,
-  enableSnippets: false,
-  navigateWithinSoftTabs: true,
-  keyboardHandler: "ace/keyboard/sublime"
-})
+  var editor = ace.edit("logstash_filter_textarea");
+  editor.session.setMode("ace/mode/ruby");
+  editor.session.setTabSize(2);
 
-// Editor save and open behavior
+  editor.setOptions({
+    fontSize: "12pt",
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    indentedSoftWrap: true,
+    useSoftTabs: true,
+    showPrintMargin: false,
+    enableSnippets: false,
+    navigateWithinSoftTabs: true,
+    keyboardHandler: "ace/keyboard/sublime"
+  })
 
-editor.commands.addCommand({
-  name: 'save',
-  bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
-  exec: function(editor) {
+  // Editor save and open behavior
+
+  editor.commands.addCommand({
+    name: 'save',
+    bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
+    exec: function (editor) {
       data = editor.session.getValue()
       saveToFile(data, "logstash_filter.conf")
-  }
-})
+    }
+  })
 
-editor.commands.addCommand({
-  name: 'open',
-  bindKey: {win: "Ctrl-O", "mac": "Cmd-O"},
-  exec: function(editor) {
+  editor.commands.addCommand({
+    name: 'open',
+    bindKey: { win: "Ctrl-O", "mac": "Cmd-O" },
+    exec: function (editor) {
       $('#filter_input_loading').click();
-  }
-})
+    }
+  })
 
+  return editor
+}
+
+// Read the content of a single file, and put it into the editor
 function readSingleFile(e) {
   var file = e.target.files[0];
   if (!file) {
     return;
   }
   var reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     var contents = e.target.result;
     editor.session.setValue(contents);
   };
   reader.readAsText(file);
 }
 
-document.getElementById('filter_input_loading')
-  .addEventListener('change', readSingleFile, false);
+// We create a callback when user click on the input loading
+document.getElementById('filter_input_loading').addEventListener('change', readSingleFile, false);
 
-
-// Util functions
-
+// Save a string to file
 function saveToFile(data, filename) {
-  var blob = new Blob([data], {type: 'text/plain'}),
-        e    = document.createEvent('MouseEvents'),
-        a    = document.createElement('a')
+  var blob = new Blob([data], { type: 'text/plain' }),
+    e = document.createEvent('MouseEvents'),
+    a = document.createElement('a')
 
-    a.download = filename
-    a.href = window.URL.createObjectURL(blob)
-    a.dataset.downloadurl =  ['text/plain', a.download, a.href].join(':')
-    e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-    a.dispatchEvent(e)
+  a.download = filename
+  a.href = window.URL.createObjectURL(blob)
+  a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':')
+  e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+  a.dispatchEvent(e)
 }
 
-// Theme color
+// Create the editor that will be used by others files
+var editor = buildEditor()
 
+//////////////////////
+// Theme management //
+//////////////////////
+
+// Theme colors
+
+// Enable the black theme
 function enableBlackTheme() {
-  $('#css_theme_bootstrap').attr('href','./css/bootstrap-black.min.css');
-  $('#css_theme_custom').attr('href','./css/custom-black.css');
+  $('#css_theme_bootstrap').attr('href', './css/bootstrap-black.min.css');
+  $('#css_theme_custom').attr('href', './css/custom-black.css');
 
   editor.setTheme("ace/theme/dracula");
 
   console.log("Enable black theme")
 }
 
+// Enable the white theme
 function enableWhiteTheme() {
-  $('#css_theme_bootstrap').attr('href','./css/bootstrap.min.css');
-  $('#css_theme_custom').attr('href','./css/custom.css');
+  $('#css_theme_bootstrap').attr('href', './css/bootstrap.min.css');
+  $('#css_theme_custom').attr('href', './css/custom.css');
 
   editor.setTheme("ace/theme/clouds");
 
   console.log("Enable white theme")
 }
 
+// Change theme button rtrigger
+$('#change_theme').click(function () {
+  if ($('#css_theme_bootstrap').attr('href').includes('bootstrap.min.css')) {
+    enableBlackTheme()
+    saveSession()
+  } else {
+    enableWhiteTheme()
+    saveSession()
+  }
+});
+
 // Minimalist mode
 
+// Enable the minimalist mode
 function enableMinimalistMode() {
-  $('#css_theme_minimalist').attr('href','./css/custom-minimalist.css');
+  $('#css_theme_minimalist').attr('href', './css/custom-minimalist.css');
 
   console.log("Enable minimalist mode")
 }
 
+// Disable the minimalist mode
 function disableMinimalistMode() {
-  $('#css_theme_minimalist').attr('href','./css/custom-nominimalist.css');
+  $('#css_theme_minimalist').attr('href', './css/custom-nominimalist.css');
 
   console.log("Disable minimalist mode")
 }
 
+// Change minimalist mode button trigger
+$('#change_minimalist').click(function () {
+  if ($('#css_theme_minimalist').attr('href').includes('nominimalist.css')) {
+    enableMinimalistMode()
+    saveSession()
+  } else {
+    disableMinimalistMode()
+    saveSession()
+  }
+});
+
+//////////////////////////
+// Example form filling //
+//////////////////////////
+
+// Trigger for the multiline example
+$('#multiline_example').click(function () {
+
+  $.ajax({
+    url: "./sample/multiline/data.txt",
+    success: function (data) {
+      $('#input_data_textarea').val(data);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/multiline/filter.conf",
+    success: function (data) {
+      editor.setValue(data, -1);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/multiline/multiline.codec",
+    success: function (data) {
+      enableMultilineCodec(data)
+    }
+  });
+
+  applyFieldsAttributes([
+    { attribute: "type", value: "java-stack-trace" }
+  ])
+
+});
+
+// Trigger for the basic example
+$('#simple_example').click(function () {
+
+  $.ajax({
+    url: "./sample/simple/data.txt",
+    success: function (data) {
+      $('#input_data_textarea').val(data);
+    }
+  });
+
+  $.ajax({
+    url: "./sample/simple/filter.conf",
+    success: function (data) {
+      editor.setValue(data, -1);
+    }
+  });
+
+  applyFieldsAttributes([
+    { attribute: "pilote", value: "system" },
+    { attribute: "application", value: "system" },
+    { attribute: "type", value: "syslog" },
+    { attribute: "path", value: "/var/log/syslog" }
+  ])
+
+  disableMultilineCodec()
+
+});
+
+////////////////////////
+// Session management //
+////////////////////////
+
+// Save current user session
+function saveSession() {
+  console.log("Saving session into cookie")
+  var session = {
+    minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
+    theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
+    input_data: $('#input_data_textarea').val(),
+    logstash_filter: editor.getValue(),
+    input_fields: getFieldsAttributesValues(),
+    custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
+    custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
+  }
+  store.set('session', session);
+
+  if (JSON.stringify(store.get('session')) != JSON.stringify(session)) {
+    toastr.warning('There was a problem while saving your work', 'Save problem')
+  }
+}
+
+// Load session for user
+function loadSession() {
+  var session = store.get('session');
+  if (session != undefined) {
+    console.log("Loading user session")
+    session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
+    $('#input_data_textarea').val(session.input_data)
+    $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
+    editor.setValue(session.logstash_filter, -1)
+    applyFieldsAttributes(session.input_fields)
+    if (session.custom_codec != "") {
+      enableMultilineCodec(session.custom_codec)
+    } else {
+      disableMultilineCodec()
+    }
+    if (session.minimalist) {
+      enableMinimalistMode()
+    } else {
+      disableMinimalistMode()
+    }
+  } else {
+    console.log("No cookie for session found")
+  }
+}
+
+//////////////////
+// Form control //
+//////////////////
+
+// Manage list of extra fields
+
+// Apply conf of extra input fields
 function applyFieldsAttributes(conf) {
   var oldValues = "";
   var number = "";
-  
-  if(conf == undefined) {
+
+  if (conf == undefined) {
     oldValues = getFieldsAttributesValues()
     number = $('#fields_attributes_number').val();
   } else {
@@ -117,7 +274,7 @@ function applyFieldsAttributes(conf) {
   }
 
   $('#fields_attributes').empty();
-  for(var i = 0 ; i < number ; i++) {
+  for (var i = 0; i < number; i++) {
     var attr = "";
     var val = "";
     if (i < oldValues.length) {
@@ -125,17 +282,18 @@ function applyFieldsAttributes(conf) {
       val = oldValues[i].value != undefined ? oldValues[i].value : ""
     }
     var str = '<div class="form-group row" style="margin-top: 1em">';
-    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute '+ (i + 1) + '" /></div>';
-    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value '+ (i + 1) + '" /></div>';
+    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute ' + (i + 1) + '" /></div>';
+    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value ' + (i + 1) + '" /></div>';
     str += '</div>';
     $('#fields_attributes').append(str);
   }
 }
 
+// Get value of extra input files
 function getFieldsAttributesValues() {
   var number = $('#fields_attributes_number').val();
   var values = []
-  for(var i = 0 ; i < number ; i++) {
+  for (var i = 0; i < number; i++) {
     values.push({
       attribute: $('#field_attribute_key_' + i).val(),
       value: $('#field_attribute_value_' + i).val()
@@ -144,102 +302,39 @@ function getFieldsAttributesValues() {
   return values
 }
 
-function jobFailed(reason) {
-  $("#start_process").removeClass('disabled');
-  $('#failModal').modal('show');
-  $('#failModalReason').html(reason);
-
-  $("#start_process").removeClass('disabled');
-  $('#output').text('No data was receive from backend server :(');
-}
-
-$('#clear_form').click(function () {
-  $('#input_data_textarea').val("");
-  editor.setValue("", -1);
-  $('#output').text("The Logstash output will be shown here !");
-  $('#fields_attributes_number').val(0);
+// Trigger on the fields attribute number
+$("#fields_attributes_number").change(function () {
   applyFieldsAttributes()
-  disableMultilineCodec()
-  saveSession();
 });
 
-$('#multiline_example').click(function () {
+// Manage the custom multiline codec
 
-  $.ajax({
-    url: "./sample/multiline/data.txt",
-    success: function (data){
-      $('#input_data_textarea').val(data);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/multiline/filter.conf",
-    success: function (data){
-      editor.setValue(data, -1);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/multiline/multiline.codec",
-    success: function (data){
-      enableMultilineCodec(data)
-    }
-  });
-
-  applyFieldsAttributes([
-    { attribute: "type", value: "java-stack-trace"}
-  ])
-
-});
-
-$('#simple_example').click(function () {
-
-  $.ajax({
-    url: "./sample/simple/data.txt",
-    success: function (data){
-      $('#input_data_textarea').val(data);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/simple/filter.conf",
-    success: function (data){
-      editor.setValue(data, -1);
-    }
-  });
-
-  applyFieldsAttributes([
-    { attribute: "pilote", value: "system"},
-    { attribute: "application", value: "system"},
-    { attribute: "type", value: "syslog"},
-    { attribute: "path", value: "/var/log/syslog"}
-  ])
-
-  disableMultilineCodec()
-
-});
-
+// Enable the multiline codec
 function enableMultilineCodec(value) {
-  if(value != undefined) {
+  if (value != undefined) {
     $('#custom_codec_field').val(value)
   }
-  $('#enable_custom_codec').attr('checked',true);
+  $('#enable_custom_codec').attr('checked', true);
   $('#custom_codec_field').removeClass('d-none');
 }
 
+// Disable the multiline codec
 function disableMultilineCodec() {
   $('#custom_codec_field').addClass('d-none');
   $('#custom_codec_field').val("");
-  $('#enable_custom_codec').attr('checked',false);
+  $('#enable_custom_codec').attr('checked', false);
 }
 
-$('#enable_custom_codec').change(function() {
-  if(this.checked) {
+// Trigger on the multiline codec checkbox
+$('#enable_custom_codec').change(function () {
+  if (this.checked) {
     enableMultilineCodec()
   } else {
     disableMultilineCodec()
   }
-}); 
+});
+
+// Validate the user input
 
 function userInputValid() {
   input_valid = true;
@@ -264,8 +359,8 @@ function userInputValid() {
   fieldsAttributes = getFieldsAttributesValues()
   fieldsAttributesValids = true
 
-  for(var i = 0 ; i < fieldsAttributes.length ; i++) {
-    if(fieldsAttributes[i].attribute == "" || fieldsAttributes[i].value == "") {
+  for (var i = 0; i < fieldsAttributes.length; i++) {
+    if (fieldsAttributes[i].attribute == "" || fieldsAttributes[i].value == "") {
       input_valid = false;
       fieldsAttributesValids = false;
       $('#input_extra_attributes').addClass("text-danger");
@@ -273,13 +368,13 @@ function userInputValid() {
     }
   }
 
-  if(fieldsAttributesValids) {
+  if (fieldsAttributesValids) {
     $('#input_extra_attributes').removeClass("text-danger");
   }
 
   if ($('#enable_custom_codec').is(':checked')) {
     var custom_codec_value = $('#custom_codec_field').val()
-    if(custom_codec_value.length == 0) {
+    if (custom_codec_value.length == 0) {
       input_valid = false;
       $('#custom_codec_field').addClass("is-invalid");
     } else {
@@ -287,12 +382,39 @@ function userInputValid() {
     }
   }
 
-  if(!input_valid) {
+  if (!input_valid) {
     toastr.error('All fields need to be fill !', 'Informations missings')
   }
 
   return input_valid
 }
+
+///////////////////////////
+// Backend communication //
+///////////////////////////
+
+// Manage if backend fail to treat user input
+
+function jobFailed(reason) {
+  $("#start_process").removeClass('disabled');
+  $('#failModal').modal('show');
+  $('#failModalReason').html(reason);
+
+  $("#start_process").removeClass('disabled');
+  $('#output').text('No data was receive from backend server :(');
+}
+
+$('#clear_form').click(function () {
+  $('#input_data_textarea').val("");
+  editor.setValue("", -1);
+  $('#output').text("The Logstash output will be shown here !");
+  $('#fields_attributes_number').val(0);
+  applyFieldsAttributes()
+  disableMultilineCodec()
+  saveSession();
+});
+
+// The main process, that will send data to backend
 
 $('#start_process').click(function () {
 
@@ -331,9 +453,9 @@ $('#start_process').click(function () {
           toastr.error('There was a problem in your configuration.', 'Error')
           res = ""
           lines = data.job_result.stdout.split('\n')
-          for(var i =0 ; i < lines.length ; i++) {
+          for (var i = 0; i < lines.length; i++) {
             line = lines[i]
-            if(line.startsWith("[")) {
+            if (line.startsWith("[")) {
               line = line.replace(/\\r\\n/g, '\n')
               line = line.replace(/\\n/g, '\n')
             }
@@ -360,77 +482,7 @@ $('#start_process').click(function () {
 
 });
 
-// Save and load user session
-
-function saveSession() {
-  console.log("Saving session into cookie")
-  var session = {
-    minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1? false : true),
-    theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1? "white" : "black"),
-    input_data: $('#input_data_textarea').val(),
-    logstash_filter: editor.getValue(),
-    input_fields: getFieldsAttributesValues(),
-    custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
-    custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
-  }
-  store.set('session', session);
-
-  if(JSON.stringify(store.get('session')) != JSON.stringify(session)) {
-    toastr.warning('There was a problem while saving your work', 'Save problem')
-  }
-}
-
-function loadSession() {
-  var session = store.get('session');
-  if (session != undefined) {
-    console.log("Loading user session")
-    session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
-    $('#input_data_textarea').val(session.input_data)
-    $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
-    editor.setValue(session.logstash_filter, -1)
-    applyFieldsAttributes(session.input_fields)
-    if(session.custom_codec != "") {
-      enableMultilineCodec(session.custom_codec)
-    } else {
-      disableMultilineCodec()
-    }
-    if(session.minimalist) {
-      enableMinimalistMode()
-    } else {
-      disableMinimalistMode()
-    }
-  } else {
-    console.log("No cookie for session found")
-  }
-}
-
-$( "#fields_attributes_number" ).change(function() {
-  applyFieldsAttributes()
-});
-
-// Change theme button
-
-$('#change_theme').click(function (){
-  if($('#css_theme_bootstrap').attr('href').includes('bootstrap.min.css')) {
-    enableBlackTheme()
-    saveSession()
-  } else {
-    enableWhiteTheme()
-    saveSession()
-  }
-});
-
-// Change minimalist mode
-
-$('#change_minimalist').click(function (){
-  if($('#css_theme_minimalist').attr('href').includes('nominimalist.css')) {
-    enableMinimalistMode()
-    saveSession()
-  } else {
-    disableMinimalistMode()
-    saveSession()
-  }
-});
+// Set default values
 
 applyFieldsAttributes()
 loadSession()
