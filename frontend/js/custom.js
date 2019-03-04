@@ -145,6 +145,7 @@ $('#clear_form').click(function () {
   $('#output').text("The Logstash output will be shown here !");
   $('#fields_attributes_number').val(0);
   applyFieldsAttributes()
+  disableMultilineCodec()
   saveSession();
 });
 
