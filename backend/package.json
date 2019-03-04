@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "mocha ./tests --recursive",
-    "nodemon": "nodemon ./index.js"
+    "nodemon": "nodemon -L ./index.js"
   },
   "author": "",
   "license": "ISC",
