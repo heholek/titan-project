@@ -344,13 +344,12 @@ function saveSession() {
     custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
     custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
   }
-  Cookies.set('session', session, { expires: 7 });
+  store.set('session', session);
 }
 
 function loadSession() {
-  var session = Cookies.get('session');
+  var session = store.get('session');
   if (session != undefined) {
-    var session = JSON.parse(session)
     console.log("Loading user session")
     session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
     $('#input_data_textarea').val(session.input_data)
