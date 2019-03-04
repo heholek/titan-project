@@ -197,7 +197,9 @@ $('#simple_example').click(function () {
 
   applyFieldsAttributes([
     { attribute: "pilote", value: "system"},
-    { attribute: "type", value: "syslog"}
+    { attribute: "application", value: "system"},
+    { attribute: "type", value: "syslog"},
+    { attribute: "path", value: "/var/log/syslog"}
   ])
 
   disableMultilineCodec()
