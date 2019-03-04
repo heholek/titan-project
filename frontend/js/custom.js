@@ -216,7 +216,8 @@ function enableMultilineCodec(value) {
 
 function disableMultilineCodec() {
   $('#custom_codec_field').addClass('d-none');
-  $('#custom_codec_field').val("")
+  $('#custom_codec_field').val("");
+  $('#enable_custom_codec').attr('checked',false);
 }
 
 $('#enable_custom_codec').change(function() {
