@@ -9,7 +9,7 @@ var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
 
-const log = require('simple-node-logger').createSimpleLogger({timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'});
+const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
 
 // Some constants
 
@@ -23,6 +23,8 @@ const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/"
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 
+const LOGFILE_DIR = LOGSTASH_DATA_DIR + "logfiles/";
+
 ///////////////////////////////
 // Some system util function //
 ///////////////////////////////
@@ -30,20 +32,23 @@ const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 // Create a directory (sync)
 
 function createDirectory(directory) {
-    if (!fs.existsSync(directory)){
+    if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, {
             recursive: true
         });
     }
 }
 
+// We create the logfile directory
+
+createDirectory(LOGFILE_DIR)
 
 // Write a string content to file
 
 function writeStringToFile(id, filepath, data, callback) {
     fs.writeFile(filepath, data, function (err) {
         if (err) {
-            log.err(id + " - Unable to write data to file '" + filepath + "'");
+            log.error(id + " - Unable to write data to file '" + filepath + "'");
         }
         callback()
     });
@@ -80,7 +85,7 @@ log.setLevel(LOG_LEVEL);
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json({ limit: '10mb' }))
+app.use(bodyParser.json({ limit: '100mb' }))
 
 // Home rooting
 
@@ -101,7 +106,16 @@ app.post('/start_process', function (req, res) {
     log.info(id + " - Start a Logstash process");
 
     if (argumentsValids(id, req, res)) {
-        var input_data = quote([req.body.input_data]);
+
+        var input = {
+            type: (req.body.input_data != null ? "input" : "file")
+        }
+
+        if(input.type == "input") {
+            input.data = quote([req.body.input_data]);
+        } else {
+            input.filehash = req.body.filehash;
+        }
 
         var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
 
@@ -110,22 +124,63 @@ app.post('/start_process', function (req, res) {
         var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
         var logstash_filter = req.body.logstash_filter;
 
-        if(req.body['custom_logstash_patterns'] != undefined) {
+        if (req.body['custom_logstash_patterns'] != undefined) {
             var custom_logstash_patterns = req.body.custom_logstash_patterns;
             var pattern_directory = instanceDirectory + "patterns/";
             createDirectory(pattern_directory)
-            writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function() {});
+            writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
             logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["' + pattern_directory + '"] ')
         }
 
         var logstash_conf = logstash_input + logstash_filter + OUTPUT_FILTER;
 
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
-       
-        writeStringToFile(id, logstash_conf_filepath, logstash_conf, function() {
-            computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath, custom_logstash_patterns);
+
+        writeStringToFile(id, logstash_conf_filepath, logstash_conf, function () {
+            input_type = {
+
+            }
+            computeResult(id, res, input, instanceDirectory, logstash_conf_filepath, custom_logstash_patterns);
         })
 
+    }
+})
+
+// Check if a file exists by hash
+
+app.post('/file/exists', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.hash == undefined) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        res.status(200);
+        filepath = buildLocalLogFilepath(req.body.hash)
+        fs.access(filepath, fs.F_OK, (err) => {
+            if (err) {
+                res.send(JSON.stringify({ "config_ok": true, "exists": false }));
+            } else {
+                res.send(JSON.stringify({ "config_ok": true, "exists": true }));
+            }
+        })
+    }
+})
+
+app.post('/file/upload', function (req, res) {
+    var id = uniqid()
+
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.hash == undefined || req.body.file_content == undefined) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        res.status(200);
+        filepath = LOGFILE_DIR + req.body.hash + ".log"
+        writeStringToFile(id, filepath, req.body.file_content, () => {
+            res.send(JSON.stringify({ "config_ok": true, "succeed": true }));
+        })
     }
 })
 
@@ -139,13 +194,27 @@ app.listen(PORT, function () {
 //  Compute functions //
 ////////////////////////
 
+// Build the input user filepath
+
+function buildLocalLogFilepath(hash) {
+    return LOGFILE_DIR + hash + ".log";
+}
+
 // Compute the logstash result
 
-function computeResult(id, res, input_data, instanceDirectory, logstash_conf_filepath) {
+function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath) {
     log.info(id + " - Starting logstash process");
 
+    var command_user_data = ""
+
+    if(input.type == "input") {
+        command_user_data = 'echo ' + input.data
+    } else {
+        command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
+    }
+
     var logstash_temp_datadir = instanceDirectory + "temp_data"
-    var command = 'echo ' + input_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i | tail -n +2';
+    var command = command_user_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i | tail -n +2';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT
@@ -154,19 +223,19 @@ function computeResult(id, res, input_data, instanceDirectory, logstash_conf_fil
     try {
         exec(command, options, (err, stdout, stderr) => {
             log.info(id + " - Ended a Logstash process");
-    
+
             var status = 0;
-    
+
             if (err instanceof Error) {
                 status = err.code;
             }
-    
+
             var job_result = {
                 stdout: stdout.toString('utf8'),
                 stderr: stderr.toString('utf8'),
                 status: status
             };
-    
+
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
         });
@@ -179,7 +248,7 @@ function computeResult(id, res, input_data, instanceDirectory, logstash_conf_fil
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
     }
-    
+
 }
 
 // Fail because of bad parameters
@@ -199,8 +268,9 @@ function argumentsValids(id, req, res) {
 
     var missing_fields = []
 
-    if (req.body.input_data == undefined) {
+    if (req.body.input_data == undefined && req.body.filehash == undefined) {
         missing_fields.push("input_data")
+        missing_fields.push("filehash")
         ok = false
     }
 
@@ -214,7 +284,7 @@ function argumentsValids(id, req, res) {
         ok = false
     }
 
-    if(req.body['input_extra_fields'] == undefined) {
+    if (req.body['input_extra_fields'] == undefined) {
         ok = false
     } else {
         for (var i = 0; i < req.body.input_extra_fields.length; i++) {

@@ -1,5 +1,7 @@
 const api_url = "http://localhost:8081";
 
+var remote_file_hash = undefined
+
 /////////////////////
 // Init ACE editor //
 /////////////////////
@@ -46,8 +48,8 @@ function buildEditor() {
   return editor
 }
 
-// Read the content of a single file, and put it into the editor
-function readSingleFile(e) {
+// Meta function to read file content
+function readSingleFile(e, callback) {
   var file = e.target.files[0];
   if (!file) {
     return;
@@ -55,13 +57,20 @@ function readSingleFile(e) {
   var reader = new FileReader();
   reader.onload = function (e) {
     var contents = e.target.result;
-    editor.session.setValue(contents);
+    callback(contents)
   };
   reader.readAsText(file);
 }
 
+// Read the content of a single file, and put it into the editor
+function loadConfEditor(e) {
+  readSingleFile(e, (contents) => {
+    editor.session.setValue(contents);
+  })
+}
+
 // We create a callback when user click on the input loading
-document.getElementById('filter_input_loading').addEventListener('change', readSingleFile, false);
+document.getElementById('filter_input_loading').addEventListener('change', loadConfEditor, false);
 
 // Save a string to file
 function saveToFile(data, filename) {
@@ -175,6 +184,8 @@ $('#multiline_example').click(function () {
     { attribute: "type", value: "java-stack-trace" }
   ])
 
+  fileUploadDisabled()
+
 });
 
 // Trigger for the basic example
@@ -203,55 +214,9 @@ $('#simple_example').click(function () {
 
   disableMultilineCodec()
 
+  fileUploadDisabled()
+
 });
-
-////////////////////////
-// Session management //
-////////////////////////
-
-// Save current user session
-function saveSession() {
-  console.log("Saving session into cookie")
-  var session = {
-    minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
-    theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
-    input_data: $('#input_data_textarea').val(),
-    logstash_filter: editor.getValue(),
-    input_fields: getFieldsAttributesValues(),
-    custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
-    custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : "")
-  }
-  store.set('session', session);
-
-  if (JSON.stringify(store.get('session')) != JSON.stringify(session)) {
-    toastr.warning('There was a problem while saving your work', 'Save problem')
-  }
-}
-
-// Load session for user
-function loadSession() {
-  var session = store.get('session');
-  if (session != undefined) {
-    console.log("Loading user session")
-    session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
-    $('#input_data_textarea').val(session.input_data)
-    $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
-    editor.setValue(session.logstash_filter, -1)
-    applyFieldsAttributes(session.input_fields)
-    if (session.custom_codec != "") {
-      enableMultilineCodec(session.custom_codec)
-    } else {
-      disableMultilineCodec()
-    }
-    if (session.minimalist) {
-      enableMinimalistMode()
-    } else {
-      disableMinimalistMode()
-    }
-  } else {
-    console.log("No cookie for session found")
-  }
-}
 
 //////////////////
 // Form control //
@@ -389,6 +354,113 @@ function userInputValid() {
   return input_valid
 }
 
+/////////////////
+// File upload //
+/////////////////
+
+// When we want to disable file upload
+function fileUploadDisabled() {
+  $('#upload_logfile').val("")
+  $('#upload_logfile').show()
+  $('#upload_logfile_cancel').hide()
+  remote_file_hash = undefined
+  $('#input_data_textarea').prop('readonly', false);
+  $('#input_data_textarea').val("")
+  saveSession()
+}
+
+// When we want to enable file upload
+function fileUploadEnabled(hash, content) {
+  $('#upload_logfile').hide()
+  $('#upload_logfile_cancel').show()
+  remote_file_hash = hash
+  $('#input_data_textarea').prop('readonly', true);
+
+  if (content != undefined) {
+    logfile_content_cut = "<-- Only the first 50 lines of your log file are shown here -->\n"
+    logfile_content_cut += content.split('\n').slice(50).join('\n')
+    $('#input_data_textarea').val(logfile_content_cut)
+  }
+
+  saveSession()
+}
+
+// Read the content of a single file, and put it into the editor
+function sendLogfileToBackend(e) {
+  readSingleFile(e, (content) => {
+
+    var hash = md5(content)
+    fileUploadEnabled(hash)
+
+    remoteLogExists(hash, (exists) => {
+      if (!exists) {
+        uploadLogFile(hash, content, (succeed) => {
+          if (!succeed) {
+            toastr.error('Unable to upload your log file', 'Error')
+            fileUploadDisabled()
+          } else {
+            fileUploadEnabled(hash, content)
+          }
+        })
+      } else {
+        fileUploadEnabled(hash, content)
+      }
+    })
+  })
+}
+
+
+// Upload a log file
+function uploadLogFile(hash, content, callback) {
+  body = {
+    hash: hash,
+    file_content: content
+  }
+  $.ajax({
+    url: api_url + "/file/upload",
+    type: "POST",
+    data: JSON.stringify(body),
+    contentType: "application/json",
+    dataType: "json",
+    success: function (data) {
+      callback(data.succeed)
+    },
+    error: function () {
+      jobFailed()
+      fileUploadDisabled()
+    }
+  });
+}
+
+// Check if a Logfile exists on remote server, send result in callback
+function remoteLogExists(hash, callback) {
+  body = {
+    hash: hash
+  }
+  $.ajax({
+    url: api_url + "/file/exists",
+    type: "POST",
+    data: JSON.stringify(body),
+    contentType: "application/json",
+    dataType: "json",
+    success: function (data) {
+      return callback(data.exists == true)
+    },
+    error: function () {
+      jobFailed()
+    }
+  });
+}
+
+// Trigger for upload a file
+document.getElementById('upload_logfile').addEventListener('change', sendLogfileToBackend, false);
+
+
+// Trigger for upload a file
+$('#upload_logfile_cancel').click(function () {
+  fileUploadDisabled()
+});
+
 ///////////////////////////
 // Backend communication //
 ///////////////////////////
@@ -396,11 +468,11 @@ function userInputValid() {
 // Escape a string to html
 function escapeHtml(unsafe) {
   return unsafe
-       .replace(/&/g, "&amp;")
-       .replace(/</g, "&lt;")
-       .replace(/>/g, "&gt;")
-       .replace(/"/g, "&quot;")
-       .replace(/'/g, "&#039;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 // A function to display beautiful json
@@ -439,7 +511,7 @@ function formatLogstashLog(log) {
       line = line.replace(/\\n/g, '\n')
       line = escapeHtml(line)
     } else if (line.startsWith("{") && line.endsWith("}")) {
-      obj = JSON.stringify(JSON.parse(line),null,2);  
+      obj = JSON.stringify(JSON.parse(line), null, 2);
       line = jsonSyntaxHighlight(obj)
     }
     res += line + "\n"
@@ -449,10 +521,10 @@ function formatLogstashLog(log) {
 
 // Manage if backend fail to treat user input
 
-function jobFailed(reason) {
+function jobFailed() {
   $("#start_process").removeClass('disabled');
   $('#failModal').modal('show');
-  $('#failModalReason').html(reason);
+  $('#failModalReason').html("Unable to obtain a response from the backend server.<br/>You cannot do anything to solve it, please contact the maintainer of this project.");
 
   $("#start_process").removeClass('disabled');
   $('#output').text('No data was receive from backend server :(');
@@ -465,6 +537,7 @@ $('#clear_form').click(function () {
   $('#fields_attributes_number').val(0);
   applyFieldsAttributes()
   disableMultilineCodec()
+  fileUploadDisabled()
   saveSession();
 });
 
@@ -477,10 +550,17 @@ $('#start_process').click(function () {
   if (userInputValid()) {
 
     var body = {
-      input_data: $('#input_data_textarea').val(),
       logstash_filter: editor.getValue(),
       input_extra_fields: getFieldsAttributesValues()
     };
+
+    if(remote_file_hash == undefined) {
+      body.input_data = $('#input_data_textarea').val()
+    } else {
+      body.filehash = remote_file_hash
+    }
+
+    console.log(body)
 
     if ($('#enable_custom_codec').is(':checked')) {
       body.custom_codec = $('#custom_codec_field').val();
@@ -519,13 +599,70 @@ $('#start_process').click(function () {
         $("#start_process").removeClass('disabled');
       },
       error: function () {
-        jobFailed("Unable to obtain a response from the backend server.<br/>You cannot do anything to solve it, please contact the maintainer of this project.")
+        jobFailed()
       }
     });
 
   }
 
 });
+
+////////////////////////
+// Session management //
+////////////////////////
+
+// Save current user session
+function saveSession() {
+  console.log("Saving session into cookie")
+  var session = {
+    minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
+    theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
+    input_data: $('#input_data_textarea').val(),
+    logstash_filter: editor.getValue(),
+    input_fields: getFieldsAttributesValues(),
+    custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
+    custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : ""),
+    remote_file_hash: remote_file_hash
+  }
+  store.set('session', session);
+
+  if (JSON.stringify(store.get('session')) != JSON.stringify(session)) {
+    toastr.warning('There was a problem while saving your work', 'Save problem')
+  }
+}
+
+// Load session for user
+function loadSession() {
+  var session = store.get('session');
+  if (session != undefined) {
+    console.log("Loading user session")
+    session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
+    $('#input_data_textarea').val(session.input_data)
+    $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
+    editor.setValue(session.logstash_filter, -1)
+    applyFieldsAttributes(session.input_fields)
+    if (session.custom_codec != "") {
+      enableMultilineCodec(session.custom_codec)
+    } else {
+      disableMultilineCodec()
+    }
+    if (session.minimalist) {
+      enableMinimalistMode()
+    } else {
+      disableMinimalistMode()
+    }
+    if (session.remote_file_hash != undefined) {
+      fileUploadEnabled(session.remote_file_hash)
+    } else {
+      fileUploadDisabled()
+    }
+  } else {
+    console.log("No cookie for session found")
+  }
+}
+
+
+
 
 // Set default values
 
