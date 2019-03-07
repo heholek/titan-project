@@ -391,8 +391,18 @@ function fileUploadEnabled(hash, content) {
   $('#input_data_textarea').prop('readonly', true);
 
   if (content != undefined) {
-    logfile_content_cut = "<-- Only the first 50 lines of your log file are shown here -->\n"
-    logfile_content_cut += content.split('\n').slice(0, 50).join('\n')
+    logfile_content_cut = "<-- Only the first 50 lines of your log file are displayed here -->\n"
+
+    all_lines = content.split('\n')
+    lines_sliced = all_lines.slice(0, 50)
+
+    logfile_content_cut += lines_sliced.join('\n')
+
+    total_lines_number = all_lines.length
+    total_lines_displayed = lines_sliced.length
+
+    var go_to_line = logfile_content_cut.endsWith('\n') ? "" : '\n'
+    logfile_content_cut += go_to_line + "<-- Displayed " + total_lines_displayed + "/" + total_lines_number + " lines of your log file -->"
     $('#input_data_textarea').val(logfile_content_cut)
   }
 
