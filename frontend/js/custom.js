@@ -1,5 +1,6 @@
 const api_url = "http://localhost:8081";
 
+// Hash of the remote log file is any
 var remote_file_hash = undefined
 
 /////////////////////
