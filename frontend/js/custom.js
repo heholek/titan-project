@@ -404,10 +404,12 @@ function sendLogfileToBackend(e) {
             toastr.error('Unable to upload your log file', 'Error')
             fileUploadDisabledClean()
           } else {
+            toastr.success('Your log file is now stored on the server', 'Success')
             fileUploadEnabled(hash, content)
           }
         })
       } else {
+        toastr.info('Your log file already was on the server', 'Done')
         fileUploadEnabled(hash, content)
       }
     })
@@ -614,6 +616,17 @@ $('#start_process').click(function () {
 // Session management //
 ////////////////////////
 
+// Check if the file still is on the server
+function checkRemoteFile() {
+  remoteLogExists(remote_file_hash, (exists) => {
+    console.log(exists)
+    if(!exists) {
+      toastr.warning('Your file is no more on the server, you need to upload it again', 'File uploaded')
+      fileUploadDisabledClean()
+    }
+  })
+}
+
 // Save current user session
 function saveSession() {
   console.log("Saving session into cookie")
@@ -656,6 +669,7 @@ function loadSession() {
     }
     if (session.remote_file_hash != undefined) {
       fileUploadEnabled(session.remote_file_hash)
+      checkRemoteFile()
     } else {
       fileUploadDisabled()
     }
