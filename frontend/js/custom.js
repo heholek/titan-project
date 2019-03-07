@@ -378,7 +378,7 @@ function fileUploadEnabled(hash, content) {
 
   if (content != undefined) {
     logfile_content_cut = "<-- Only the first 50 lines of your log file are shown here -->\n"
-    logfile_content_cut += content.split('\n').slice(50).join('\n')
+    logfile_content_cut += content.split('\n').slice(0, 50).join('\n')
     $('#input_data_textarea').val(logfile_content_cut)
   }
 
