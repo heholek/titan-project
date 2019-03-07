@@ -137,9 +137,6 @@ app.post('/start_process', function (req, res) {
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
 
         writeStringToFile(id, logstash_conf_filepath, logstash_conf, function () {
-            input_type = {
-
-            }
             computeResult(id, res, input, instanceDirectory, logstash_conf_filepath, custom_logstash_patterns);
         })
 
