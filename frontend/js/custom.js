@@ -167,6 +167,8 @@ function exampleFactory(input_data_filepath, filter_filepath, input_data_attribu
         $('#input_data_textarea').val(data);
       }
     });
+  } else {
+    $('#input_data_textarea').val("");
   }
 
   if (filter_filepath != undefined) {
@@ -221,6 +223,21 @@ $('#simple_example').click(function () {
       { attribute: "pilote", value: "system" },
       { attribute: "type", value: "syslog" },
       { attribute: "path", value: "/var/log/syslog" }
+    ],
+    custom_codec_filepath = undefined
+  )
+
+});
+
+// Trigger for a basic Logstash template
+$('#template_example').click(function () {
+
+  exampleFactory(
+    input_data_filepath = undefined,
+    filter_filepath = "./sample/template/filter.conf",
+    input_data_attributes = [
+      { attribute: "pilote", value: "my-pilote" },
+      { attribute: "type", value: "my-type" }
     ],
     custom_codec_filepath = undefined
   )
