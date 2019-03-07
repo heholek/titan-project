@@ -156,65 +156,73 @@ $('#change_minimalist').click(function () {
 // Example form filling //
 //////////////////////////
 
+// To generate examples
+function exampleFactory(input_data_filepath, filter_filepath, input_data_attributes, custom_codec_filepath) {
+
+  if (input_data_filepath != undefined) {
+    $.ajax({
+      url: input_data_filepath,
+      success: function (data) {
+        $('#input_data_textarea').val(data);
+      }
+    });
+  }
+
+  if (filter_filepath != undefined) {
+    $.ajax({
+      url: filter_filepath,
+      success: function (data) {
+        editor.setValue(data, -1);
+      }
+    });
+  }
+
+  if (input_data_attributes != undefined) {
+    applyFieldsAttributes(input_data_attributes)
+  }
+
+  if (custom_codec_filepath != undefined) {
+    $.ajax({
+      url: custom_codec_filepath,
+      success: function (data) {
+        enableMultilineCodec(data)
+      }
+    });
+  } else {
+    disableMultilineCodec()
+  }
+
+  fileUploadDisabled()
+
+}
+
 // Trigger for the multiline example
 $('#multiline_example').click(function () {
 
-  $.ajax({
-    url: "./sample/multiline/data.txt",
-    success: function (data) {
-      $('#input_data_textarea').val(data);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/multiline/filter.conf",
-    success: function (data) {
-      editor.setValue(data, -1);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/multiline/multiline.codec",
-    success: function (data) {
-      enableMultilineCodec(data)
-    }
-  });
-
-  applyFieldsAttributes([
-    { attribute: "type", value: "java-stack-trace" }
-  ])
-
-  fileUploadDisabled()
+  exampleFactory(
+    input_data_filepath = "./sample/multiline/data.txt",
+    filter_filepath = "./sample/multiline/filter.conf",
+    input_data_attributes = [
+      { attribute: "type", value: "java-stack-trace" }
+    ],
+    custom_codec_filepath = "./sample/multiline/multiline.codec"
+  )
 
 });
 
 // Trigger for the basic example
 $('#simple_example').click(function () {
 
-  $.ajax({
-    url: "./sample/simple/data.txt",
-    success: function (data) {
-      $('#input_data_textarea').val(data);
-    }
-  });
-
-  $.ajax({
-    url: "./sample/simple/filter.conf",
-    success: function (data) {
-      editor.setValue(data, -1);
-    }
-  });
-
-  applyFieldsAttributes([
-    { attribute: "pilote", value: "system" },
-    { attribute: "application", value: "system" },
-    { attribute: "type", value: "syslog" },
-    { attribute: "path", value: "/var/log/syslog" }
-  ])
-
-  disableMultilineCodec()
-
-  fileUploadDisabled()
+  exampleFactory(
+    input_data_filepath = "./sample/simple/data.txt",
+    filter_filepath = "./sample/simple/filter.conf",
+    input_data_attributes = [
+      { attribute: "pilote", value: "system" },
+      { attribute: "type", value: "syslog" },
+      { attribute: "path", value: "/var/log/syslog" }
+    ],
+    custom_codec_filepath = undefined
+  )
 
 });
 
@@ -561,7 +569,7 @@ $('#start_process').click(function () {
       input_extra_fields: getFieldsAttributesValues()
     };
 
-    if(remote_file_hash == undefined) {
+    if (remote_file_hash == undefined) {
       body.input_data = $('#input_data_textarea').val()
     } else {
       body.filehash = remote_file_hash
@@ -620,7 +628,7 @@ $('#start_process').click(function () {
 function checkRemoteFile() {
   remoteLogExists(remote_file_hash, (exists) => {
     console.log(exists)
-    if(!exists) {
+    if (!exists) {
       toastr.warning('Your file is no more on the server, you need to upload it again', 'File uploaded')
       fileUploadDisabledClean()
     }
