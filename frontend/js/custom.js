@@ -565,8 +565,6 @@ $('#start_process').click(function () {
       body.filehash = remote_file_hash
     }
 
-    console.log(body)
-
     if ($('#enable_custom_codec').is(':checked')) {
       body.custom_codec = $('#custom_codec_field').val();
     }
