@@ -365,8 +365,13 @@ function fileUploadDisabled() {
   $('#upload_logfile_cancel').hide()
   remote_file_hash = undefined
   $('#input_data_textarea').prop('readonly', false);
-  $('#input_data_textarea').val("")
   saveSession()
+}
+
+// When we want to disable file upload, and clean the input data field
+function fileUploadDisabledClean() {
+  $('#input_data_textarea').val("")
+  fileUploadDisabled()
 }
 
 // When we want to enable file upload
@@ -397,7 +402,7 @@ function sendLogfileToBackend(e) {
         uploadLogFile(hash, content, (succeed) => {
           if (!succeed) {
             toastr.error('Unable to upload your log file', 'Error')
-            fileUploadDisabled()
+            fileUploadDisabledClean()
           } else {
             fileUploadEnabled(hash, content)
           }
@@ -427,7 +432,7 @@ function uploadLogFile(hash, content, callback) {
     },
     error: function () {
       jobFailed()
-      fileUploadDisabled()
+      fileUploadDisabledClean()
     }
   });
 }
@@ -458,7 +463,7 @@ document.getElementById('upload_logfile').addEventListener('change', sendLogfile
 
 // Trigger for upload a file
 $('#upload_logfile_cancel').click(function () {
-  fileUploadDisabled()
+  fileUploadDisabledClean()
 });
 
 ///////////////////////////
