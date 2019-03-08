@@ -17,5 +17,5 @@ read -p "Do you want to launch the build and deployment of the new version with 
 echo 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    docker-compose up -d
+    docker-compose up -d --build
 fi
