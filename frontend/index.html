@@ -237,8 +237,22 @@
         </div>
 
         <div>
-          <h4 style="margin-top: 2em">Logstash output:</h4>
+          <h4 style="margin-top: 2em; margin-bottom: 1em">Logstash output:</h4>
+
           <p class="form-text text-muted minimalist-box">
+            If you want to filter the result based on a custom search
+          </p>
+
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+               <div class="text-center" style="margin-right: 10px">Regex</div>  <input type="checkbox" id="filter_regex_enabled">
+              </div>
+            </div>
+            <input type="text" class="form-control log-display" id="filter_display" placeholder="Filter pattern" aria-label="Filter pattern">
+          </div>
+          
+          <p style="margin-top: 1em" class="form-text text-muted minimalist-box">
             The input data process by Logstash will be displayed here.
           </p>
         </div>

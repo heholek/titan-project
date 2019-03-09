@@ -248,6 +248,8 @@ $('#template_example').click(function () {
 // Form control //
 //////////////////
 
+var logstash_output = ""
+
 // Manage list of extra fields
 
 // Apply conf of extra input fields
@@ -379,6 +381,22 @@ function userInputValid() {
 
   return input_valid
 }
+
+// Update the filter value
+function updateFilter() {
+  saveSession()
+  refreshLogstashLogDisplay()
+}
+
+// Trigger for the search filter value
+$('#filter_display').on('input', (function () {
+  updateFilter()
+}))
+
+// Trigger for the search filter type
+$('#filter_regex_enabled').change(function () {
+  updateFilter()
+})
 
 /////////////////
 // File upload //
@@ -542,24 +560,47 @@ function jsonSyntaxHighlight(json) {
   });
 }
 
-// Format logstash log output
+// Display logstash log with formatting
 
-function formatLogstashLog(log) {
+function refreshLogstashLogDisplay() {
+  filter_value = $('#filter_display').val()
+  filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
+  if (filter_regex_enabled && filter_value != "") {
+    filter_regex = new RegExp(filter_value)
+    console.log(filter_value)
+  }
+
   res = ""
-  lines = log.split('\n')
+  lines = logstash_output.split('\n')
+
   for (var i = 0; i < lines.length; i++) {
     line = lines[i]
-    if (line.startsWith("[")) {
-      line = line.replace(/\\r\\n/g, '\n')
-      line = line.replace(/\\n/g, '\n')
-      line = escapeHtml(line)
-    } else if (line.startsWith("{") && line.endsWith("}")) {
-      obj = JSON.stringify(JSON.parse(line), null, 2);
-      line = jsonSyntaxHighlight(obj)
+
+    if (filter_value == "" || ((filter_regex_enabled && line.match(filter_regex)) || (!filter_regex_enabled && line.indexOf(filter_value) != -1))) {
+
+      if (line.startsWith("[")) {
+        line = line.replace(/\\r\\n/g, '\n')
+        line = line.replace(/\\n/g, '\n')
+        line = escapeHtml(line)
+      } else if (line.startsWith("{") && line.endsWith("}")) {
+        obj = JSON.stringify(JSON.parse(line), null, 2);
+        line = jsonSyntaxHighlight(obj)
+      }
+      res += line + "\n"
+
     }
-    res += line + "\n"
+
   }
-  return res;
+
+  if(res.length == 0) {
+    if(logstash_output.length == 0) {
+      res = "No data to filter :("
+    } else {
+      res = "Nothing match :("
+    }
+  }
+
+  $('#output').html(res);
 }
 
 // Manage if backend fail to treat user input
@@ -578,6 +619,8 @@ $('#clear_form').click(function () {
   editor.setValue("", -1);
   $('#output').text("The Logstash output will be shown here !");
   $('#fields_attributes_number').val(0);
+  $('#filter_regex_enabled').attr('checked', false)
+  $('#filter_display').val("")
   applyFieldsAttributes()
   disableMultilineCodec()
   fileUploadDisabled()
@@ -622,21 +665,21 @@ $('#start_process').click(function () {
       dataType: "json",
       timeout: 60000,
       success: function (data) {
+        logstash_output = data.job_result.stdout
+
         if (data.job_result.status == -1) {
           toastr.error('Unable to execute the process on remote server.', 'Error')
         } else if (data.job_result.status != 0 || data.job_result.stdout.indexOf("[ERROR]") != -1 || data.job_result.stdout.indexOf("[WARNING]") != -1) {
           toastr.error('There was a problem in your configuration.', 'Error')
-          data.job_result.stdout = formatLogstashLog(data.job_result.stdout)
         } else {
           toastr.success('Configuration parsing is done !', 'Success')
-          data.job_result.stdout = formatLogstashLog(data.job_result.stdout)
         }
 
         if (!data.config_ok) {
           toastr.error('All fields need to be fill !', 'Informations missings')
         }
 
-        $('#output').html(data.job_result.stdout);
+        refreshLogstashLogDisplay(data.job_result.stdout)
         $("#start_process").removeClass('disabled');
       },
       error: function () {
@@ -674,7 +717,9 @@ function saveSession() {
     input_fields: getFieldsAttributesValues(),
     custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
     custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : ""),
-    remote_file_hash: remote_file_hash
+    remote_file_hash: remote_file_hash,
+    filter_regex_enabled: $('#filter_regex_enabled').is(':checked'),
+    filter_display: $('#filter_display').val()
   }
   store.set('session', session);
 
@@ -691,6 +736,8 @@ function loadSession() {
     session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
     $('#input_data_textarea').val(session.input_data)
     $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
+    $('#filter_regex_enabled').attr('checked', session.filter_regex_enabled)
+    $('#filter_display').val(session.filter_display)
     editor.setValue(session.logstash_filter, -1)
     applyFieldsAttributes(session.input_fields)
     if (session.custom_codec != "") {
