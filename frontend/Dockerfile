@@ -22,6 +22,6 @@ COPY . /usr/share/nginx/html
 
 ARG BACKENDHOST="localhost:8081"
 
-RUN sed -i '1s/.*/const api_url="http:\/\/'"$BACKENDHOST"'";/' /usr/share/nginx/html/js/custom.js
+RUN sed -i '1s/.*/const api_url="http:\/\/'"$BACKENDHOST"'";/' /usr/share/nginx/html/js/custom/main.js
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/ || exit 1
