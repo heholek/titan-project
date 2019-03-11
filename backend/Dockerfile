@@ -43,8 +43,9 @@ RUN apt-get autoremove --yes
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 RUN rm -rf /var/lib/apt/lists/*
 
-# Bundle app source
+# Bundle app source and conf
 COPY . .
+COPY ./confs/jvm.options /etc/logstash/jvm.options
 
 # Image characteristics
 EXPOSE 8081
