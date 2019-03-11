@@ -28,3 +28,11 @@ provisioning/roles/node/*
 
 # Sftp config
 /.vscode/sftp.json
+
+###############
+# Docker part #
+###############
+
+# Docker compose backup files
+docker-compose-old.yml
+docker-compose-latest.yml
