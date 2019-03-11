@@ -27,7 +27,7 @@ provisioning/roles/node/*
 ###############
 
 # Sftp config
-/.vscode/sftp.json
+.vscode/
 
 ###############
 # Docker part #
