@@ -4,7 +4,7 @@ An attempt to make a **web interface** to facilitate development of **Logstash c
 
 ![Titan project frontend image](doc/titan-project-frontend.png)
 
-## Installation
+## Installation
 
 ### Docker
 
