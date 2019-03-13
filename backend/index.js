@@ -8,6 +8,7 @@ var bodyParser = require('body-parser')
 var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
+var morgan = require('morgan')
 
 const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
 
@@ -48,7 +49,11 @@ createDirectory(LOGFILE_DIR)
 function writeStringToFile(id, filepath, data, callback) {
     fs.writeFile(filepath, data, function (err) {
         if (err) {
-            log.error(id + " - Unable to write data to file '" + filepath + "'");
+            if(id != undefined) {
+                log.error(id + " - Unable to write data to file '" + filepath + "'");
+            } else {
+                log.error("Unable to write data to file '" + filepath + "'");
+            }
         }
         callback()
     });
@@ -86,13 +91,11 @@ log.setLevel(LOG_LEVEL);
 const app = express()
 app.use(cors())
 app.use(bodyParser.json({ limit: '100mb' }))
+app.use(morgan('combined'))
 
 // Home rooting
 
 app.get('/', function (req, res) {
-    var id = uniqid()
-
-    log.info(id + " - Someone hit slash");
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "message": "Nothing here !" }));
 })
@@ -165,8 +168,6 @@ app.post('/file/exists', function (req, res) {
 })
 
 app.post('/file/upload', function (req, res) {
-    var id = uniqid()
-
     res.setHeader('Content-Type', 'application/json');
 
     if (req.body.hash == undefined || req.body.file_content == undefined || !isFilehashValid(req.body.hash)) {
@@ -175,7 +176,7 @@ app.post('/file/upload', function (req, res) {
     } else {
         res.status(200);
         filepath = LOGFILE_DIR + req.body.hash + ".log"
-        writeStringToFile(id, filepath, req.body.file_content, () => {
+        writeStringToFile(null, filepath, req.body.file_content, () => {
             res.send(JSON.stringify({ "config_ok": true, "succeed": true }));
         })
     }
