@@ -6,18 +6,27 @@
 function formatLogstashFilter() {
     logstash_filter = editor.getValue()
     lines = logstash_filter.split('\n')
-    level = 0;
+    level_accolade = 0;
+    level_array = 0;
 
     for (var i = 0; i < lines.length; i++) {
         line = lines[i]
-        if (line.match(/}\s*$/g) && level != 0) {
-            level -= 1
+        if (line.match(/\]\s*$/g) && level_array != 0) {
+            level_array -= 1
+        }
+        if (line.match(/}\s*$/g) && level_accolade != 0) {
+            level_accolade -= 1
+            level_array = 0
         }
         if (line.match(/^\s*/g)) {
-            lines[i] = line.replace(/^\s*/g, "  ".repeat(level))
+            lines[i] = line.replace(/^\s*/g, "  ".repeat(level_accolade + level_array))
+        }
+        if (line.match(/\s+\[/g)) {
+            level_array += 1
         }
         if (line.match(/\s+{/g)) {
-            level += 1
+            level_accolade += 1
+            level_array = 0
         }
     }
     
