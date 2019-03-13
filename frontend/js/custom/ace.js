@@ -2,6 +2,30 @@
 // Init ACE editor //
 /////////////////////
 
+// Format logstash filter code
+function formatLogstashFilter() {
+    logstash_filter = editor.getValue()
+    lines = logstash_filter.split('\n')
+    level = 0;
+
+    for (var i = 0; i < lines.length; i++) {
+        line = lines[i]
+        if (line.match(/}\s*$/g) && level != 0) {
+            level -= 1
+        }
+        if (line.match(/^\s*/g)) {
+            lines[i] = line.replace(/^\s*/g, "  ".repeat(level))
+        }
+        if (line.match(/\s+{/g)) {
+            level += 1
+        }
+    }
+    
+    logstash_filter = lines.join('\n')
+    editor.setValue(logstash_filter, -1)
+    console.log("Code formatted")
+}
+
 // Build the ACE editor to edit configuration
 function buildEditor() {
     ace.require("ace/ext/language_tools");
@@ -38,6 +62,14 @@ function buildEditor() {
         bindKey: { win: "Ctrl-O", "mac": "Cmd-O" },
         exec: function (editor) {
             $('#filter_input_loading').click();
+        }
+    })
+
+    editor.commands.addCommand({
+        name: 'autoident',
+        bindKey: { win: "Ctrl-I", "mac": "Cmd-I" },
+        exec: function (editor) {
+            formatLogstashFilter()
         }
     })
 
