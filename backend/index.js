@@ -169,7 +169,7 @@ app.post('/file/upload', function (req, res) {
 
     res.setHeader('Content-Type', 'application/json');
 
-    if (req.body.hash == undefined || req.body.file_content == undefined) {
+    if (req.body.hash == undefined || req.body.file_content == undefined || !isFilehashValid(req.body.hash)) {
         res.status(400);
         res.send(JSON.stringify({ "config_ok": false }));
     } else {
@@ -190,6 +190,12 @@ app.listen(PORT, function () {
 ////////////////////////
 //  Compute functions //
 ////////////////////////
+
+
+// Check if a filehash is valid or not
+function isFilehashValid(hash) {
+    return hash.match(/^[a-zA-Z0-9]{32}$/g)
+}
 
 // Build the input user filepath
 
@@ -268,6 +274,11 @@ function argumentsValids(id, req, res) {
     if (req.body.input_data == undefined && req.body.filehash == undefined) {
         missing_fields.push("input_data")
         missing_fields.push("filehash")
+        ok = false
+    }
+
+    if(req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
+        missing_fields.push("filehash_format")
         ok = false
     }
 
