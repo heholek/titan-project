@@ -57,6 +57,7 @@ function refreshLogstashLogDisplay() {
             if (line.startsWith("[")) {
                 line = line.replace(/\\r\\n/g, '\n')
                 line = line.replace(/\\n/g, '\n')
+                line = line.replace(/\\t/g, '  ')
                 line = escapeHtml(line)
             } else if (line.startsWith("{") && line.endsWith("}")) {
                 obj = JSON.stringify(JSON.parse(line), null, 2);
