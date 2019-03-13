@@ -18,8 +18,12 @@ RUN apt-get update
 RUN apt-get install logstash=1:5.6.15-1 -y
 
 # We remove unused Logstash plugins
-COPY ./scripts/remove_logstash_plugins.sh .
+COPY ./docker/scripts/remove_logstash_plugins.sh .
 RUN bash remove_logstash_plugins.sh
+
+# We add new Logstash plugins
+COPY ./docker/scripts/add_logstash_plugins.sh .
+RUN bash add_logstash_plugins.sh
 
 # We then update remaining plugins
 RUN /usr/share/logstash/bin/logstash-plugin update
@@ -45,7 +49,7 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # Bundle app source and conf
 COPY . .
-COPY ./confs/jvm.options /etc/logstash/jvm.options
+COPY ./docker/confs/jvm.options /etc/logstash/jvm.options
 
 # Image characteristics
 EXPOSE 8081

@@ -17,11 +17,3 @@ while read -r logstash_output; do
     echo "Removing $logstash_output"
     /usr/share/logstash/bin/logstash-plugin remove $logstash_output > /dev/null
 done <<< "$logstash_outputs"
-
-# Add new plugins if needed
-
-logstash_filters=(logstash-filter-aggregate)
-
-for logstash_filter in ${logstash_filters[@]}; do
-      /usr/share/logstash/bin/logstash-plugin install $logstash_filter > /dev/null  
-done
