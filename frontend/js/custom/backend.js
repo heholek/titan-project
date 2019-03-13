@@ -43,7 +43,7 @@ function logstashParsingProblem() {
 
     for (var i = 0; i < lines.length; i++) {
         line = lines[i]
-        if (line.startsWith("[")) {
+        if (line.startsWith("[ERROR]")) {
             return true;
         }
     }
