@@ -36,6 +36,21 @@ function jsonSyntaxHighlight(json) {
     });
 }
 
+// We check if logstash met a problems during the process
+
+function logstashParsingProblem() {
+    lines = logstash_output.split('\n')
+
+    for (var i = 0; i < lines.length; i++) {
+        line = lines[i]
+        if (line.startsWith("[")) {
+            return true;
+        }
+    }
+
+    return false
+}
+
 // Display logstash log with formatting
 
 function refreshLogstashLogDisplay() {
@@ -146,7 +161,7 @@ $('#start_process').click(function () {
 
                 if (data.job_result.status == -1) {
                     toastr.error('Unable to execute the process on remote server.', 'Error')
-                } else if (data.job_result.status != 0 || data.job_result.stdout.indexOf("[ERROR]") != -1 || data.job_result.stdout.indexOf("[WARNING]") != -1) {
+                } else if (data.job_result.status != 0 || logstashParsingProblem()) {
                     toastr.error('There was a problem in your configuration.', 'Error')
                 } else {
                     toastr.success('Configuration parsing is done !', 'Success')
