@@ -29,7 +29,7 @@ function formatLogstashFilter() {
             level_array = 0
         }
     }
-    
+
     logstash_filter = lines.join('\n')
     editor.setValue(logstash_filter, -1)
     console.log("Code formatted")
@@ -70,7 +70,7 @@ function buildEditor() {
         name: 'open',
         bindKey: { win: "Ctrl-O", "mac": "Cmd-O" },
         exec: function (editor) {
-            $('#filter_input_loading').click();
+            $('#filter_input_loading').trigger( "click" )
         }
     })
 
@@ -112,7 +112,7 @@ document.getElementById('filter_input_loading').addEventListener('change', loadC
 // Save a string to file
 function saveToFile(data, filename, filetype) {
 
-    if(filetype == undefined) {
+    if (filetype == undefined) {
         filetype = 'text/plain'
     }
 

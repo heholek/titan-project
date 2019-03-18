@@ -79,7 +79,7 @@ function loadUserSession(e) {
         try {
             session = JSON.parse(sessionString)
             loadSession(session)
-            toastr.success('Successfully load your saved session', 'Success')
+            toastr.success('Successfully loaded your saved session', 'Success')
         } catch (e) {
             toastr.error('Your session backup should be a JSON file, is that the right file ?', 'Error')
         }  
