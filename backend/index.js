@@ -23,6 +23,7 @@ const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
+const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024*1024*1024;
 
 const LOGFILE_DIR = LOGSTASH_DATA_DIR + "logfiles/";
 
@@ -221,7 +222,8 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
     var command = command_user_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i | tail -n +2';
 
     var options = {
-        timeout: MAX_EXEC_TIMEOUT
+        timeout: MAX_EXEC_TIMEOUT,
+        maxBuffer: MAX_BUFFER_STDOUT
     }
 
     try {
