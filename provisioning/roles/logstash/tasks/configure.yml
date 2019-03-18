@@ -1,8 +1,8 @@
 ---
-- name: Enable Logstash service at startup
+- name: Disable Logstash service at startup
   systemd:
     name: logstash
-    enabled: yes
+    enabled: no
 
 - name: "Set Logstash minimum heap size"
   lineinfile:
