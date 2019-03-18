@@ -25,7 +25,8 @@ function saveSession() {
         custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : ""),
         remote_file_hash: remote_file_hash,
         filter_regex_enabled: $('#filter_regex_enabled').is(':checked'),
-        filter_display: $('#filter_display').val()
+        filter_display: $('#filter_display').val(),
+        number_lines_display: $("#number_lines_display").val()
     }
     store.set('session', session);
 
@@ -46,6 +47,7 @@ function loadSession() {
         $('#filter_display').val(session.filter_display)
         editor.setValue(session.logstash_filter, -1)
         applyFieldsAttributes(session.input_fields)
+        $("#number_lines_display option[data-value='" + session.number_lines_display +"']").attr("selected","selected");
         if (session.custom_codec != "") {
             enableMultilineCodec(session.custom_codec)
         } else {
@@ -66,6 +68,3 @@ function loadSession() {
         console.log("No cookie for session found")
     }
 }
-
-
-

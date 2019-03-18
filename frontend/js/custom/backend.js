@@ -61,10 +61,22 @@ function refreshLogstashLogDisplay() {
         console.log(filter_value)
     }
 
+    number_lines_display = $("#number_lines_display").val()
+    if(number_lines_display == "unlimited") {
+        number_lines_display = 100000;
+    } else {
+        number_lines_display = parseInt(number_lines_display, 10)
+    }
+
     res = ""
     lines = logstash_output.split('\n')
 
     for (var i = 0; i < lines.length; i++) {
+
+        if(i >= number_lines_display) {
+            break;
+        }
+
         line = lines[i]
 
         if (filter_value == "" || ((filter_regex_enabled && line.match(filter_regex)) || (!filter_regex_enabled && line.indexOf(filter_value) != -1))) {

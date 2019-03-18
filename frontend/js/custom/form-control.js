@@ -152,3 +152,8 @@ $('#filter_display').on('input', (function () {
 $('#filter_regex_enabled').change(function () {
   updateFilter()
 })
+
+// Trigger for the limit display change
+$('#number_lines_display').change(function () {
+  updateFilter()
+})

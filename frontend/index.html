@@ -236,22 +236,47 @@
           <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
         </div>
 
-        <div>
+        <div class="col-lg-12">
           <h4 style="margin-top: 2em; margin-bottom: 1em">Logstash output:</h4>
 
-          <p class="form-text text-muted minimalist-box">
-            If you want to filter the result based on a custom search
-          </p>
+         
 
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <div class="input-group-text">
-               <div class="text-center" style="margin-right: 10px">Regex</div>  <input type="checkbox" id="filter_regex_enabled">
-              </div>
+          <div class="row col-lg-12">
+            <div class="col">
+              <div class="row text-center">
+                <p class="form-text text-muted minimalist-box">
+                    If you want to filter the result based on a custom search
+                </p>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                       <div class="text-center" style="margin-right: 10px">Regex</div>  <input type="checkbox" id="filter_regex_enabled">
+                      </div>
+                    </div>
+                    <input type="text" class="form-control log-display" id="filter_display" placeholder="Filter pattern" aria-label="Filter pattern">
+                  </div>
+                  </div>
             </div>
-            <input type="text" class="form-control log-display" id="filter_display" placeholder="Filter pattern" aria-label="Filter pattern">
+            <div class="col">
+              <div class="row text-center"  style="float: right">
+                <div class="form-group">
+                    <p class="form-text text-muted minimalist-box">
+                        If you want to limit the number of events displayed
+                    </p>
+                    <select class="form-control log-display" id="number_lines_display">
+                      <option data-value="10">10</option>
+                      <option data-value="20">20</option>
+                      <option data-value="50" selected="selected">50</option>
+                      <option data-value="100">100</option>
+                      <option data-value="200">200</option>
+                      <option data-value="500">500</option>
+                      <option data-value="unlimited">unlimited</option>
+                    </select>
+                  </div>
+                  </div>
+            </div>
           </div>
-          
+
           <p style="margin-top: 1em" class="form-text text-muted minimalist-box">
             The input data process by Logstash will be displayed here.
           </p>
