@@ -51,6 +51,18 @@ function logstashParsingProblem() {
     return false
 }
 
+// Escape string characters to build a Regex
+
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+// Set background color to pattern in string
+
+function hightlightMatch(str, pattern, value) {
+    return str.replace(new RegExp(pattern, 'g'), "<span class='background-highlight'>" + value + "</span>");
+}
+
 // Display logstash log with formatting
 
 function refreshLogstashLogDisplay() {
@@ -58,11 +70,12 @@ function refreshLogstashLogDisplay() {
     filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
     if (filter_regex_enabled && filter_value != "") {
         filter_regex = new RegExp(filter_value)
-        console.log(filter_value)
+    } else {
+        filter_regex = new RegExp(escapeRegExp(filter_value))
     }
 
     number_lines_display = $("#number_lines_display").val()
-    if(number_lines_display == "unlimited") {
+    if (number_lines_display == "unlimited") {
         number_lines_display = 100000;
     } else {
         number_lines_display = parseInt(number_lines_display, 10)
@@ -73,13 +86,13 @@ function refreshLogstashLogDisplay() {
 
     for (var i = 0; i < lines.length; i++) {
 
-        if(i >= number_lines_display) {
+        if (i >= number_lines_display) {
             break;
         }
 
         line = lines[i]
 
-        if (filter_value == "" || ((filter_regex_enabled && line.match(filter_regex)) || (!filter_regex_enabled && line.indexOf(filter_value) != -1))) {
+        if (filter_value == "" || line.match(filter_regex)) {
 
             if (line.startsWith("[")) {
                 line = line.replace(/\\r\\n/g, '\n')
@@ -90,8 +103,12 @@ function refreshLogstashLogDisplay() {
                 obj = JSON.stringify(JSON.parse(line), null, 2);
                 line = jsonSyntaxHighlight(obj)
             }
-            res += line + "\n"
 
+            if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
+                line = hightlightMatch(line, filter_regex, filter_value)
+            }
+
+            res += line + "\n"
         }
 
     }
