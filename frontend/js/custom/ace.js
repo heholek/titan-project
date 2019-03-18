@@ -110,8 +110,13 @@ function loadConfEditor(e) {
 document.getElementById('filter_input_loading').addEventListener('change', loadConfEditor, false);
 
 // Save a string to file
-function saveToFile(data, filename) {
-    var blob = new Blob([data], { type: 'text/plain' }),
+function saveToFile(data, filename, filetype) {
+
+    if(filetype == undefined) {
+        filetype = 'text/plain'
+    }
+
+    var blob = new Blob([data], { type: filetype }),
         e = document.createEvent('MouseEvents'),
         a = document.createElement('a')
 

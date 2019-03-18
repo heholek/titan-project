@@ -36,8 +36,10 @@ function saveSession() {
 }
 
 // Load session for user
-function loadSession() {
-    var session = store.get('session');
+function loadSession(session) {
+    if(session == undefined) {
+        var session = store.get('session');
+    }
     if (session != undefined) {
         console.log("Loading user session")
         session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
@@ -67,4 +69,31 @@ function loadSession() {
     } else {
         console.log("No cookie for session found")
     }
+}
+
+// User specific
+
+// Read the content of a single file, and put it into the editor
+function loadUserSession(e) {
+    readSingleFile(e, (sessionString) => {
+        try {
+            session = JSON.parse(sessionString)
+            loadSession(session)
+            toastr.success('Successfully load your saved session', 'Success')
+        } catch (e) {
+            toastr.error('Your session backup should be a JSON file, is that the right file ?', 'Error')
+        }  
+    })
+}
+
+// We create a callback when user click on the input loading
+document.getElementById('session_input_loading').addEventListener('change', loadUserSession, false);
+
+// Function to save current user session to a file
+
+function saveSessionToFile() {
+    saveSession()
+    var session = store.get('session');
+    var sessionString = JSON.stringify(session)
+    saveToFile(sessionString, "titan-project-session.json", "application/json")
 }
