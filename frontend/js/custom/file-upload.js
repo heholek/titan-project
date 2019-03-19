@@ -8,13 +8,13 @@ function fileUploadDisabled() {
     $('#upload_logfile').show()
     $('#upload_logfile_cancel').hide()
     remote_file_hash = undefined
-    $('#input_data_textarea').prop('readonly', false);
+    inputEditor.setReadOnly(false)
     saveSession()
 }
 
 // When we want to disable file upload, and clean the input data field
 function fileUploadDisabledClean() {
-    $('#input_data_textarea').val("")
+    inputEditor.setValue("", -1)
     fileUploadDisabled()
 }
 
@@ -23,7 +23,7 @@ function fileUploadEnabled(hash, content) {
     $('#upload_logfile').hide()
     $('#upload_logfile_cancel').show()
     remote_file_hash = hash
-    $('#input_data_textarea').prop('readonly', true);
+    inputEditor.setReadOnly(true)
 
     if (content != undefined) {
         logfile_content_cut = "<-- Only the first 50 lines of your log file are displayed here -->\n"
@@ -38,7 +38,7 @@ function fileUploadEnabled(hash, content) {
 
         var go_to_line = logfile_content_cut.endsWith('\n') ? "" : '\n'
         logfile_content_cut += go_to_line + "<-- Displayed " + total_lines_displayed + "/" + total_lines_number + " lines of your log file -->"
-        $('#input_data_textarea').val(logfile_content_cut)
+        inputEditor.setValue(logfile_content_cut, -1)
     }
 
     saveSession()

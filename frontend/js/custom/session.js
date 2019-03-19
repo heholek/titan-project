@@ -18,7 +18,7 @@ function saveSession() {
     var session = {
         minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
         theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
-        input_data: $('#input_data_textarea').val(),
+        input_data: inputEditor.getValue(),
         logstash_filter: editor.getValue(),
         input_fields: getFieldsAttributesValues(),
         custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
@@ -43,7 +43,7 @@ function loadSession(session) {
     if (session != undefined) {
         console.log("Loading user session")
         session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
-        $('#input_data_textarea').val(session.input_data)
+        inputEditor.setValue(session.input_data, -1)
         $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
         $('#filter_regex_enabled').attr('checked', session.filter_regex_enabled)
         $('#filter_display').val(session.filter_display)

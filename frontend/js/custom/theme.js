@@ -10,6 +10,7 @@ function enableBlackTheme() {
   $('#css_theme_custom').attr('href', './css/custom-black.css');
 
   editor.setTheme("ace/theme/dracula");
+  inputEditor.setTheme("ace/theme/dracula");
 
   console.log("Enable black theme")
 }
@@ -20,6 +21,7 @@ function enableWhiteTheme() {
   $('#css_theme_custom').attr('href', './css/custom.css');
 
   editor.setTheme("ace/theme/clouds");
+  inputEditor.setTheme("ace/theme/clouds");
 
   console.log("Enable white theme")
 }

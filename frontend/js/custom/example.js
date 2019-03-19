@@ -9,11 +9,11 @@ function exampleFactory(input_data_filepath, filter_filepath, input_data_attribu
         $.ajax({
             url: input_data_filepath,
             success: function (data) {
-                $('#input_data_textarea').val(data);
+                inputEditor.setValue(data, -1)
             }
         });
     } else {
-        $('#input_data_textarea').val("");
+        inputEditor.setValue("", -1)
     }
 
     if (filter_filepath != undefined) {

@@ -222,7 +222,7 @@
 
           </div>
 
-          <h4 class="col-lg-6" style="margin-top: 2em">Logs:</h4>
+          <h4 id="input_data_title" class="col-lg-6" style="margin-top: 2em">Logs:</h4>
           <div class="col-lg-6" style="margin-top: 2.5em"><input type="file" style="float: right"
               id="upload_logfile"></input><a id="upload_logfile_cancel" style="float: right; display: none"><i
                 class="fas fa-times text-danger"> Cancel the upload</i></a></div>
@@ -231,17 +231,19 @@
               logs</strong> of your formats. You should not have more than about 100 lines of logs.
           </p>
 
-          <textarea id="input_data_textarea" spellcheck="false" class="form-control col-lg-12 log-display" rows="10"
-            placeholder="Copy/Paste your logs file here !" style="margin-top: 1em"></textarea>
+            <div class="col-lg-12" style="margin-top: 1em">
+                <pre id="input_data_textarea" style="position: absolute; height: 20em; " class="col-lg-12" rows="10"
+                  placeholder="Copy/Paste your logs file here !"></pre>
+              </div>
 
           <div>
-            <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
+            <h4 id="logstash_filter_title" style="margin-top: 17em">Logstash filter:</h4>
             <p class="form-text text-muted minimalist-box">
               Here is the place where you can create your Logstash filter.
             </p>
           </div>
 
-          <div class="col-lg-12" style="margin-top: 1em">
+          <div class="col-lg-12" style="margin-top: 2em">
             <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
               placeholder="Write your logstash filter here !"></pre>
           </div>

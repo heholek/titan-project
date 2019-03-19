@@ -136,7 +136,7 @@ function jobFailed() {
 }
 
 $('#clear_form').click(function () {
-    $('#input_data_textarea').val("");
+    inputEditor.setValue("", -1)
     editor.setValue("", -1);
     $('#output').text("The Logstash output will be shown here !");
     $('#fields_attributes_number').val(0);
@@ -162,7 +162,7 @@ $('#start_process').click(function () {
         };
 
         if (remote_file_hash == undefined) {
-            body.input_data = $('#input_data_textarea').val()
+            body.input_data = inputEditor.getValue()
         } else {
             body.filehash = remote_file_hash
         }

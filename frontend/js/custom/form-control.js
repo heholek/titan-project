@@ -87,14 +87,14 @@ $('#enable_custom_codec').change(function () {
 function userInputValid() {
   input_valid = true;
 
-  var input_data = $('#input_data_textarea').val();
+  var input_data = inputEditor.getValue()
   var logstash_filter = editor.getValue();
 
   if (input_data.length == 0) {
-    $('#input_data_textarea').addClass("is-invalid");
+    $('#input_data_title').addClass("text-danger");
     input_valid = false;
   } else {
-    $('#input_data_textarea').removeClass("is-invalid");
+    $('#input_data_title').removeClass("text-danger");
   }
 
   if (logstash_filter.length == 0) {

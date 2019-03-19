@@ -36,7 +36,26 @@ function formatLogstashFilter() {
 }
 
 // Build the ACE editor to edit configuration
-function buildEditor() {
+function buildInputDataEditor() {
+    var editor = ace.edit("input_data_textarea");
+
+    editor.setOptions({
+        fontSize: "12pt",
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false,
+        indentedSoftWrap: false,
+        useSoftTabs: false,
+        showPrintMargin: false,
+        enableSnippets: false,
+        navigateWithinSoftTabs: false,
+        keyboardHandler: "ace/keyboard/sublime"
+    })
+
+    return editor
+}
+
+// Build the ACE editor to edit the Logstash configuration
+function buildFilterEditor() {
     ace.require("ace/ext/language_tools");
 
     var editor = ace.edit("logstash_filter_textarea");
@@ -128,4 +147,5 @@ function saveToFile(data, filename, filetype) {
 }
 
 // Create the editor that will be used by others files
-var editor = buildEditor()
+var editor = buildFilterEditor()
+var inputEditor = buildInputDataEditor()
