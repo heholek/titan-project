@@ -21,7 +21,7 @@ function enableWhiteTheme() {
   $('#css_theme_custom').attr('href', './css/custom.css');
 
   editor.setTheme("ace/theme/clouds");
-  inputEditor.setTheme("ace/theme/clouds");
+  inputEditor.setTheme("ace/theme/chrome");
 
   console.log("Enable white theme")
 }
