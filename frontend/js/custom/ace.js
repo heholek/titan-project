@@ -2,6 +2,9 @@
 // Init ACE editor //
 /////////////////////
 
+// We want to incldue externals languages
+ace.require("ace/ext/language_tools");
+
 // Format logstash filter code
 function formatLogstashFilter() {
     logstash_filter = editor.getValue()
@@ -38,6 +41,7 @@ function formatLogstashFilter() {
 // Build the ACE editor to edit configuration
 function buildInputDataEditor() {
     var editor = ace.edit("input_data_textarea");
+    editor.session.setMode("ace/mode/elixir");
 
     editor.setOptions({
         fontSize: "12pt",
@@ -56,8 +60,6 @@ function buildInputDataEditor() {
 
 // Build the ACE editor to edit the Logstash configuration
 function buildFilterEditor() {
-    ace.require("ace/ext/language_tools");
-
     var editor = ace.edit("logstash_filter_textarea");
     editor.session.setMode("ace/mode/ruby");
     editor.session.setTabSize(2);
