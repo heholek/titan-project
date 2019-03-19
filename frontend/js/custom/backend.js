@@ -83,16 +83,18 @@ function refreshLogstashLogDisplay() {
 
     res = ""
     lines = logstash_output.split('\n')
+    matchNumber = 0
 
     for (var i = 0; i < lines.length; i++) {
 
-        if (i >= number_lines_display) {
+        if (matchNumber >= number_lines_display) {
             break;
         }
 
         line = lines[i]
 
         if (filter_value == "" || line.match(filter_regex)) {
+            matchNumber += 1
 
             if (line.startsWith("[")) {
                 line = line.replace(/\\r\\n/g, '\n')
