@@ -5,36 +5,54 @@
 // We want to incldue externals languages
 ace.require("ace/ext/language_tools");
 
-// Format logstash filter code
-function formatLogstashFilter() {
-    logstash_filter = editor.getValue()
+// Find and replace text in editor
+
+function findAndReplaceTextEditor(ed, pattern, value) {
+    logstash_filter = ed.getValue()
     lines = logstash_filter.split('\n')
-    level_accolade = 0;
-    level_array = 0;
 
     for (var i = 0; i < lines.length; i++) {
         line = lines[i]
-        if (line.match(/\]\s*$/g) && level_array != 0) {
-            level_array -= 1
-        }
-        if (line.match(/}\s*$/g) && level_accolade != 0) {
-            level_accolade -= 1
-            level_array = 0
-        }
-        if (line.match(/^\s*/g)) {
-            lines[i] = line.replace(/^\s*/g, "  ".repeat(level_accolade + level_array))
-        }
-        if (line.match(/\s+\[/g)) {
-            level_array += 1
-        }
-        if (line.match(/\s+{/g)) {
-            level_accolade += 1
-            level_array = 0
-        }
+
+        lines[i] = line.replace(pattern, value)
+
     }
 
     logstash_filter = lines.join('\n')
+    ed.setValue(logstash_filter, -1)
+}
+
+// Format logstash filter code
+function formatLogstashFilter() {
+
+    // As '#' are start of comment, with need to add // before them
+    findAndReplaceTextEditor(editor, /(#[^{}\[\]"']*)$/, "//$1")
+
+    // Then we beautify using js language syntax
+    logstash_filter = editor.getValue()
+    logstash_filter = js_beautify(logstash_filter, {
+        "indent_size": "2",
+        "indent_char": " ",
+        "max_preserve_newlines": "5",
+        "preserve_newlines": true,
+        "keep_array_indentation": false,
+        "break_chained_methods": false,
+        "indent_scripts": "normal",
+        "brace_style": "collapse,preserve-inline",
+        "space_before_conditional": true,
+        "unescape_strings": false,
+        "jslint_happy": false,
+        "end_with_newline": false,
+        "wrap_line_length": "0",
+        "indent_inner_html": false,
+        "comma_first": false,
+        "e4x": false
+    })
     editor.setValue(logstash_filter, -1)
+
+    // And finaly we remove the '//'
+    findAndReplaceTextEditor(editor, /\/\/(#[^{}\[\]"']*)$/, "$1")
+
     console.log("Code formatted")
 }
 
@@ -91,7 +109,7 @@ function buildFilterEditor() {
         name: 'open',
         bindKey: { win: "Ctrl-O", "mac": "Cmd-O" },
         exec: function (editor) {
-            $('#filter_input_loading').trigger( "click" )
+            $('#filter_input_loading').trigger("click")
         }
     })
 
