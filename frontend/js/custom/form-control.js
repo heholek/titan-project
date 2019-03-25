@@ -70,7 +70,7 @@ function enableMultilineCodec(value) {
   if (value != undefined) {
     $('#custom_codec_field').val(value)
   }
-  $('#enable_custom_codec').attr('checked', true);
+  $('#enable_custom_codec').prop('checked', true);
   $('#custom_codec_field').removeClass('d-none');
 }
 
@@ -78,7 +78,7 @@ function enableMultilineCodec(value) {
 function disableMultilineCodec() {
   $('#custom_codec_field').addClass('d-none');
   $('#custom_codec_field').val("");
-  $('#enable_custom_codec').attr('checked', false);
+  $('#enable_custom_codec').prop('checked', false);
 }
 
 // Trigger on the multiline codec checkbox

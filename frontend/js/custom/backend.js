@@ -162,7 +162,7 @@ $('#clear_form').click(function () {
     editor.setValue("", -1);
     $('#output').text("The Logstash output will be shown here !");
     $('#fields_attributes_number').val(0);
-    $('#filter_regex_enabled').attr('checked', false)
+    $('#filter_regex_enabled').prop('checked', false)
     $('#filter_display').val("")
     $('#backend_response_time').text("0")
     applyFieldsAttributes()

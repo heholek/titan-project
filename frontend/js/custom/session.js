@@ -45,7 +45,7 @@ function loadSession(session) {
         session.theme == "white" ? enableWhiteTheme() : enableBlackTheme()
         inputEditor.setValue(session.input_data, -1)
         $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
-        $('#filter_regex_enabled').attr('checked', session.filter_regex_enabled)
+        $('#filter_regex_enabled').prop('checked', session.filter_regex_enabled)
         $('#filter_display').val(session.filter_display)
         editor.setValue(session.logstash_filter, -1)
         applyFieldsAttributes(session.input_fields)
