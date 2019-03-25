@@ -6,6 +6,9 @@
 
 // Enable the black theme
 function enableBlackTheme() {
+  editor.setTheme("ace/theme/dracula");
+  inputEditor.setTheme("ace/theme/dracula");
+
   $('#css_theme_bootstrap').attr('href', './css/bootstrap-black.min.css');
   $('#css_theme_custom').attr('href', './css/custom-black.css');
 
@@ -17,6 +20,9 @@ function enableBlackTheme() {
 
 // Enable the white theme
 function enableWhiteTheme() {
+  editor.setTheme("ace/theme/clouds");
+  inputEditor.setTheme("ace/theme/chrome");
+
   $('#css_theme_bootstrap').attr('href', './css/bootstrap.min.css');
   $('#css_theme_custom').attr('href', './css/custom.css');
 
@@ -35,6 +41,7 @@ $('#change_theme').click(function () {
     enableWhiteTheme()
     saveSession()
   }
+  document.location.reload(true);
 });
 
 // Minimalist mode
