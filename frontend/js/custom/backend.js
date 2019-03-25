@@ -63,6 +63,24 @@ function hightlightMatch(str, pattern, value) {
     return str.replace(new RegExp(pattern, 'g'), "<span class='background-highlight'>" + value + "</span>");
 }
 
+// Sort a dictionary by key.
+
+function sortDictionary(dict) {
+
+    var sorted = [];
+    for(var key in dict) {
+        sorted[sorted.length] = key;
+    }
+    sorted.sort();
+
+    var tempDict = {};
+    for(var i = 0; i < sorted.length; i++) {
+        tempDict[sorted[i]] = dict[sorted[i]];
+    }
+
+    return tempDict;
+}
+
 // Display logstash log with formatting
 
 function refreshLogstashLogDisplay() {
@@ -102,7 +120,9 @@ function refreshLogstashLogDisplay() {
                 line = line.replace(/\\t/g, '  ')
                 line = escapeHtml(line)
             } else if (line.startsWith("{") && line.endsWith("}")) {
-                obj = JSON.stringify(JSON.parse(line), null, 2);
+                jsonDic = JSON.parse(line)
+                jsonDic = sortDictionary(jsonDic)
+                obj = JSON.stringify(jsonDic, null, 2);
                 line = jsonSyntaxHighlight(obj)
             }
 
