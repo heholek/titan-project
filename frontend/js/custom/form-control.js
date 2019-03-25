@@ -30,8 +30,9 @@ function applyFieldsAttributes(conf) {
       val = oldValues[i].value != undefined ? oldValues[i].value : ""
     }
     var str = '<div class="form-group row" style="margin-top: 1em">';
-    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute ' + (i + 1) + '" /></div>';
-    str += '<div class="col"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value ' + (i + 1) + '" /></div>';
+    str += '<div class="col-lg-5"><input type="text" class="form-control log-display" id="field_attribute_key_' + i + '" size="20" name="p_scnt" value="' + attr + '" placeholder="Attribute ' + (i + 1) + '" /></div>';
+    str += '<div class="col-lg-6"><input type="text" class="form-control log-display" id="field_attribute_value_' + i + '" size="20" name="p_scnt" value="' + val + '" placeholder="Value ' + (i + 1) + '" /></div>';
+    str += '<div class="col-lg-1"><a onclick="deleteFieldAttribute(' + i + ')"><i class="fas fa-times text-danger" style="padding-top: 0.7em"></i></a></div>';
     str += '</div>';
     $('#fields_attributes').append(str);
   }
@@ -48,6 +49,13 @@ function getFieldsAttributesValues() {
     });
   }
   return values
+}
+
+// Delete a field attribute
+function deleteFieldAttribute(i) {
+  attributes = getFieldsAttributesValues()
+  attributes.splice(i, 1)
+  applyFieldsAttributes(attributes)
 }
 
 // Trigger on the fields attribute number
