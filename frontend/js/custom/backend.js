@@ -144,6 +144,7 @@ $('#clear_form').click(function () {
     $('#fields_attributes_number').val(0);
     $('#filter_regex_enabled').attr('checked', false)
     $('#filter_display').val("")
+    $('#backend_response_time').text("0")
     applyFieldsAttributes()
     disableMultilineCodec()
     fileUploadDisabled()
@@ -202,7 +203,10 @@ $('#start_process').click(function () {
                     toastr.error('All fields need to be fill !', 'Informations missings')
                 }
 
+                var response_time_formatted = (data.job_result.response_time / 1000).toFixed(2)
+
                 refreshLogstashLogDisplay(data.job_result.stdout)
+                $("#backend_response_time").text(response_time_formatted)
                 $("#start_process").removeClass('disabled');
             },
             error: function () {

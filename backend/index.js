@@ -226,6 +226,8 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
         maxBuffer: MAX_BUFFER_STDOUT
     }
 
+    var startTime = new Date()
+
     try {
         exec(command, options, (err, stdout, stderr) => {
             log.info(id + " - Ended a Logstash process");
@@ -239,7 +241,8 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
             var job_result = {
                 stdout: stdout.toString('utf8'),
                 stderr: stderr.toString('utf8'),
-                status: status
+                status: status,
+                response_time: new Date() - startTime
             };
 
             res.setHeader('Content-Type', 'application/json');
@@ -252,7 +255,10 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
             status: -1
         };
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
+        res.send(JSON.stringify({ 
+            "config_ok": true, 
+            "job_result": job_result
+        }));
     }
 
 }
