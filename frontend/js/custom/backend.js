@@ -155,6 +155,7 @@ $('#clear_form').click(function () {
 
 $('#start_process').click(function () {
 
+    $('#backend_response_time').text("0")
     saveSession()
 
     if (userInputValid()) {
@@ -203,7 +204,7 @@ $('#start_process').click(function () {
                     toastr.error('All fields need to be fill !', 'Informations missings')
                 }
 
-                var response_time_formatted = (data.job_result.response_time / 1000).toFixed(2)
+                var response_time_formatted = (data.job_result.response_time / 1000).toFixed(1)
 
                 refreshLogstashLogDisplay(data.job_result.stdout)
                 $("#backend_response_time").text(response_time_formatted)
