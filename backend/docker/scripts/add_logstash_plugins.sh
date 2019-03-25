@@ -2,7 +2,7 @@
 
 # Add new plugins if needed
 
-logstash_filters=(logstash-filter-aggregate logstash-filter-elapsed)
+logstash_filters=(logstash-filter-aggregate logstash-filter-elapsed logstash-filter-multiline)
 
 for logstash_filter in ${logstash_filters[@]}; do
     echo "Adding $logstash_filter"

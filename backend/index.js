@@ -73,11 +73,17 @@ function buildLogstashInput(attributes, custom_codec) {
         input += ' add_field => { "' + attributes[i].attribute + '" => "' + attributes[i].value + '" }';
     }
 
-    if (custom_codec != undefined) {
+    if (custom_codec != undefined && custom_codec.indexOf("multiline") == -1) {
         input += " codec => " + custom_codec;
     }
 
     input += "}}";
+
+    // We cheat for the multiline codec, we will use the filter's one instead of the input codec
+    if (custom_codec != undefined && custom_codec.indexOf("multiline") != -1) {
+        input += "filter {" + custom_codec + "}";
+    }
+
     return input;
 }
 
