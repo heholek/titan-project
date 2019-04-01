@@ -74,16 +74,19 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: /\\(?:[nsrtvfbae'"\\]|c.|C-.|M-.(?:\\C-.)?|[0-7]{3}|x[\da-fA-F]{2}|u[\da-fA-F]{4})/
                         },{
                             token: "support.class",
-                            regex: "%{([a-zA-Z]+)(?:\:)[@a-zA-Z_]+}"
+                            regex: "%{[a-zA-Z0-9_]+:[@a-zA-Z_]+}"
                         },{
                             token: "support.class",
-                            regex: "%{([@a-zA-Z]+)}"
-                        },{
-                            token: "variable.instance",
-                            regex: "@[a-zA-Z]+"
+                            regex: "%{[@a-zA-Z0-9_]+}"
                         },{
                             token: "constant.language.boolean",
-                            regex: "integer|integer_eu|float|float_eu|string|boolean",
+                            regex: "(integer|integer_eu|float|float_eu|string|boolean)",
+                        },{
+                            token: "variable.instance",
+                            regex: "\\[[@a-zA-Z_0-9]+\\]",
+                        },{
+                            token: "support.class",
+                            regex: "\\${[_a-zA-Z]+}"
                         },{
                             token: "string.end",
                             regex: /"/,
@@ -99,16 +102,19 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: /\\(?:[nsrtvfbae'"\\]|c.|C-.|M-.(?:\\C-.)?|[0-7]{3}|x[\da-fA-F]{2}|u[\da-fA-F]{4})/
                         },{
                             token: "support.class",
-                            regex: "%{([a-zA-Z]+)(?:\:)[@a-zA-Z_]+}"
+                            regex: "%{[a-zA-Z0-9_]+:[@a-zA-Z_]+}"
                         },{
                             token: "support.class",
-                            regex: "%{([@a-zA-Z]+)}"
-                        },{
-                            token: "variable.instance",
-                            regex: "@[a-zA-Z]+"
+                            regex: "%{[@a-zA-Z0-9_]+}"
                         },{
                             token: "constant.language.boolean",
                             regex: "integer|integer_eu|float|float_eu|string|boolean",
+                        },{
+                            token: "variable.instance",
+                            regex: "\\[[@a-zA-Z_0-9]+\\]",
+                        },{
+                            token: "support.class",
+                            regex: "\\${[_a-zA-Z]+}"
                         },{
                             token: "string.end",
                             regex: /'/,
