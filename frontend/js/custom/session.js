@@ -6,8 +6,9 @@
 function checkRemoteFile() {
     remoteLogExists(remote_file_hash, (exists) => {
         if (!exists) {
-            toastr.warning('Your file is no more on the server, you need to upload it again', 'File uploaded')
+            var notif = toastr.warning('Your file is no more on the server, you need to upload it again', 'File uploaded')
             fileUploadDisabledClean()
+            redirectToastrClick(notif, "input_data_title")
         }
     })
 }

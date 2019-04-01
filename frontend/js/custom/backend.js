@@ -215,13 +215,16 @@ $('#start_process').click(function () {
                 if (data.job_result.status == -1) {
                     toastr.error('Unable to execute the process on remote server.', 'Error')
                 } else if (data.job_result.status != 0 || logstashParsingProblem()) {
-                    toastr.error('There was a problem in your configuration.', 'Error')
+                   var notif =  toastr.error('There was a problem in your configuration.', 'Error')
+                   redirectToastrClick(notif, "logstash_filter_textarea")
                 } else {
-                    toastr.success('Configuration parsing is done !', 'Success')
+                    var notif =  toastr.success('Configuration parsing is done !', 'Success')
+                    redirectToastrClick(notif, "output")
                 }
 
                 if (!data.config_ok) {
-                    toastr.error('All fields need to be fill !', 'Informations missings')
+                    var notif =  toastr.error('All fields need to be fill !', 'Informations missings')
+                    redirectToastrClick(notif, "input_extra_attributes")
                 }
 
                 var response_time_formatted = (data.job_result.response_time / 1000).toFixed(1)

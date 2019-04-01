@@ -94,6 +94,7 @@ $('#enable_custom_codec').change(function () {
 
 function userInputValid() {
   input_valid = true;
+  redirectToLocation = null;
 
   var input_data = inputEditor.getValue()
   var logstash_filter = editor.getValue();
@@ -101,12 +102,14 @@ function userInputValid() {
   if (input_data.length == 0) {
     $('#input_data_title').addClass("text-danger");
     input_valid = false;
+    redirectToLocation = "input_data_textarea"
   } else {
     $('#input_data_title').removeClass("text-danger");
   }
 
   if (logstash_filter.length == 0) {
     $('#logstash_filter_title').addClass("text-danger");
+    redirectToLocation = "logstash_filter_textarea"
     input_valid = false;
   } else {
     $('#logstash_filter_title').removeClass("text-danger");
@@ -120,6 +123,7 @@ function userInputValid() {
       input_valid = false;
       fieldsAttributesValids = false;
       $('#input_extra_attributes').addClass("text-danger");
+      redirectToLocation = "input_extra_attributes"
       break;
     }
   }
@@ -133,13 +137,15 @@ function userInputValid() {
     if (custom_codec_value.length == 0) {
       input_valid = false;
       $('#custom_codec_field').addClass("is-invalid");
+      redirectToLocation = "custom_codec_field"
     } else {
       $('#custom_codec_field').removeClass("is-invalid");
     }
   }
 
   if (!input_valid) {
-    toastr.error('All fields need to be fill !', 'Informations missings')
+    var notif = toastr.error('All fields need to be fill !', 'Informations missings')
+    redirectToastrClick(notif, redirectToLocation)
   }
 
   return input_valid

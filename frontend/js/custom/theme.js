@@ -70,3 +70,17 @@ $('#change_minimalist').click(function () {
     saveSession()
   }
 });
+
+// Redirect the user to a specific anchor in the page
+
+function jumpTo(anchor) {
+  window.location.href = "#"+anchor;
+}
+
+// Redirect click for a toastr event for a specific anchor
+
+function redirectToastrClick(element, anchor) {
+  $(element).click(function(){ 
+    jumpTo(anchor)
+  });
+}

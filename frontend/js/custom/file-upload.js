@@ -55,16 +55,19 @@ function sendLogfileToBackend(e) {
             if (!exists) {
                 uploadLogFile(hash, content, (succeed) => {
                     if (!succeed) {
-                        toastr.error('Unable to upload your log file', 'Error')
+                        var notif = toastr.error('Unable to upload your log file', 'Error')
                         fileUploadDisabledClean()
+                        redirectToastrClick(notif, "input_data_title")
                     } else {
-                        toastr.success('Your log file is now stored on the server', 'Success')
+                        var notif = toastr.success('Your log file is now stored on the server', 'Success')
                         fileUploadEnabled(hash, content)
+                        redirectToastrClick(notif, "input_data_textarea")
                     }
                 })
             } else {
-                toastr.info('Your log file already was on the server', 'Done')
+                var notif = toastr.info('Your log file already was on the server', 'Done')
                 fileUploadEnabled(hash, content)
+                redirectToastrClick(notif, "input_data_textarea")
             }
         })
     })
