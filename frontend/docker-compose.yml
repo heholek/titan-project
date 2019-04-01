@@ -7,6 +7,9 @@ services:
       context: .
       args:
         BACKENDHOST: "localhost:8081"
+      #  http_proxy: ""
+      #  https_proxy: ""
+      #  no_proxy: ""
     ports:
      - "8080:80"
 
