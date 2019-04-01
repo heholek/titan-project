@@ -21,11 +21,11 @@ var OUTPUT_FILTER = "output { stdout { codec => json_lines } }";
 const PORT = process.env.PORT || 8081;
 const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
+const LOGFILES_DIR = process.env.LOGFILES_DIR || "/tmp/logstash/logfiles/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024*1024*1024;
 
-const LOGFILE_DIR = LOGSTASH_DATA_DIR + "logfiles/";
 
 ///////////////////////////////
 // Some system util function //
@@ -41,9 +41,10 @@ function createDirectory(directory) {
     }
 }
 
-// We create the logfile directory
+// We create the local directories directory
 
-createDirectory(LOGFILE_DIR)
+createDirectory(LOGSTASH_DATA_DIR)
+createDirectory(LOGFILES_DIR)
 
 // Write a string content to file
 
@@ -182,7 +183,7 @@ app.post('/file/upload', function (req, res) {
         res.send(JSON.stringify({ "config_ok": false }));
     } else {
         res.status(200);
-        filepath = LOGFILE_DIR + req.body.hash + ".log"
+        filepath = LOGFILES_DIR + req.body.hash + ".log"
         writeStringToFile(null, filepath, req.body.file_content, () => {
             res.send(JSON.stringify({ "config_ok": true, "succeed": true }));
         })
@@ -208,7 +209,7 @@ function isFilehashValid(hash) {
 // Build the input user filepath
 
 function buildLocalLogFilepath(hash) {
-    return LOGFILE_DIR + hash + ".log";
+    return LOGFILES_DIR + hash + ".log";
 }
 
 // Compute the logstash result

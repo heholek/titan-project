@@ -6,12 +6,16 @@ services:
     restart: always
     build: 
       context: ./backend
-      #args:
+     # args:
       #  http_proxy: ""
       #  https_proxy: ""
       #  no_proxy: ""
+    environment:
+        - LOGFILES_DIR=/data/logfiles/
     ports:
       - "8081:8081"
+    volumes:
+      - titan-project-logfiles:/data/logfiles/
 
   titan-project-frontend:
     restart: always
@@ -25,3 +29,5 @@ services:
     ports:
      - "8080:80"
 
+volumes:
+  titan-project-logfiles:
