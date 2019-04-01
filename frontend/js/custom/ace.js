@@ -79,7 +79,7 @@ function buildInputDataEditor() {
 // Build the ACE editor to edit the Logstash configuration
 function buildFilterEditor() {
     var editor = ace.edit("logstash_filter_textarea");
-    editor.session.setMode("ace/mode/ruby");
+    editor.session.setMode("ace/mode/logstash");
     editor.session.setTabSize(2);
 
     editor.setOptions({
