@@ -9,6 +9,7 @@ var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
 var morgan = require('morgan')
+var request = require('request');
 
 const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
 
@@ -25,6 +26,8 @@ const LOGFILES_DIR = process.env.LOGFILES_DIR || "/tmp/logstash/logfiles/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024*1024*1024;
+const KIBANA_VERSION = process.env.KIBANA_VERSION || "6.7.0";
+const KIBANA_HOST = process.env.KIBANA_HOST || "localhost:5601";
 
 
 ///////////////////////////////
@@ -175,6 +178,30 @@ app.post('/file/exists', function (req, res) {
     }
 })
 
+// Try to guess the config using the Kibana Machine Learning API
+
+app.post('/guess_config', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.filehash == undefined && req.body.input_data == null) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        if(req.body.filehash != undefined) {
+            filepath = buildLocalLogFilepath(req.body.filehash)
+            fs.readFile(filepath, 'utf8', function(err, contents) {
+                if(err != undefined) {
+                    res.send(JSON.stringify({ "config_ok": true, "exists": false }));
+                } else {
+                    guessConfig(res, contents)
+                }
+            });
+        } else {
+            guessConfig(res, req.body.input_data)
+        }
+    }
+})
+
 app.post('/file/upload', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
@@ -268,6 +295,51 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
         }));
     }
 
+}
+
+// Function to try to guess a config
+
+function guessConfig(res, data) {
+    res.setHeader('Content-Type', 'application/json');
+
+    request.post({
+        headers: {
+            'content-type' : 'text/plain',
+            'kbn-version': KIBANA_VERSION
+        },
+        url: 'http://' + KIBANA_HOST + '/api/ml/file_data_visualizer/analyze_file',
+        body: data
+      }, function(error, response, body){
+        if(error != undefined) {
+            res.send(JSON.stringify({ 
+                "config_ok": true, 
+                "succeed": false
+            }));
+        } else {
+            try {
+                var kibanaConfig = JSON.parse(body);
+
+                var conf = {
+                    multiline_start_pattern: kibanaConfig.results.multiline_start_pattern,
+                    grok_pattern: kibanaConfig.results.grok_pattern,
+                    timestamp_field: kibanaConfig.results.timestamp_field,
+                    joda_timestamp_formats: kibanaConfig.results.joda_timestamp_formats,
+                    mappings: kibanaConfig.results.mappings
+                }
+
+                res.send(JSON.stringify({ 
+                    "config_ok": true, 
+                    "succeed": true,
+                    "configuration": conf
+                }));
+            } catch (e) {
+                res.send(JSON.stringify({ 
+                    "config_ok": true, 
+                    "succeed": false
+                }));
+            }
+        }
+      });
 }
 
 // Fail because of bad parameters
