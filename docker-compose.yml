@@ -2,21 +2,6 @@ version: '3'
 
 services:
 
-  titan-project-backend:
-    restart: always
-    build: 
-      context: ./backend
-     # args:
-      #  http_proxy: ""
-      #  https_proxy: ""
-      #  no_proxy: ""
-    environment:
-        - LOGFILES_DIR=/data/logfiles/
-    ports:
-      - "8081:8081"
-    volumes:
-      - titan-project-logfiles:/data/logfiles/
-
   titan-project-frontend:
     restart: always
     build: 
@@ -29,5 +14,61 @@ services:
     ports:
      - "8080:80"
 
+  titan-project-backend:
+    restart: always
+    build: 
+      context: ./backend
+     # args:
+      #  http_proxy: ""
+      #  https_proxy: ""
+      #  no_proxy: ""
+    environment:
+        - LOGFILES_DIR=/data/logfiles/
+        - KIBANA_HOST=kibana:5601
+    ports:
+      - "8081:8081"
+    volumes:
+      - titan-project-logfiles:/data/logfiles/
+    networks:
+      - titan_project_backend_network
+    depends_on:
+      - kibana
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.7.0
+    restart: always
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      SERVER_HOST: "0.0.0.0"
+    ports:
+      - 5601
+    networks:
+      - titan_project_backend_network
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
+    restart: always
+    environment:
+      - NETWORK_HOST="0.0.0.0"
+      - bootstrap.memory_lock=true
+      - xpack.monitoring.collection.enabled=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200
+    networks:
+      - titan_project_backend_network
+
 volumes:
   titan-project-logfiles:
+  elasticsearch_data:
+
+networks:
+  titan_project_backend_network:
