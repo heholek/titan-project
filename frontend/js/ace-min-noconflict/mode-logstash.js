@@ -74,7 +74,7 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: /\\(?:[nsrtvfbae'"\\]|c.|C-.|M-.(?:\\C-.)?|[0-7]{3}|x[\da-fA-F]{2}|u[\da-fA-F]{4})/
                         },{
                             token: ["string", "support.class", "string", "constant.language.boolean", "string"],
-                            regex: "(%{)([a-zA-Z0-9_]+)(:)([@a-zA-Z_]+)(})"
+                            regex: "(%{)([a-zA-Z0-9_]+)(:)([@a-zA-Z0-9_]+)(})"
                         },{
                             token: ["string", "support.class", "string"],
                             regex: "(%{)([A-Z0-9_]+)(})"
@@ -108,7 +108,7 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: /\\(?:[nsrtvfbae'"\\]|c.|C-.|M-.(?:\\C-.)?|[0-7]{3}|x[\da-fA-F]{2}|u[\da-fA-F]{4})/
                         },{
                             token: ["string", "support.class", "string", "constant.language.boolean", "string"],
-                            regex: "(%{)([a-zA-Z0-9_]+)(:)([@a-zA-Z_]+)(})"
+                            regex: "(%{)([a-zA-Z0-9_]+)(:)([@a-zA-Z0-9_]+)(})"
                         },{
                             token: ["string", "support.class", "string"],
                             regex: "(%{)([A-Z0-9_]+)(})"
