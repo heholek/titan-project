@@ -18,7 +18,7 @@ function improveGrokPattern(grok_pattern) {
 
     while(grok_pattern.match(/\.\*\?/)) {
         fieldName = "string" + i.toString()
-        pattern = "%{NOTSPACE:" + fieldName + "}"
+        pattern = "%{GREEDYDATA:" + fieldName + "}"
         grok_pattern = grok_pattern.replace(/\.\*\?/, pattern)
         i += 1
     }
