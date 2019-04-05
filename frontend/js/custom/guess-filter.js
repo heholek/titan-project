@@ -12,6 +12,31 @@ function buildMultilineCodec(multiline_start_pattern) {
     return codec
 }
 
+// Due to some missing fields catch, we need to improve the grok pattern
+function improveGrokPattern(grok_pattern) {
+    i = 1
+
+    while(grok_pattern.match(/\.\*\?/)) {
+        fieldName = "string" + i.toString()
+        pattern = "%{NOTSPACE:" + fieldName + "}"
+        grok_pattern = grok_pattern.replace(/\.\*\?/, pattern)
+        i += 1
+    }
+
+    i = 1   
+
+    while(grok_pattern.match(/\.\*/)) {
+        fieldName = "data" + i.toString()
+        pattern = "%{GREEDYDATA:" + fieldName + "}"
+        grok_pattern = grok_pattern.replace(/\.\*/, pattern)
+        i += 1
+    }
+
+    grok_pattern = grok_pattern.replace(/"/g, '\\"')
+
+    return grok_pattern
+}
+
 // Build the filter guessed
 function buildGuessedFilter(configuration) {
 
@@ -26,10 +51,12 @@ function buildGuessedFilter(configuration) {
         }
     }
 
+    grok_pattern = improveGrokPattern(configuration.grok_pattern)
+
     filter = "filter {\n\n"
     filter += "  grok {\n"
     filter += "    match => {\n"
-    filter += "      \"message\" => \"" + configuration.grok_pattern + "\"\n"
+    filter += "      \"message\" => \"" + grok_pattern + "\"\n"
     filter += "    }\n"
     filter += "  }\n\n"
 
