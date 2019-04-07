@@ -97,10 +97,10 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: "(%{)([A-Z0-9_]+)(})"
                         },{
                             token: "constant.language.boolean",
-                            regex: "(%{)([@a-zA-Z0-9_]+)(})"
+                            regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
                         },{
                             token: "keyword.type",
-                            regex: "(integer|integer_eu|float|float_eu|string|boolean)",
+                            regex: /(int|integer|integer_eu|float|float_eu|string|boolean)/,
                         },{
                             token: ["string", "constant.language.boolean", "string"],
                             regex: "(\\[)([@a-zA-Z_0-9]+)(\\])",
@@ -116,7 +116,7 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                         }]
                     }, {
                         token: "string.start",
-                        regex: /`/,
+                        regex: /'/,
                         push: [{
                             token: "constant.language.escape",
                             regex: /\\(?:[nsrtvfbae'"\\]|c.|C-.|M-.(?:\\C-.)?|[0-7]{3}|x[\da-fA-F]{2}|u[\da-fA-F]{4})/
@@ -128,10 +128,10 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: "(%{)([A-Z0-9_]+)(})"
                         },{
                             token: "constant.language.boolean",
-                            regex: "(%{)([@a-zA-Z0-9_]+)(})"
+                            regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
                         },{
                             token: "support.class",
-                            regex: "(integer|integer_eu|float|float_eu|string|boolean)",
+                            regex: "(int|integer|integer_eu|float|float_eu|string|boolean)",
                         },{
                             token: ["string", "constant.language.boolean", "string"],
                             regex: "(\\[)([@a-zA-Z_0-9]+)(\\])",
@@ -139,19 +139,6 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             token: ["support.class"],
                             regex: "\\${[_a-zA-Z]+}"
                         },{
-                            token: "string.end",
-                            regex: /'/,
-                            next: "pop"
-                        }, {
-                            defaultToken: "string"
-                        }]
-                    }, {
-                        token: "string.start",
-                        regex: /'/,
-                        push: [{
-                            token: "constant.language.escape",
-                            regex: /\\['\\]/
-                        }, {
                             token: "string.end",
                             regex: /'/,
                             next: "pop"
