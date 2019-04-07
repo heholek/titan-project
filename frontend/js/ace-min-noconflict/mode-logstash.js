@@ -100,7 +100,7 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
                         },{
                             token: "keyword.type",
-                            regex: /(int|integer|integer_eu|float|float_eu|string|boolean)/,
+                            regex: "(integer_eu|integer|float_eu|float|string|boolean|int)",
                         },{
                             token: ["string", "constant.language.boolean", "string"],
                             regex: "(\\[)([@a-zA-Z_0-9]+)(\\])",
@@ -131,7 +131,7 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
                         },{
                             token: "support.class",
-                            regex: "(int|integer|integer_eu|float|float_eu|string|boolean)",
+                            regex: "(integer_eu|integer|float_eu|float|string|boolean|int)",
                         },{
                             token: ["string", "constant.language.boolean", "string"],
                             regex: "(\\[)([@a-zA-Z_0-9]+)(\\])",
