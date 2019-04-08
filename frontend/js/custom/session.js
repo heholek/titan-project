@@ -19,6 +19,7 @@ function saveSession() {
     var session = {
         minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
         theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
+        fullscreen: ($('#main_container').hasClass("container")? false : true),
         input_data: inputEditor.getValue(),
         logstash_filter: editor.getValue(),
         input_fields: getFieldsAttributesValues(),
@@ -60,6 +61,11 @@ function loadSession(session) {
             enableMinimalistMode()
         } else {
             disableMinimalistMode()
+        }
+        if(session.fullscreen) {
+            enableFullscreenMode()
+        } else {
+            disableFullscreenMode()
         }
         if (session.remote_file_hash != undefined) {
             fileUploadEnabled(session.remote_file_hash)

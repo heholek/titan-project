@@ -46,6 +46,11 @@
             </div>
           </li>
           <li class="nav-item">
+            <a class="nav-link" id="change_fullscreen" href="#">
+              <i class="fas fa-arrows-alt"> Fullscreen</i>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" id="change_minimalist" href="#">
               <i class="fas fa-font"> Minimalist</i>
             </a>
@@ -61,7 +66,7 @@
   </nav>
 
   <!-- Page Content -->
-  <div class="container">
+  <div id="main_container" class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
         <h1 class="mt-5">Logstash filter tester</h1>
@@ -240,23 +245,23 @@
           </p>
 
           <div class="col-lg-12" style="margin-top: 1em">
-            <pre id="input_data_textarea" style="position: absolute; height: 20em; " class="col-lg-12" rows="10"
+            <pre id="input_data_textarea" style="position: relative; height: 20em; " class="col-lg-12" rows="10"
               placeholder="Copy/Paste your logs file here !"></pre>
           </div>
 
           <div>
-            <h4 id="logstash_filter_title" style="margin-top: 15em">Logstash filter:</h4>
+            <h4 id="logstash_filter_title" style="margin-top: 2em">Logstash filter:</h4>
             <p class="form-text text-muted minimalist-box">
               Here is the place where you can create your Logstash filter.
             </p>
           </div>
 
           <div class="col-lg-12" style="margin-top: 2em">
-            <pre id="logstash_filter_textarea" style="position: absolute; height: 40em; " class="col-lg-12" rows="15"
+            <pre id="logstash_filter_textarea" style="position: relative; height: 40em; " class="col-lg-12" rows="15"
               placeholder="Write your logstash filter here !"></pre>
           </div>
 
-          <div class="col-lg-12 text-center" style="margin-top: 40em">
+          <div class="col-lg-12 text-center" style="margin-top: 2em">
             <button type="button" class="btn btn-danger" style="float: left" id="clear_form">Clear forms</button>
             <button type="button" class="btn btn-light" id="guess_filter">Try to guess the config</button>
             <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
@@ -268,11 +273,8 @@
               <p class="form-text text-muted" style="float: right; font-size: 0.9375rem">&#160;s</p>
               <p class="form-text text-muted" style="float: right; font-size: 0.9375rem" id="backend_response_time">0</p>
             </h4>
-                
 
-
-
-            <div class="row">
+            <div class="row col-lg-12">
               <div class="col">
                 <div class="row text-center">
                   <p class="form-text text-muted minimalist-box">

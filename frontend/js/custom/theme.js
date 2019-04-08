@@ -71,6 +71,35 @@ $('#change_minimalist').click(function () {
   }
 });
 
+// Fullscreen mode
+
+// Enable the fullscreen mode
+function enableFullscreenMode() {
+  $('#main_container').removeClass("container")
+  $('#main_container').addClass("container-fluid")
+
+  console.log("Enable fullscreen mode")
+}
+
+// Disable the fullscreen mode
+function disableFullscreenMode() {
+  $('#main_container').removeClass("container-fluid")
+  $('#main_container').addClass("container")
+
+  console.log("Disable fullscreen mode")
+}
+
+// Change fullscreen mode button trigger
+$('#change_fullscreen').click(function () {
+  if ($('#main_container').hasClass("container")) {
+    enableFullscreenMode()
+    saveSession()
+  } else {
+    disableFullscreenMode()
+    saveSession()
+  }
+});
+
 // Redirect the user to a specific anchor in the page
 
 function jumpTo(anchor) {

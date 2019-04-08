@@ -70,6 +70,9 @@ function buildInputDataEditor() {
         showPrintMargin: false,
         enableSnippets: false,
         navigateWithinSoftTabs: false,
+        autoScrollEditorIntoView: true,
+        minLines: 5,
+        maxLines: 20,
         keyboardHandler: "ace/keyboard/sublime"
     })
 
@@ -91,6 +94,9 @@ function buildFilterEditor() {
         showPrintMargin: false,
         enableSnippets: false,
         navigateWithinSoftTabs: true,
+        autoScrollEditorIntoView: true,
+        minLines: 25,
+        maxLines: 40,
         keyboardHandler: "ace/keyboard/sublime"
     })
 
