@@ -10,6 +10,8 @@ var cors = require('cors')
 var uniqid = require('uniqid');
 var morgan = require('morgan')
 var request = require('request');
+const NodeCache = require("node-cache");
+const myMemoryCache = new NodeCache({ stdTTL: 3600, checkperiod: 120 });
 
 const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
 
@@ -25,7 +27,7 @@ const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/"
 const LOGFILES_DIR = process.env.LOGFILES_DIR || "/tmp/logstash/logfiles/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
-const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024*1024*1024;
+const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const KIBANA_VERSION = process.env.KIBANA_VERSION || "6.7.0";
 const KIBANA_HOST = process.env.KIBANA_HOST || "localhost:5601";
 
@@ -54,7 +56,7 @@ createDirectory(LOGFILES_DIR)
 function writeStringToFile(id, filepath, data, callback) {
     fs.writeFile(filepath, data, function (err) {
         if (err) {
-            if(id != undefined) {
+            if (id != undefined) {
                 log.error(id + " - Unable to write data to file '" + filepath + "'");
             } else {
                 log.error("Unable to write data to file '" + filepath + "'");
@@ -120,7 +122,7 @@ app.post('/start_process', function (req, res) {
             type: (req.body.input_data != null ? "input" : "file")
         }
 
-        if(input.type == "input") {
+        if (input.type == "input") {
             input.data = quote([req.body.input_data]);
         } else {
             input.filehash = req.body.filehash;
@@ -173,6 +175,49 @@ app.post('/file/exists', function (req, res) {
     }
 })
 
+
+// Store a user config
+
+app.post('/config/store', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.hash == undefined && req.body.config == undefined) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        res.status(200);
+
+        myMemoryCache.set(req.body.hash, { value: req.body.config }, function (err, success) {
+            if (!err && success) {
+                res.send(JSON.stringify({ "config_ok": true, "succeed": true, "hash": req.body.hash }));
+            } else {
+                res.send(JSON.stringify({ "config_ok": true, "succeed": false }));
+            }
+        });
+    }
+})
+
+// Get a user config
+
+app.post('/config/get', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.hash == undefined) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        res.status(200);
+
+        myMemoryCache.get(req.body.hash, function (err, config) {
+            if (!err && config != undefined) {
+                res.send(JSON.stringify({ "config_ok": true, "succeed": true, "config": config }));
+            } else {
+                res.send(JSON.stringify({ "config_ok": true, "succeed": false }));
+            }
+        });
+    }
+})
+
 // Try to guess the config using the Kibana Machine Learning API
 
 app.post('/guess_config', function (req, res) {
@@ -182,10 +227,10 @@ app.post('/guess_config', function (req, res) {
         res.status(400);
         res.send(JSON.stringify({ "config_ok": false }));
     } else {
-        if(req.body.filehash != undefined) {
+        if (req.body.filehash != undefined) {
             filepath = buildLocalLogFilepath(req.body.filehash)
-            fs.readFile(filepath, 'utf8', function(err, contents) {
-                if(err != undefined) {
+            fs.readFile(filepath, 'utf8', function (err, contents) {
+                if (err != undefined) {
                     res.send(JSON.stringify({ "config_ok": true, "exists": false }));
                 } else {
                     guessConfig(res, contents)
@@ -241,7 +286,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
 
     var command_user_data = ""
 
-    if(input.type == "input") {
+    if (input.type == "input") {
         command_user_data = 'echo ' + input.data
     } else {
         command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
@@ -284,8 +329,8 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
             status: -1
         };
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ 
-            "config_ok": true, 
+        res.send(JSON.stringify({
+            "config_ok": true,
             "job_result": job_result
         }));
     }
@@ -299,15 +344,15 @@ function guessConfig(res, data) {
 
     request.post({
         headers: {
-            'content-type' : 'text/plain',
+            'content-type': 'text/plain',
             'kbn-version': KIBANA_VERSION
         },
         url: 'http://' + KIBANA_HOST + '/api/ml/file_data_visualizer/analyze_file',
         body: data
-      }, function(error, response, body){
-        if(error != undefined) {
-            res.send(JSON.stringify({ 
-                "config_ok": true, 
+    }, function (error, response, body) {
+        if (error != undefined) {
+            res.send(JSON.stringify({
+                "config_ok": true,
                 "succeed": false
             }));
         } else {
@@ -322,19 +367,19 @@ function guessConfig(res, data) {
                     mappings: kibanaConfig.results.mappings
                 }
 
-                res.send(JSON.stringify({ 
-                    "config_ok": true, 
+                res.send(JSON.stringify({
+                    "config_ok": true,
                     "succeed": true,
                     "configuration": conf
                 }));
             } catch (e) {
-                res.send(JSON.stringify({ 
-                    "config_ok": true, 
+                res.send(JSON.stringify({
+                    "config_ok": true,
                     "succeed": false
                 }));
             }
         }
-      });
+    });
 }
 
 // Fail because of bad parameters
@@ -360,7 +405,7 @@ function argumentsValids(id, req, res) {
         ok = false
     }
 
-    if(req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
+    if (req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
         missing_fields.push("filehash_format")
         ok = false
     }

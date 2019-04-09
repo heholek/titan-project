@@ -87,7 +87,7 @@ function loadSession(session) {
             disableFullscreenMode()
         }
 
-        if("config" in session) {
+        if ("config" in session) {
             loadConfig(session.config)
         } else {  // Compatibility reason
             loadConfig(session)
@@ -121,4 +121,96 @@ function saveConfigToFile() {
     saveSession()
     var configString = JSON.stringify(getConfig())
     saveToFile(configString, "titan-project-config.json", "application/json")
+}
+
+// Share current user configuration
+
+function shareConf() {
+    storeConfigBackend(getConfig(), (result) => {
+        if (result.succeed) {
+            url = window.location.protocol + "//" + window.location.host + "?conf=" + result.hash
+            copyToClipboard(url)
+            toastr.success('Your url is now copy into your clipboard. It will be stored for 1h.', 'Success', {timeOut: 30000})
+        } else {
+            toastr.error("Unable to share your session :(", "Error")
+        }
+    })
+}
+
+// Store the config on backend
+
+function storeConfigBackend(config, callback) {
+    configString = JSON.stringify(config)
+    hash = md5(configString)
+    body = {
+        hash: hash,
+        config: configString
+    }
+    $.ajax({
+        url: api_url + "/config/store",
+        type: "POST",
+        data: JSON.stringify(body),
+        contentType: "application/json",
+        dataType: "json",
+        success: function (result) {
+            return callback(result)
+        },
+        error: function () {
+            jobFailed()
+        }
+    });
+}
+
+// Load the user config if it is being shared
+
+function loadShareConfigIfNeeded() {
+    search = window.location.search
+    if (search.length != 0) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const confHash = urlParams.get('conf');
+        if (confHash != undefined) {
+            getConfigBackend(confHash, (result) => {
+                if (result.succeed) {
+                    console.log(result)
+                    config = JSON.parse(result.config.value)
+                    loadConfig(config)
+                    toastr.success('Successfully loaded the shared configuration', 'Success')
+                } else {
+                    toastr.error("Unable to load the shared session. Is it still valid ?", "Error")
+                }
+            })
+        }
+    }
+}
+
+// Get the config stored on backend
+
+function getConfigBackend(hash, callback) {
+    body = {
+        hash: hash
+    }
+    $.ajax({
+        url: api_url + "/config/get",
+        type: "POST",
+        data: JSON.stringify(body),
+        contentType: "application/json",
+        dataType: "json",
+        success: function (result) {
+            return callback(result)
+        },
+        error: function () {
+            jobFailed()
+        }
+    });
+}
+
+// Copy a string to clipboard
+
+function copyToClipboard(text){
+    var dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.setAttribute('value', text);
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
 }
