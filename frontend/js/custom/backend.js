@@ -99,9 +99,15 @@ function refreshLogstashLogDisplay() {
         number_lines_display = parseInt(number_lines_display, 10)
     }
 
-    res = ""
-    lines = logstash_output.split('\n')
+
+    logstash_output_stderr_arr = logstash_output_stderr.split('\n')
+    logstash_output_stderr_arr.shift() // We want to remove the first line of the stderr
+    logstash_output_stderr_arr.pop() // We remove the last linen as well
+    lines = logstash_output_stderr_arr.concat(logstash_output.split('\n'))
+    
+    stderr_errors_lines = logstash_output_stderr_arr.length
     matchNumber = 0
+    res = ""
 
     for (var i = 0; i < lines.length; i++) {
 
@@ -124,6 +130,10 @@ function refreshLogstashLogDisplay() {
                 jsonDic = sortDictionary(jsonDic)
                 obj = JSON.stringify(jsonDic, null, 2);
                 line = jsonSyntaxHighlight(obj)
+            }
+
+            if(i < stderr_errors_lines) {
+                line = "<span class='text-danger'>" + line + "</span>"
             }
 
             if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
@@ -211,6 +221,7 @@ $('#start_process').click(function () {
             timeout: 60000,
             success: function (data) {
                 logstash_output = data.job_result.stdout
+                logstash_output_stderr = data.job_result.stderr
 
                 if (data.job_result.status == -1) {
                     toastr.error('Unable to execute the process on remote server.', 'Error')
@@ -229,7 +240,7 @@ $('#start_process').click(function () {
 
                 var response_time_formatted = (data.job_result.response_time / 1000).toFixed(1)
 
-                refreshLogstashLogDisplay(data.job_result.stdout)
+                refreshLogstashLogDisplay()
                 $("#backend_response_time").text(response_time_formatted)
                 $("#start_process").removeClass('disabled');
             },
