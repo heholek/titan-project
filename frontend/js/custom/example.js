@@ -171,8 +171,6 @@ function getSelectedExample() {
 function updateExamplesDescription() {
     example = getSelectedExample()
 
-    console.log("changed")
-
     if(example != undefined) {
         $("#example_description").text(example.description)
     } else {
