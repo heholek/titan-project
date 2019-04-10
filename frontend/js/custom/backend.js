@@ -44,11 +44,22 @@ function logstashParsingProblem() {
     for (var i = 0; i < lines.length; i++) {
         line = lines[i]
         if (line.startsWith("[ERROR]")) {
-            return true;
+            return { isProblem: true, cause: "logstash" }
+        }
+        if (line.startsWith("{")) {
+            values = JSON.parse(line)
+            if("tags" in values) {
+                for(i in values.tags) {
+                    tag = values.tags[i]
+                    if(tag.indexOf("failure") != -1) {
+                        return { isProblem: true, cause: "failure" }
+                    }
+                }
+            }
         }
     }
 
-    return false
+    return { isProblem: false }
 }
 
 // Escape string characters to build a Regex
@@ -223,11 +234,18 @@ $('#start_process').click(function () {
                 logstash_output = data.job_result.stdout
                 logstash_output_stderr = data.job_result.stderr
 
+                parsingResult = logstashParsingProblem()
+
                 if (data.job_result.status == -1) {
                     toastr.error('Unable to execute the process on remote server.', 'Error')
-                } else if (data.job_result.status != 0 || logstashParsingProblem()) {
-                   var notif =  toastr.error('There was a problem in your configuration.', 'Error')
-                   redirectToastrClick(notif, "logstash_filter_textarea")
+                } else if (data.job_result.status != 0 || parsingResult.isProblem) {
+                    if(data.job_result.status != 0 || parsingResult.cause == "logstash") {
+                        var notif =  toastr.error('There was a problem in your configuration.', 'Error')
+                        redirectToastrClick(notif, "logstash_filter_textarea")
+                    } else {
+                        var notif =  toastr.warning('Logstash failed to parse some of your events', 'Parsing problems')
+                        redirectToastrClick(notif, "logstash_filter_textarea")
+                    }
                 } else {
                     var notif =  toastr.success('Configuration parsing is done !', 'Success')
                     redirectToastrClick(notif, "output")
