@@ -49,8 +49,8 @@ function logstashParsingProblem() {
         if (line.startsWith("{")) {
             values = JSON.parse(line)
             if("tags" in values) {
-                for(i in values.tags) {
-                    tag = values.tags[i]
+                for(j in values.tags) {
+                    tag = values.tags[j]
                     if(tag.indexOf("failure") != -1) {
                         return { isProblem: true, cause: "failure" }
                     }
