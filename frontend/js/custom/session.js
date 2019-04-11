@@ -126,6 +126,7 @@ function saveConfigToFile() {
 // Share current user configuration
 
 function shareConf() {
+    saveSession()
     storeConfigBackend(getConfig(), (result) => {
         if (result.succeed) {
             url = window.location.protocol + "//" + window.location.host + "?conf=" + result.hash
