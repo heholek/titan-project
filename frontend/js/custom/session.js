@@ -130,8 +130,8 @@ function shareConf() {
     storeConfigBackend(getConfig(), (result) => {
         if (result.succeed) {
             url = window.location.protocol + "//" + window.location.host + "?conf=" + result.hash
-            copyToClipboard(url)
-            toastr.success('Your url is now copy into your clipboard. It will be stored for 1h.', 'Success', {timeOut: 30000})
+            $('#shareLinkModal').modal('show');
+            $('#share-link-input').val(url);
         } else {
             toastr.error("Unable to share your session :(", "Error")
         }
@@ -205,13 +205,22 @@ function getConfigBackend(hash, callback) {
     });
 }
 
-// Copy a string to clipboard
+// A Trigger to copy the share link text when user click on the button
 
-function copyToClipboard(text){
-    var dummy = document.createElement("input");
-    document.body.appendChild(dummy);
-    dummy.setAttribute('value', text);
-    dummy.select();
-    document.execCommand("copy");
-    document.body.removeChild(dummy);
-}
+$(document).ready(function () {
+    $('#share-link-button').bind('click', function () {
+        var input = document.getElementById('share-link-input');
+        input.select()
+        try {
+            var success = document.execCommand('copy');
+            if (success) {
+                toastr.success('Your url is copied into your clipboard', 'Success')
+            } else {
+                toastr.error('Failed to copy the URL. Use CTRL + C instead', 'Failure', { timeOut: 10000 })
+            }
+        } catch (err) {
+            toastr.error('Failed to copy the URL. Use CTRL + C instead', 'Failure', { timeOut: 10000 })
+        }
+    });
+
+});
