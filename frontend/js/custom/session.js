@@ -171,13 +171,13 @@ function loadShareConfigIfNeeded() {
         if (confHash != undefined) {
             getConfigBackend(confHash, (result) => {
                 if (result.succeed) {
-                    console.log(result)
                     config = JSON.parse(result.config.value)
                     loadConfig(config)
                     toastr.success('Successfully loaded the shared configuration', 'Success')
                 } else {
                     toastr.error("Unable to load the shared session. Is it still valid ?", "Error")
                 }
+                history.replaceState({}, document.title, "/");
             })
         }
     }
