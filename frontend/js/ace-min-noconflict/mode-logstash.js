@@ -96,6 +96,17 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                             token: ["string", "keyword.type", "string"],
                             regex: "(%{)([A-Z0-9_]+)(})"
                         },{
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: "(\\(\\?<)([^>]+)(>)"
+                        },{
+                            // event.set(\"myEventField\"
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: /(event\.(?:get|set)\(\\")([^"]+)(\\")/
+                        },{
+                            // event.set('myEventField'
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: /(event\.(?:get|set)\(')([^']+)(')/
+                        },{
                             token: "constant.language.boolean",
                             regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
                         },{
@@ -126,6 +137,17 @@ ace.define("ace/mode/logstash_highlight_rules", ["require", "exports", "module",
                         },{
                             token: ["string", "support.class", "string"],
                             regex: "(%{)([A-Z0-9_]+)(})"
+                        },{
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: "(\\(\\?<)([^>]+)(>)"
+                        },{
+                            // event.set("myEventField"
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: /(event\.(?:get|set)\(")([^"]+)(")/
+                        },{
+                            // event.set(\'myEventField\'
+                            token: ["string", "constant.language.boolean", "string"],
+                            regex: /(event\.(?:get|set)\(\\')([^']+)(\\')/
                         },{
                             token: "constant.language.boolean",
                             regex: "(%{)([?+&]?[@a-zA-Z0-9_]+(/\\d+)?)(})"
