@@ -80,7 +80,7 @@ function buildLogstashInput(attributes, custom_codec) {
     }
 
     if (custom_codec != undefined) {
-        input += " codec => " + custom_codec;
+        input += " codec => " + formatCustomCodec(custom_codec);
     }
 
     input += "}}";
@@ -380,6 +380,20 @@ function guessConfig(res, data) {
             }
         }
     });
+}
+
+// Format the custom codec to remove options that are not accurate for this web version
+function formatCustomCodec(codec) {
+    rawCodec = codec.split('\n')
+    codecFormatted = ""
+
+    rawCodec.forEach(line => {
+        if (!(line.includes("patterns_dir") || (line.includes("patterns_files_glob ")))) {
+            codecFormatted += line + "\n"
+        }
+    });
+
+    return codecFormatted
 }
 
 // Fail because of bad parameters
