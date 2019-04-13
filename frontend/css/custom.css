@@ -22,3 +22,26 @@
 .background-highlight {
   background-color: #fff176;
 }
+
+.ace-clouds .ace_keyword  {
+  color:  #e91e91 !important;
+}
+.ace-clouds .ace_keyword  {
+  color:  #cc1b1b !important;
+}
+
+.ace-clouds .ace_support.ace_function  {
+  color:  #745e00 !important;
+}
+
+.ace-clouds .ace_variable  {
+  color:  #6a00ff !important; 
+}
+
+.ace-clouds .ace_constant.ace_language  {
+  color:  rgb(0, 179, 12) !important;
+}
+
+.ace-clouds .ace_string  {
+  color:  rgb(4, 96, 202) !important;
+}
