@@ -192,6 +192,7 @@ $('#clear_form').click(function () {
     disableMultilineCodec()
     fileUploadDisabled()
     saveSession();
+    toastr.success("Successfully cleaned your workspace", "Success")
 });
 
 // Remove the previous alert status from latest run container

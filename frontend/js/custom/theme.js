@@ -65,9 +65,11 @@ $('#change_minimalist').click(function () {
   if ($('#css_theme_minimalist').attr('href').includes('nominimalist.css')) {
     enableMinimalistMode()
     saveSession()
+    toastr.success("Enabled minimalist mode", "Success")
   } else {
     disableMinimalistMode()
     saveSession()
+    toastr.success("Disabled minimalist mode", "Success")
   }
 });
 
@@ -78,7 +80,7 @@ function enableFullscreenMode() {
   $('#main_container').removeClass("container")
   $('#main_container').addClass("container-fluid")
 
-  console.log("Enable fullscreen mode")
+  console.log("Enabled fullscreen mode")
 }
 
 // Disable the fullscreen mode
@@ -86,7 +88,7 @@ function disableFullscreenMode() {
   $('#main_container').removeClass("container-fluid")
   $('#main_container').addClass("container")
 
-  console.log("Disable fullscreen mode")
+  console.log("Disabled fullscreen mode")
 }
 
 // Change fullscreen mode button trigger
@@ -94,9 +96,11 @@ $('#change_fullscreen').click(function () {
   if ($('#main_container').hasClass("container")) {
     enableFullscreenMode()
     saveSession()
+    toastr.success("Enabled fullscreen mode", "Success")
   } else {
     disableFullscreenMode()
     saveSession()
+    toastr.success("Disabled fullscreen mode", "Success")
   }
 });
 
@@ -107,14 +111,14 @@ $('#change_fullscreen').click(function () {
 function enableTextWrappingMode() {
   $('#css_theme_text_wrapping').attr('href', './css/custom-text-wrapping.css');
 
-  console.log("Enable text wrapping mode")
+  console.log("Enabled text wrapping mode")
 }
 
 // Disable the text wrapping mode
 function disableTextWrappingMode() {
   $('#css_theme_text_wrapping').attr('href', './css/custom-no-text-wrapping.css');
 
-  console.log("Disable text wrapping mode")
+  console.log("Disabled text wrapping mode")
 }
 
 // Change text wrapping mode button trigger
@@ -122,9 +126,11 @@ $('#change_text_wrapping').click(function () {
   if ($('#css_theme_text_wrapping').attr('href').includes('no-text-wrapping.css')) {
     enableTextWrappingMode()
     saveSession()
+    toastr.success("Enabled text wrapping line mode", "Success")
   } else {
     disableTextWrappingMode()
     saveSession()
+    toastr.success("Disabled text wrapping line mode", "Success")
   }
 });
 

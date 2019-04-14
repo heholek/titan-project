@@ -191,7 +191,9 @@ $("#show_example").click(function () {
 
     if(example != undefined) {
         exampleFactory(example)
+        toastr.success("Successfully loaded your example", "Success")
+        jumpTo("input_extra_attributes")
     } else {
-        console.log("Unable to find the example")
+        toastr.error("Failed to load your example", "Error")
     }
 });
