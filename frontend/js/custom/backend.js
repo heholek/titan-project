@@ -44,7 +44,7 @@ function logstashParsingProblem() {
     for (var i = 0; i < lines.length; i++) {
         line = lines[i]
         if (line.startsWith("[ERROR]")) {
-            return { isProblem: true, cause: "logstash" }
+            return { isProblem: true, cause: "logstash", filter: "[ERROR]" }
         }
         if (line.startsWith("{")) {
             values = JSON.parse(line)
@@ -52,7 +52,7 @@ function logstashParsingProblem() {
                 for(j in values.tags) {
                     tag = values.tags[j]
                     if(tag.indexOf("failure") != -1) {
-                        return { isProblem: true, cause: "failure" }
+                        return { isProblem: true, cause: "failure", filter: "failure"}
                     }
                 }
             }
@@ -203,6 +203,16 @@ function removeLatestRunStatus() {
     $("#latest_run_container").removeClass("d-none")
 }
 
+// Apply a custom filter
+
+function applyFilter(filter) {
+    $('#filter_regex_enabled').prop('checked', false)
+    $('#filter_reverse_match_enabled').prop('checked', false)
+    $('#filter_display').val(filter)
+    
+    refreshLogstashLogDisplay()
+}
+
 // Manage result of Logstash process
 
 function manageResultLogstashProcess(code, type, message) {
@@ -225,8 +235,8 @@ function manageResultLogstashProcess(code, type, message) {
         $("#latest_run_container").addClass("alert-success")
     }
 
-    $("#latest_run_status").text(type)
-    $("#latest_run_message").text(message)
+    $("#latest_run_status").html(type)
+    $("#latest_run_message").html(message)
 
     return notif
 }
@@ -280,10 +290,10 @@ $('#start_process').click(function () {
                     manageResultLogstashProcess('error', 'Error', 'Unable to execute the process on remote server.')
                 } else if (data.job_result.status != 0 || parsingResult.isProblem) {
                     if(data.job_result.status != 0 || parsingResult.cause == "logstash") {
-                        var notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in your configuration.')
+                        var notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">your configuration</a>.')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     } else {
-                        var notif = manageResultLogstashProcess('warning', 'Parsing problems', 'Logstash failed to parse some of your events')
+                        var notif = manageResultLogstashProcess('warning', 'Parsing problems', 'Logstash <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">failed to parse</a> some of your events')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     }
                 } else {
