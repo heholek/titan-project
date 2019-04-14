@@ -14,7 +14,7 @@ function fileUploadDisabled() {
 
 // When we want to disable file upload, and clean the input data field
 function fileUploadDisabledClean() {
-    inputEditor.setValue("", -1)
+    inputEditor.getSession().setValue("", -1)
     fileUploadDisabled()
 }
 
@@ -38,7 +38,7 @@ function fileUploadEnabled(hash, content) {
 
         var go_to_line = logfile_content_cut.endsWith('\n') ? "" : '\n'
         logfile_content_cut += go_to_line + "<-- Displayed " + total_lines_displayed + "/" + total_lines_number + " lines of your log file -->"
-        inputEditor.setValue(logfile_content_cut, -1)
+        inputEditor.getSession().setValue(logfile_content_cut, -1)
     }
 
     saveSession()

@@ -96,8 +96,8 @@ function userInputValid() {
   input_valid = true;
   redirectToLocation = null;
 
-  var input_data = inputEditor.getValue()
-  var logstash_filter = editor.getValue();
+  var input_data = inputEditor.getSession().getValue()
+  var logstash_filter = editor.getSession().getValue();
 
   if (input_data.length == 0) {
     $('#input_data_title').addClass("text-danger");

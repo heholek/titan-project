@@ -9,7 +9,7 @@ function exampleFactory(conf) {
         $.ajax({
             url: conf.input_data_filepath,
             success: function (data) {
-                inputEditor.setValue(data, -1)
+                inputEditor.getSession().setValue(data, -1)
             }
         });
     }
@@ -18,7 +18,7 @@ function exampleFactory(conf) {
         $.ajax({
             url: conf.filter_filepath,
             success: function (data) {
-                editor.setValue(data, -1);
+                editor.getSession().setValue(data, -1);
             }
         });
     }

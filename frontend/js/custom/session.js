@@ -20,9 +20,10 @@ function saveSession() {
         minimalist: ($('#css_theme_minimalist').attr('href').indexOf('nominimalist.css') != -1 ? false : true),
         theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
         fullscreen: ($('#main_container').hasClass("container") ? false : true),
+        text_wrapping: ($('#css_theme_text_wrapping').attr('href').indexOf('no-text-wrapping.css') != -1 ? false : true),
         config: {
-            input_data: inputEditor.getValue(),
-            logstash_filter: editor.getValue(),
+            input_data: inputEditor.getSession().getValue(),
+            logstash_filter: editor.getSession().getValue(),
             input_fields: getFieldsAttributesValues(),
             custom_logstash_patterns: $('#custom_logstash_patterns_input').val(),
             custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : ""),
@@ -43,13 +44,13 @@ function saveSession() {
 function loadConfig(session) {
     console.log("Loading user config")
 
-    inputEditor.setValue(session.input_data, -1)
+    inputEditor.getSession().setValue(session.input_data, -1)
     $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
     $('#filter_regex_enabled').prop('checked', session.filter_regex_enabled)
     $('#filter_reverse_match_enabled').prop('checked', session.filter_reverse_match_enabled)
     $('#filter_display').val(session.filter_display)
     $("#number_lines_display option[data-value='" + session.number_lines_display + "']").attr("selected", "selected");
-    editor.setValue(session.logstash_filter, -1)
+    editor.getSession().setValue(session.logstash_filter, -1)
     applyFieldsAttributes(session.input_fields)
     if (session.custom_codec != "") {
         enableMultilineCodec(session.custom_codec)
@@ -87,6 +88,11 @@ function loadSession(session) {
             enableFullscreenMode()
         } else {
             disableFullscreenMode()
+        }
+        if(session.text_wrapping) {
+            enableTextWrappingMode()
+        } else {
+            disableTextWrappingMode()
         }
 
         if ("config" in session) {

@@ -181,8 +181,8 @@ function jobFailed() {
 }
 
 $('#clear_form').click(function () {
-    inputEditor.setValue("", -1)
-    editor.setValue("", -1);
+    inputEditor.getSession().setValue("", -1)
+    editor.getSession().setValue("", -1);
     $('#output').text("The Logstash output will be shown here !");
     $('#fields_attributes_number').val(0);
     $('#filter_regex_enabled').prop('checked', false)
@@ -204,12 +204,12 @@ $('#start_process').click(function () {
     if (userInputValid()) {
 
         var body = {
-            logstash_filter: editor.getValue(),
+            logstash_filter: editor.getSession().getValue(),
             input_extra_fields: getFieldsAttributesValues()
         };
 
         if (remote_file_hash == undefined) {
-            body.input_data = inputEditor.getValue()
+            body.input_data = inputEditor.getSession().getValue()
         } else {
             body.filehash = remote_file_hash
         }

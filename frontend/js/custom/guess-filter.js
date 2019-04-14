@@ -87,7 +87,7 @@ function buildGuessedFilter(configuration) {
 function tryToGuessFilter() {
     body = {}
     if (remote_file_hash == undefined) {
-        body.input_data = inputEditor.getValue()
+        body.input_data = inputEditor.getSession().getValue()
     } else {
         body.filehash = remote_file_hash
     }
@@ -103,7 +103,7 @@ function tryToGuessFilter() {
                 configuration = data.configuration
 
                 filter = buildGuessedFilter(configuration)
-                editor.setValue(filter, -1);
+                editor.getSession().setValue(filter, -1);
 
                 multilineCodec = buildMultilineCodec(configuration.multiline_start_pattern)
                 enableMultilineCodec(multilineCodec)

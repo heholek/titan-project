@@ -100,16 +100,44 @@ $('#change_fullscreen').click(function () {
   }
 });
 
+
+// Text wrapping mode
+
+// Enable the text wrapping mode
+function enableTextWrappingMode() {
+  $('#css_theme_text_wrapping').attr('href', './css/custom-text-wrapping.css');
+
+  console.log("Enable text wrapping mode")
+}
+
+// Disable the text wrapping mode
+function disableTextWrappingMode() {
+  $('#css_theme_text_wrapping').attr('href', './css/custom-no-text-wrapping.css');
+
+  console.log("Disable text wrapping mode")
+}
+
+// Change text wrapping mode button trigger
+$('#change_text_wrapping').click(function () {
+  if ($('#css_theme_text_wrapping').attr('href').includes('no-text-wrapping.css')) {
+    enableTextWrappingMode()
+    saveSession()
+  } else {
+    disableTextWrappingMode()
+    saveSession()
+  }
+});
+
 // Redirect the user to a specific anchor in the page
 
 function jumpTo(anchor) {
-  window.location.href = "#"+anchor;
+  window.location.href = "#" + anchor;
 }
 
 // Redirect click for a toastr event for a specific anchor
 
 function redirectToastrClick(element, anchor) {
-  $(element).click(function(){ 
+  $(element).click(function () {
     jumpTo(anchor)
   });
 }
