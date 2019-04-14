@@ -286,9 +286,23 @@
             <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
           </div>
 
+          <div class="alert alert-light col-lg-12 text-center d-none" id="latest_run_container" style="margin-top: 4em" role="alert">
+            <div class="row col-lg-12">
+                <div class="col-lg-2">
+                    <b>Latest run result:</b>
+                </div>
+                <div id="latest_run_status" class="col-lg-2">
+                    Unknown status
+                </div>
+                <div id="latest_run_message" class="col-lg-8">
+                    Unknown message
+                </div>
+            </div>
+          </div>
+
           <div class="col-lg-12">
 
-            <h4 style="margin-top: 2em; margin-bottom: 1em">Logstash output:
+            <h4 style="margin-top: 2em;">Logstash output:
               <p class="form-text text-muted" style="float: right; font-size: 0.9375rem">&#160;s</p>
               <p class="form-text text-muted" style="float: right; font-size: 0.9375rem" id="backend_response_time">0
               </p>

@@ -194,6 +194,43 @@ $('#clear_form').click(function () {
     saveSession();
 });
 
+// Remove the previous alert status from latest run container
+
+function removeLatestRunStatus() {
+    $("#latest_run_container").removeClass (function (index, className) {
+        return (className.match (/(^|\s)alert-\S+/g) || []).join(' ');
+    });
+    $("#latest_run_container").removeClass("d-none")
+}
+
+// Manage result of Logstash process
+
+function manageResultLogstashProcess(code, type, message) {
+    var notif = null;
+
+    if(code == "error") {
+        notif = toastr.error(message, type)
+
+        removeLatestRunStatus()
+        $("#latest_run_container").addClass("alert-danger")
+    } else if (code == "warning") {
+        notif = toastr.warning(message, type)
+
+        removeLatestRunStatus()
+        $("#latest_run_container").addClass("alert-warning")
+    } else if (code == "success") {
+        notif = toastr.success(message, type)
+
+        removeLatestRunStatus()
+        $("#latest_run_container").addClass("alert-success")
+    }
+
+    $("#latest_run_status").text(type)
+    $("#latest_run_message").text(message)
+
+    return notif
+}
+
 // The main process, that will send data to backend
 
 $('#start_process').click(function () {
@@ -224,6 +261,7 @@ $('#start_process').click(function () {
 
         $('#output').html('<div style="padding-top: 1em; padding-bottom: 1em"><div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div></div>');
         $("#start_process").addClass('disabled');
+        $("#latest_run_container").addClass("d-none")
 
         $.ajax({
             url: api_url + "/start_process",
@@ -239,22 +277,22 @@ $('#start_process').click(function () {
                 parsingResult = logstashParsingProblem()
 
                 if (data.job_result.status == -1) {
-                    toastr.error('Unable to execute the process on remote server.', 'Error')
+                    manageResultLogstashProcess('error', 'Error', 'Unable to execute the process on remote server.')
                 } else if (data.job_result.status != 0 || parsingResult.isProblem) {
                     if(data.job_result.status != 0 || parsingResult.cause == "logstash") {
-                        var notif =  toastr.error('There was a problem in your configuration.', 'Error')
+                        var notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in your configuration.')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     } else {
-                        var notif =  toastr.warning('Logstash failed to parse some of your events', 'Parsing problems')
+                        var notif = manageResultLogstashProcess('warning', 'Parsing problems', 'Logstash failed to parse some of your events')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     }
                 } else {
-                    var notif =  toastr.success('Configuration parsing is done !', 'Success')
+                    var notif = manageResultLogstashProcess('success', 'Success', 'Configuration parsing is done !')
                     redirectToastrClick(notif, "output")
                 }
 
                 if (!data.config_ok) {
-                    var notif =  toastr.error('All fields need to be fill !', 'Informations missings')
+                    var notif = manageResultLogstashProcess('error', 'Informations missings', 'All fields need to be fill !')
                     redirectToastrClick(notif, "input_extra_attributes")
                 }
 
