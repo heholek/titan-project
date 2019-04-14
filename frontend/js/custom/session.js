@@ -28,6 +28,7 @@ function saveSession() {
             custom_codec: ($('#enable_custom_codec').is(':checked') ? $('#custom_codec_field').val() : ""),
             remote_file_hash: remote_file_hash,
             filter_regex_enabled: $('#filter_regex_enabled').is(':checked'),
+            filter_reverse_match_enabled: $('#filter_reverse_match_enabled').is(':checked'),
             filter_display: $('#filter_display').val(),
             number_lines_display: $("#number_lines_display").val()
         }
@@ -45,6 +46,7 @@ function loadConfig(session) {
     inputEditor.setValue(session.input_data, -1)
     $('#custom_logstash_patterns_input').val(session.custom_logstash_patterns)
     $('#filter_regex_enabled').prop('checked', session.filter_regex_enabled)
+    $('#filter_reverse_match_enabled').prop('checked', session.filter_reverse_match_enabled)
     $('#filter_display').val(session.filter_display)
     $("#number_lines_display option[data-value='" + session.number_lines_display + "']").attr("selected", "selected");
     editor.setValue(session.logstash_filter, -1)

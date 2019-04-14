@@ -97,6 +97,8 @@ function sortDictionary(dict) {
 function refreshLogstashLogDisplay() {
     filter_value = $('#filter_display').val()
     filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
+    filter_reverse_match_enabled = $('#filter_reverse_match_enabled').is(':checked')
+
     if (filter_regex_enabled && filter_value != "") {
         filter_regex = new RegExp(filter_value)
     } else {
@@ -128,7 +130,7 @@ function refreshLogstashLogDisplay() {
 
         line = lines[i]
 
-        if (filter_value == "" || line.match(filter_regex)) {
+        if (filter_value == "" || (!filter_reverse_match_enabled && line.match(filter_regex)) || (filter_reverse_match_enabled && !line.match(filter_regex))) {
             matchNumber += 1
 
             if (line.startsWith("[")) {

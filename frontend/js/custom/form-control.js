@@ -167,6 +167,11 @@ $('#filter_regex_enabled').change(function () {
   updateFilter()
 })
 
+// Trigger for the reverse match filter type
+$('#filter_reverse_match_enabled').change(function () {
+  updateFilter()
+})
+
 // Trigger for the limit display change
 $('#number_lines_display').change(function () {
   updateFilter()
