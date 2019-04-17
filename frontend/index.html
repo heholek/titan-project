@@ -186,6 +186,91 @@
             </div>
           </div>
 
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#keyboard_shortcuts"
+                  aria-expanded="false" aria-controls="keyboard_shortcuts">
+                  Keyboard shortcuts
+                </button>
+              </h5>
+            </div>
+
+            <div id="keyboard_shortcuts" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body text-center">
+
+                <h4 style="margin-bottom: 1em">Logs input</h4>
+
+                <div class="row">
+
+                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                      <div class="card-body" style="padding: 0.5em">
+                        <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
+                              style="margin-bottom: 1em !important">Load the file</div>
+                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + o</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <h4 style="margin-bottom: 1em">Logstash filter input</h4>
+
+                <div class="row">
+
+                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                      <div class="card-body" style="padding: 0.5em">
+                        <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
+                              style="margin-bottom: 1em !important">Load the file</div>
+                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + o</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                      <div class="card-body" style="padding: 0.5em">
+                        <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
+                              style="margin-bottom: 1em !important">Save the file</div>
+                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + s</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                      <div class="card-body" style="padding: 0.5em">
+                        <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
+                              style="margin-bottom: 1em !important">Auto-indent code</div>
+                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + i</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -286,17 +371,18 @@
             <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start process</button>
           </div>
 
-          <div class="alert alert-light col-lg-12 text-center d-none" id="latest_run_container" style="margin-top: 4em" role="alert">
+          <div class="alert alert-light col-lg-12 text-center d-none" id="latest_run_container" style="margin-top: 4em"
+            role="alert">
             <div class="row col-lg-12">
-                <div class="col-lg-2">
-                    <b>Latest run result:</b>
-                </div>
-                <div id="latest_run_status" class="col-lg-2">
-                    Unknown status
-                </div>
-                <div id="latest_run_message" class="col-lg-8">
-                    Unknown message
-                </div>
+              <div class="col-lg-2">
+                <b>Latest run result:</b>
+              </div>
+              <div id="latest_run_status" class="col-lg-2">
+                Unknown status
+              </div>
+              <div id="latest_run_message" class="col-lg-8">
+                Unknown message
+              </div>
             </div>
           </div>
 
