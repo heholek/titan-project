@@ -142,3 +142,9 @@ function saveToFile(data, filename, filetype) {
 // Create the editor that will be used by others files
 var editor = buildFilterEditor()
 var inputEditor = buildInputDataEditor()
+
+// Add this little trick to force editor to load on startup
+window.onload = () => {
+    inputEditor.resize();
+    editor.resize();
+}
