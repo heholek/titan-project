@@ -90,6 +90,20 @@ $('#enable_custom_codec').change(function () {
   }
 });
 
+// Check for input logs with empty lines at the end, and inform user in consequences
+
+function checkInputLogsEnding() {
+  var input_data = inputEditor.getSession().getValue().split("\n")
+
+  if(input_data.length > 0) {
+    var lastLine = input_data[input_data.length - 1]
+    if (lastLine.length == 0 || /^s*$/.test(lastLine)) {
+      var notif = toastr.info('If it is expected, don\'t bother, but otherwise, it may cause some parsing problems.', 'Your log file ends with empty lines', { timeOut: 10000 })
+      redirectToastrClick(notif, "input_data_textarea")
+    }
+  }
+}
+
 // Validate the user input
 
 function userInputValid() {
@@ -147,6 +161,8 @@ function userInputValid() {
     var notif = toastr.error('All fields need to be fill !', 'Informations missings')
     redirectToastrClick(notif, redirectToLocation)
   }
+
+  checkInputLogsEnding()
 
   return input_valid
 }
