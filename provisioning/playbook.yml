@@ -14,11 +14,6 @@
 - name: Update the system
   hosts: all
   become: true
-  pre_tasks:
-    - name: Update the system
-      apt:
-        update_cache: yes
-        upgrade: dist
   roles:
     - system-utils
 
@@ -32,11 +27,6 @@
   roles:
     - node
     - logstash
-  post_tasks:
-    - name: Install npm dependencies for backend
-      npm:
-        path: "/vagrant/backend"
-        state: present
 
 # Install the frontend
 

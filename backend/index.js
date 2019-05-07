@@ -134,6 +134,7 @@ app.post('/start_process', function (req, res) {
 
         var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
         var logstash_filter = req.body.logstash_filter;
+        var logstash_version = req.body.logstash_version
 
         if (req.body['custom_logstash_patterns'] != undefined) {
             var custom_logstash_patterns = req.body.custom_logstash_patterns;
@@ -148,7 +149,7 @@ app.post('/start_process', function (req, res) {
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
 
         writeStringToFile(id, logstash_conf_filepath, logstash_conf, function () {
-            computeResult(id, res, input, instanceDirectory, logstash_conf_filepath, custom_logstash_patterns);
+            computeResult(id, res, input, instanceDirectory, logstash_version, logstash_conf_filepath);
         })
 
     }
@@ -281,7 +282,7 @@ function buildLocalLogFilepath(hash) {
 
 // Compute the logstash result
 
-function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath) {
+function computeResult(id, res, input, instanceDirectory, logstash_version, logstash_conf_filepath) {
     log.info(id + " - Starting logstash process");
 
     var command_user_data = ""
@@ -293,7 +294,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_conf_filepath
     }
 
     var logstash_temp_datadir = instanceDirectory + "temp_data"
-    var command = command_user_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /usr/share/logstash/bin/logstash --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i | tail -n +2';
+    var command = command_user_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /logstash/logstash-"' + logstash_version + '"/bin/logstash --log.level warn --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT,
@@ -421,6 +422,11 @@ function argumentsValids(id, req, res) {
 
     if (req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
         missing_fields.push("filehash_format")
+        ok = false
+    }
+
+    if (req.body.logstash_version == undefined && !/^\d\.\d\.\d$/.test(req.body.logstash_version)) {
+        missing_fields.push("logstash_version")
         ok = false
     }
 

@@ -36,13 +36,27 @@ function jsonSyntaxHighlight(json) {
     });
 }
 
+// We clean useless lines at start of the Logstash stdout
+
+function cleanLogstashStdout(stdout) {
+    stdout_splitted = stdout.split("\n")
+    stdout_cleaned = []
+    for (var i = 0; i < stdout_splitted.length; i++) {
+        line = stdout_splitted[i]
+        if (!/^Sending Logstash.*logs.*configured.*log4j2\.properties$/.test(line) 
+            && !/^\[\d+.*WARN.*logstash\.config\.source.*Ignoring.*pipelines.yml.*$/.test(line)
+            && !/^\[\d+.*WARN.*logstash\.agent.*stopping pipeline.*$/.test(line)) {
+            stdout_cleaned.push(line)
+        }
+    }
+    return stdout_cleaned
+}
+
 // We check if logstash met a problems during the process
 
 function logstashParsingProblem() {
-    lines = logstash_output.split('\n')
-
-    for (var i = 0; i < lines.length; i++) {
-        line = lines[i]
+    for (var i = 0; i < logstash_output.length; i++) {
+        line = logstash_output[i]
         if (line.startsWith("[ERROR]")) {
             return { isProblem: true, cause: "logstash", filter: "[ERROR]" }
         }
@@ -116,7 +130,7 @@ function refreshLogstashLogDisplay() {
     logstash_output_stderr_arr = logstash_output_stderr.split('\n')
     logstash_output_stderr_arr.shift() // We want to remove the first line of the stderr
     logstash_output_stderr_arr.pop() // We remove the last linen as well
-    lines = logstash_output_stderr_arr.concat(logstash_output.split('\n'))
+    lines = logstash_output_stderr_arr.concat(logstash_output)
     
     stderr_errors_lines = logstash_output_stderr_arr.length
     matchNumber = 0
@@ -253,7 +267,8 @@ $('#start_process').click(function () {
 
         var body = {
             logstash_filter: editor.getSession().getValue(),
-            input_extra_fields: getFieldsAttributesValues()
+            input_extra_fields: getFieldsAttributesValues(),
+            logstash_version: $('#logstash_version :selected').text()
         };
 
         if (remote_file_hash == undefined) {
@@ -282,7 +297,7 @@ $('#start_process').click(function () {
             dataType: "json",
             timeout: 60000,
             success: function (data) {
-                logstash_output = data.job_result.stdout
+                logstash_output = cleanLogstashStdout(data.job_result.stdout)
                 logstash_output_stderr = data.job_result.stderr
 
                 parsingResult = logstashParsingProblem()

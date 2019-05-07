@@ -5,7 +5,7 @@ services:
   titan-project-backend:
     restart: always
     build: 
-      context: ./backend
+      context: .
      # args:
       #  http_proxy: ""
       #  https_proxy: ""

@@ -21,6 +21,7 @@ function saveSession() {
         theme: ($('#css_theme_bootstrap').attr('href').indexOf('bootstrap.min.css') != -1 ? "white" : "black"),
         fullscreen: ($('#main_container').hasClass("container") ? false : true),
         text_wrapping: ($('#css_theme_text_wrapping').attr('href').indexOf('no-text-wrapping.css') != -1 ? false : true),
+        logstash_version: $('#logstash_version :selected').text(),
         config: {
             input_data: inputEditor.getSession().getValue(),
             logstash_filter: editor.getSession().getValue(),
@@ -94,6 +95,10 @@ function loadSession(session) {
         } else {
             disableTextWrappingMode()
         }
+
+        $("#logstash_version option").filter(function() {
+            return $(this).text().trim() == session.logstash_version;
+        }).prop('selected', true);
 
         if ("config" in session) {
             loadConfig(session.config)

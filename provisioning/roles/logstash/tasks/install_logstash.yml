@@ -1,0 +1,16 @@
+---
+- name: "Check if Logstash {{ item }} already exists"
+  stat:
+    path: "/logstash/logstash-{{ item }}/"
+  register: logstash_installed
+
+- name: "Install Logstash {{ item }}"
+  become: true
+  shell: "bash /vagrant/backend/setup/install_logstash.sh {{ item }}"
+  when: not logstash_installed.stat.exists
+
+- name: "Update Logstash {{ item }} plugins"
+  become: true
+  shell: "bash /vagrant/backend/setup/update_logstash_plugins.sh {{ item }}"
+  when: not logstash_installed.stat.exists
+  ignore_errors: yes

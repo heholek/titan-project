@@ -1,6 +1,6 @@
 ---
-logstash_version: 5.6.16
-
-logstash_java_heap_size: 1024m
-
-logstash_debug_mode: false
+logstash_versions: 
+  - "5.6.4"
+#  - "5.6.16"
+#  - "6.7.2"
+#  - "7.0.1"
