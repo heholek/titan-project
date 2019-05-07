@@ -32,6 +32,10 @@ Your logs here
 Your filter here
 ```
 
+#### Logstash version
+
+> The version you use
+
 #### Logstash output
 
 ``` 
