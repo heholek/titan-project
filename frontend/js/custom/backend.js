@@ -60,6 +60,9 @@ function logstashParsingProblem() {
         if (line.startsWith("[ERROR]")) {
             return { isProblem: true, cause: "logstash", filter: "[ERROR]" }
         }
+        if(/^\[\d+.*\[ERROR\s*\].*$/.test(line)) {
+            return { isProblem: true, cause: "logstash", filter: "[ERROR" }
+        }
         if (line.startsWith("{")) {
             values = JSON.parse(line)
             if("tags" in values) {
