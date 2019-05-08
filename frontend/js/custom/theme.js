@@ -134,6 +134,37 @@ $('#change_text_wrapping').click(function () {
   }
 });
 
+// Parsing advices mode
+
+var enableParsingAdvices = false
+
+// Enable the parsing advices mode
+function enableParsingAdvicesMode() {
+  enableParsingAdvices = true
+
+  console.log("Enabled parsing advices mode")
+}
+
+// Disable the parsing advices mode
+function disableParsingAdvicesMode() {
+  enableParsingAdvices = false
+
+  console.log("Disabled parsing advices mode")
+}
+
+// Change text wrapping mode button trigger
+$('#change_parsing_advices').click(function () {
+  if (!enableParsingAdvices) {
+    enableParsingAdvicesMode()
+    saveSession()
+    toastr.success("Enabled parsing advices mode", "Success")
+  } else {
+    disableParsingAdvicesMode()
+    saveSession()
+    toastr.success("Disabled parsing advices mode", "Success")
+  }
+});
+
 // Redirect the user to a specific anchor in the page
 
 function jumpTo(anchor) {

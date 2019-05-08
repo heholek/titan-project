@@ -45,7 +45,7 @@ function cleanLogstashStdout(stdout) {
     stdout_cleaned = []
     for (var i = 0; i < stdout_splitted.length; i++) {
         line = stdout_splitted[i]
-        if (!/^Sending Logstash.*logs.*configured.*log4j2\.properties$/.test(line) 
+        if (!/^Sending Logstash.*logs.*configured.*log4j2\.properties$/.test(line)
             && !/^\[\d+.*WARN.*logstash\.config\.source.*Ignoring.*pipelines.yml.*$/.test(line)
             && !/^\[\d+.*WARN.*logstash\.agent.*stopping pipeline.*$/.test(line)) {
             stdout_cleaned.push(line)
@@ -62,16 +62,16 @@ function logstashParsingProblem() {
         if (line.startsWith("[ERROR]")) {
             return { isProblem: true, cause: "logstash", filter: "[ERROR]" }
         }
-        if(/^\[\d+.*\[ERROR\s*\].*$/.test(line)) {
+        if (/^\[\d+.*\[ERROR\s*\].*$/.test(line)) {
             return { isProblem: true, cause: "logstash", filter: "[ERROR" }
         }
         if (line.startsWith("{")) {
             values = JSON.parse(line)
-            if("tags" in values) {
-                for(j in values.tags) {
+            if ("tags" in values) {
+                for (j in values.tags) {
                     tag = values.tags[j]
-                    if(tag.indexOf("failure") != -1) {
-                        return { isProblem: true, cause: "failure", filter: "failure"}
+                    if (tag.indexOf("failure") != -1) {
+                        return { isProblem: true, cause: "failure", filter: "failure" }
                     }
                 }
             }
@@ -79,6 +79,135 @@ function logstashParsingProblem() {
     }
 
     return { isProblem: false }
+}
+
+// Guess a value type
+
+function guessStringType(str) {
+
+    if (/^[0-9]+$/.test(str)) {
+        return "integer"
+    }
+
+    if (/^[0-9]+\.[0-9]+$/.test(str)) {
+        return "float"
+    }
+
+    if (str == "true" || str == "false") {
+        return "boolean"
+    }
+
+    return "string"
+}
+
+// Find a value type
+
+function getValueType(value) {
+    if (Number(value) === value) {
+        if (value % 1 === 0) {
+            return "integer"
+        } else {
+            return "float"
+        }
+    }
+
+    if (Array.isArray(value)) {
+        return "array"
+    }
+    if (typeof value == "boolean") {
+        return "boolean"
+    }
+
+    if (typeof value == "string") {
+        if (/(?:\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+(?:[+-][0-2]\d:[0-5]\d|Z))|(?:\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:[+-][0-2]\d:[0-5]\d|Z))|(?:\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d(?:[+-][0-2]\d:[0-5]\d|Z))/.test(value)) {
+            return "date"
+        }
+
+        return "string"
+    }
+
+    return "object"
+}
+
+// Try do find some advices / problem in current parsing
+
+function findParsingOptimizationAdvices() {
+
+    var keys = {}
+
+    var fieldsToSkip = ["@timestamp", "@version", "host", "message"]
+
+    for (var i = 0; i < logstash_output.length; i++) {
+        line = logstash_output[i]
+        if (line.startsWith("{")) {
+            obj = JSON.parse(line)
+            for (var key in obj) {
+                if (!fieldsToSkip.includes(key)) {
+                    if (!(key in keys)) {
+                        keys[key] = {
+                            "types": [],
+                            "guessType": []
+                        }
+                    }
+
+                    valueType = getValueType(obj[key])
+
+                    if (valueType == "string") {
+                        valueTypeGuessed = guessStringType(obj[key])
+                        if (!keys[key]["guessType"].includes(valueTypeGuessed)) {
+                            keys[key]["guessType"].push(valueTypeGuessed)
+                        }
+                    }
+
+                    if (!keys[key]["types"].includes(valueType)) {
+                        keys[key]["types"].push(valueType)
+                    }
+                }
+            }
+        }
+    }
+
+    numberOfDateFields = 0
+    dateFields = []
+    for (var key in keys) {
+        if(keys[key]["types"].includes("date")) {
+            numberOfDateFields += 1
+            dateFields.push(key)
+        }
+    }
+
+    $("#parsing_advices").empty()
+    $("#parsing_advices").append("<h5>Parsing advices:</h5>")
+    $("#parsing_advices").append("<ul>")
+
+    var advicesShouldBeShown = false
+
+    for (key in keys) {
+        if (keys[key]["types"].length > 1) {
+            advicesShouldBeShown = true
+            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + key + "</a>"
+            str += " got <b>multiple types</b> : " + keys[key]["types"].join(", ") + "</li>"
+            $("#parsing_advices").append(str);
+        } else if (keys[key]["types"].length == 1 && keys[key]["guessType"].length == 1 && keys[key]["types"][0] != keys[key]["guessType"][0]) {
+            advicesShouldBeShown = true
+            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + key + "</a>"
+            str += " of type " + keys[key]["types"][0] + " could probably be <b>convert</b> into " + keys[key]["guessType"][0] + "</li>"
+            $("#parsing_advices").append(str);
+        }
+    }
+
+    if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
+        advicesShouldBeShown = true
+        str = "<li>No field <b>TIMESTAMP</b> found, while you got <b>" + numberOfDateFields + "</b> others date field(s) (" + dateFields.join(", ") + ")"
+        $("#parsing_advices").append(str);
+    }
+
+    $("#parsing_advices").append("</ul>")
+
+
+    if (advicesShouldBeShown) {
+        $("#parsing_advices").removeClass("d-none")
+    }
 }
 
 // Escape string characters to build a Regex
@@ -98,13 +227,13 @@ function hightlightMatch(str, pattern, value) {
 function sortDictionary(dict) {
 
     var sorted = [];
-    for(var key in dict) {
+    for (var key in dict) {
         sorted[sorted.length] = key;
     }
     sorted.sort();
 
     var tempDict = {};
-    for(var i = 0; i < sorted.length; i++) {
+    for (var i = 0; i < sorted.length; i++) {
         tempDict[sorted[i]] = dict[sorted[i]];
     }
 
@@ -136,7 +265,7 @@ function refreshLogstashLogDisplay() {
     logstash_output_stderr_arr.shift() // We want to remove the first line of the stderr
     logstash_output_stderr_arr.pop() // We remove the last linen as well
     lines = logstash_output_stderr_arr.concat(logstash_output)
-    
+
     stderr_errors_lines = logstash_output_stderr_arr.length
     matchNumber = 0
     res = ""
@@ -164,7 +293,7 @@ function refreshLogstashLogDisplay() {
                 line = jsonSyntaxHighlight(obj)
             }
 
-            if(i < stderr_errors_lines) {
+            if (i < stderr_errors_lines) {
                 line = "<span class='text-danger'>" + line + "</span>"
             }
 
@@ -217,8 +346,8 @@ $('#clear_form').click(function () {
 // Remove the previous alert status from latest run container
 
 function removeLatestRunStatus() {
-    $("#latest_run_container").removeClass (function (index, className) {
-        return (className.match (/(^|\s)alert-\S+/g) || []).join(' ');
+    $("#latest_run_container").removeClass(function (index, className) {
+        return (className.match(/(^|\s)alert-\S+/g) || []).join(' ');
     });
     $("#latest_run_container").removeClass("d-none")
 }
@@ -229,7 +358,7 @@ function applyFilter(filter) {
     $('#filter_regex_enabled').prop('checked', false)
     $('#filter_reverse_match_enabled').prop('checked', false)
     $('#filter_display').val(filter)
-    
+
     refreshLogstashLogDisplay()
 }
 
@@ -238,7 +367,7 @@ function applyFilter(filter) {
 function manageResultLogstashProcess(code, type, message) {
     var notif = null;
 
-    if(code == "error") {
+    if (code == "error") {
         notif = toastr.error(message, type)
 
         removeLatestRunStatus()
@@ -293,6 +422,7 @@ $('#start_process').click(function () {
         $('#output').html('<div style="padding-top: 1em; padding-bottom: 1em"><div class="spinner-border" style="display: block; margin: auto;" role="status><span class="sr-only"></span></div></div>');
         $("#start_process").addClass('disabled');
         $("#latest_run_container").addClass("d-none")
+        $("#parsing_advices").addClass("d-none")
 
         $.ajax({
             url: api_url + "/start_process",
@@ -305,12 +435,16 @@ $('#start_process').click(function () {
                 logstash_output = cleanLogstashStdout(data.job_result.stdout)
                 logstash_output_stderr = data.job_result.stderr
 
+                if(enableParsingAdvices) {
+                    findParsingOptimizationAdvices()
+                }
+
                 parsingResult = logstashParsingProblem()
 
                 if (data.job_result.status == -1) {
                     manageResultLogstashProcess('error', 'Error', 'Unable to execute the process on remote server.')
                 } else if (data.job_result.status != 0 || parsingResult.isProblem) {
-                    if(data.job_result.status != 0 || parsingResult.cause == "logstash") {
+                    if (data.job_result.status != 0 || parsingResult.cause == "logstash") {
                         var notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">your configuration</a>.')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     } else {
