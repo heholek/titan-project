@@ -22,32 +22,12 @@ docker-compose up -d
 
 **Application** will then be available at http://localhost:8080/
 
-### Manually
-
-There is **no actual benefices** to install this program by hands, but if you want to, you need to :
-
-#### Backend
-
-- Install **Logstash v5.6.x** (a newer version could work, but it was only tested with this version)
-- Install **Node.js 10.x**
-- Install **dependencies of backend** with npm
-- **Launch the node backend** using npm **as admin**
-
-#### Frontend
-
-- Install a **web server** such Apache or Nginx
-- Configure it so one of the **virtual hosts** redirect to the [frontend](frontend) directory of this application
-- Configure the **api_url** variable in the [main.js](frontend/js/custom/main.js) file to match the backend server url
-
-
 ## Deployment considerations
 
 As we use a **real Logstash** to test the parsing of our logs, and he is a little **CPU hungry**, if this application is intended to be use by **multiple persons at the same time**, you should :
 - Use a **dedicated machine**
-- Each job parsing will use ~2.5 CPU for about 15s, so **the more CPU the better**
-- **RAM isn't a huge requirements**, it will use about 1Go / job
-
-> **In the future**, it will be possible to use **multiple backend**
+- Each job parsing will use 1~2.5 CPU for about 15s, so **the more CPU the better**
+- **RAM isn't a huge requirements**, it will use at max 1Go / job
 
 
 ## Development
@@ -57,6 +37,8 @@ If you want to participate to this project, you can use the [Vagrantfile](Vagran
 You will need to install :
 - [Vagrant](https://www.vagrantup.com/)
 - [VirtualBox](https://www.virtualbox.org/)
+
+If you are beyond a proxy, you need to have the [Vagrant plugin proxy-conf](https://github.com/tmatilai/vagrant-proxyconf) installed
 
 Once done, go into a command-line and launch the VM:
 
