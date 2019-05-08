@@ -22,7 +22,7 @@ var OUTPUT_FILTER = "output { stdout { codec => json_lines } }";
 // Environments variables
 
 const PORT = process.env.PORT || 8081;
-const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 60000;
+const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 120000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
 const LOGFILES_DIR = process.env.LOGFILES_DIR || "/tmp/logstash/logfiles/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
