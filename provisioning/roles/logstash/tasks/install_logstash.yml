@@ -9,8 +9,9 @@
   shell: "bash /vagrant/backend/setup/install_logstash.sh {{ item }}"
   when: not logstash_installed.stat.exists
 
-- name: "Update Logstash {{ item }} plugins"
-  become: true
-  shell: "bash /vagrant/backend/setup/update_logstash_plugins.sh {{ item }}"
-  when: not logstash_installed.stat.exists
-  ignore_errors: yes
+# Disable by default as it's pretty long ..
+#- name: "Update Logstash {{ item }} plugins"
+#  become: true
+#  shell: "bash /vagrant/backend/setup/update_logstash_plugins.sh {{ item }}"
+#  when: not logstash_installed.stat.exists
+#  ignore_errors: yes
