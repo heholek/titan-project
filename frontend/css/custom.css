@@ -18,6 +18,7 @@
 .boolean { color: rgb(248, 94, 55); }
 .null { color: #009f6c; }
 .key { color: #2b7cc4; }
+.date { color: #6a00ff; }
 
 .background-highlight {
   background-color: #fff176;
