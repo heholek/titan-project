@@ -113,53 +113,6 @@
 
       <div class="col-lg-12 text-center minimalist-box" style="margin-top: 2em">
         <div id="accordion">
-          <div class="card">
-            <div class="card-header" id="headingOne">
-              <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#more_informations_colapse"
-                  aria-expanded="false" aria-controls="more_informations_colapse">
-                  More informations
-                </button>
-              </h5>
-            </div>
-
-            <div id="more_informations_colapse" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-              <div class="card-body text-left">
-
-                <div>The goal of this site is to provide you a Logstash instance to <strong>test the parsing</strong>
-                  of a log file.</div>
-                <div>&nbsp;</div>
-                <div>It was and will <strong>never</strong> be mean to <strong>read or write to an external
-                    source</strong>,
-                  such as Elasticsearch, Redis, Kafka, etc.</div>
-                <div>&nbsp;</div>
-                <div>Each time you <strong>launch the processing</strong> of your configuration, your full
-                  configuration will be <strong>saved</strong> in local, which mean that they will be persistant
-                  between your sessions !</div>
-                <div>&nbsp;</div>
-                <div>You wil be able to :</div>
-                <div>- Enter some <strong>extra inputs fields</strong>, such as <strong>type</strong>,
-                  <strong>pilote</strong>,
-                  <strong>filepath</strong>, etc., depending of your original real input</div>
-                <div>- Enter some <strong>representative data</strong> from the original logs files</div>
-                <div>- <strong>Build your logstash configuration</strong> from scratch in the embedded editor</div>
-                <div>&nbsp;</div>
-                <div><strong>Technical considerations</strong>:</div>
-                <ul>
-                  <li><strong>Logstash</strong> if package as a light version, with a limited number of inputs and
-                    outputs
-                    ; and is optimized to <strong>run faster</strong> than usual instances</li>
-                  <li>Logstash is version <strong>5.6.16</strong>, with all it's plugins updated to <strong>latest
-                      version</strong></li>
-                  <li>Each Logstash job is launch with <strong>1Go</strong> of memory</li>
-                </ul>
-                <p>As it is currently in beta, if you <strong>encounter a bug</strong>, need a <strong>new
-                    functionnality</strong> or have a <strong>specific need</strong>, feel free to contact me at <a
-                    href="mailto:valentin.bourdier@mail.com">this mail address</a>&nbsp;to talk about it.</p>
-
-              </div>
-            </div>
-          </div>
 
           <div class="card">
             <div class="card-header" id="headingTwo">
@@ -181,71 +134,6 @@
 
                 <textarea spellcheck="false" id="custom_logstash_patterns_input" class="form-control log-display"
                   rows="10" placeholder="Enter your custom Logstash patterns here !" style="margin-top: 1em"></textarea>
-
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header" id="headingTwo">
-              <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#keyboard_shortcuts"
-                  aria-expanded="false" aria-controls="keyboard_shortcuts">
-                  Keyboard shortcuts
-                </button>
-              </h5>
-            </div>
-
-            <div id="keyboard_shortcuts" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-              <div class="card-body text-center">
-
-                <h4 style="margin-bottom: 1em">Logstash filter input</h4>
-
-                <div class="row">
-
-                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                      <div class="card-body" style="padding: 0.5em">
-                        <div class="row no-gutters align-items-center">
-                          <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
-                              style="margin-bottom: 1em !important">Load the file</div>
-                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + o</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                      <div class="card-body" style="padding: 0.5em">
-                        <div class="row no-gutters align-items-center">
-                          <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
-                              style="margin-bottom: 1em !important">Save the file</div>
-                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + s</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-xl-3 col-md-6 mb-4 mx-auto">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                      <div class="card-body" style="padding: 0.5em">
-                        <div class="row no-gutters align-items-center">
-                          <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1 text-center text-info"
-                              style="margin-bottom: 1em !important">Auto-indent code</div>
-                            <div class="h5 mb-0 font-weight-bold text-center">CTRL + i</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
 
               </div>
             </div>
@@ -358,11 +246,12 @@
                 <p class="form-text text-muted minimalist-box">
                   Logstash version
                 </p>
-                <select class="form-control log-display" style="float: right; padding-top: 0px; padding-bottom: 0px" id="logstash_version">
-                    <option data-value="5.6.4">5.6.4</option>
-                    <option data-value="5.6.16" selected="selected">5.6.16</option>
-                    <option data-value="6.7.2">6.7.2</option>
-                    <option data-value="7.0.1">7.0.1</option>
+                <select class="form-control log-display" style="float: right; padding-top: 0px; padding-bottom: 0px"
+                  id="logstash_version">
+                  <option data-value="5.6.4">5.6.4</option>
+                  <option data-value="5.6.16" selected="selected">5.6.16</option>
+                  <option data-value="6.7.2">6.7.2</option>
+                  <option data-value="7.0.1">7.0.1</option>
                 </select>
               </div>
             </div>
@@ -519,16 +408,35 @@
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary static-bot" style="margin-top: 1em; padding-bottom: 0px;">
-    <div class="col-lg-6 text-center">
-      <p class="navbar-brand" style="color: white; font-size: 1em">Made with <i class="fas fa-heart">
-          by <a href="mailto:valentin.bourdier@mail.com">Valentin
-            Bourdier</a></i></p>
+
+    <div class="col-lg-2"></div>
+
+    <div class="col-lg-2 text-center">
+      <p class="navbar-brand" style="color: white; font-size: 1em">Made with <i class="fas fa-heart"></i></p>
     </div>
-    <div class="col-lg-6 text-center">
+
+    <div class="col-lg-2 text-center">
+      <p class="navbar-brand" style="color: white; font-size: 1em">
+        <a href="https://github.com/GroupePSA/titan-project/issues"><i class="fas fa-bug"
+            style="color: white;"></i>
+          Issues</a></p>
+    </div>
+
+    <div class="col-lg-2 text-center">
+      <p class="navbar-brand" style="color: white; font-size: 1em">
+        <a href="https://github.com/GroupePSA/titan-project/wiki"><i class="fas fa-book"
+            style="color: white;"></i>
+          Documentation</a></p>
+    </div>
+
+    <div class="col-lg-2 text-center">
       <p class="navbar-brand" style="color: white; font-size: 1em">
         <a href="https://github.com/GroupePSA/titan-project"><i class="fab fa-github" style="color: white;"></i>
           Github</a></p>
     </div>
+
+    <div class="col-lg-2 text-center"></div>
+
   </nav>
 
   <!-- Bootstrap core JavaScript -->
