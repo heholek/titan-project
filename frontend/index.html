@@ -244,12 +244,14 @@
             <div class="col-lg-3">
               <button type="button" class="btn btn-light" id="guess_filter">Try to guess the config</button>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-2">
+              <p class="form-text text-muted minimalist-box">
+                Logstash version
+              </p>
+            </div>
+            <div class="col-lg-2">
               <div class="form-group">
-                <p class="form-text text-muted minimalist-box">
-                  Logstash version
-                </p>
-                <select class="form-control log-display" style="float: right; padding-top: 0px; padding-bottom: 0px"
+                <select class="form-control log-display" style=""
                   id="logstash_version">
                   <option data-value="5.6.4" selected="selected">5.6.4</option>
                   <option data-value="5.6.16">5.6.16</option>
@@ -261,7 +263,7 @@
             </div>
             <div class="col-lg-1"></div>
             <div class="col-lg-2">
-              <button type="submit" class="btn btn-primary" style="float: right" id="start_process">Start
+              <button type="submit" class="btn btn-primary" id="start_process">Start
                 process</button>
             </div>
           </div>
