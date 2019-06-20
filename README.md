@@ -14,7 +14,11 @@ You will need to install :
 - [Docker](https://www.docker.com/)
 - [Docker compose](https://docs.docker.com/compose/)
 
-Once the requirements met, just type in a terminal, once the project downloaded :
+Once the requirements met, you need to build on your Docker host the [log-parser](https://github.com/GroupePSA/log-parser) builder image for the **parser** executable, as descript here :
+
+> https://github.com/GroupePSA/log-parser#log-parser
+
+And then just type in a terminal, once this project is downloaded :
 
 ```bash
 docker-compose up -d
