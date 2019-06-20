@@ -2,6 +2,14 @@
 
 An attempt to make a **web interface** to facilitate development of **Logstash configuration files**
 
+---
+
+Current instance is located here :
+
+> https://titan-project.transrian.fr
+
+---
+
 ![Titan project frontend image](doc/titan-project-frontend.png)
 
 ## Installation
