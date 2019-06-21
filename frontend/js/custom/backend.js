@@ -169,11 +169,15 @@ function findParsingOptimizationAdvices() {
 
     numberOfDateFields = 0
     dateFields = []
+    badFieldNames = []
     for (var key in keys) {
         if(keys[key]["types"].includes("date")) {
             numberOfDateFields += 1
             dateFields.push(key)
         }
+        if (!/^[a-zA-Z0-9_]+$/.test(key)) {
+            badFieldNames.push(key)
+        }   
     }
 
     $("#parsing_advices").empty()
@@ -194,6 +198,13 @@ function findParsingOptimizationAdvices() {
             str += " of type " + keys[key]["types"][0] + " could probably be <b>convert</b> into " + keys[key]["guessType"][0] + "</li>"
             $("#parsing_advices").append(str);
         }
+    }
+
+    for (key in badFieldNames) {
+        advicesShouldBeShown = true
+        str = '<li>Fieldname <a href="#output" onclick="applyFilter(\'' + badFieldNames[key] + '\')">' + badFieldNames[key] + "</a>"
+        str += " should contains only characters in range A-Z, a-z, 0-9, or _</li>"
+        $("#parsing_advices").append(str);
     }
 
     if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
