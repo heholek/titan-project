@@ -146,7 +146,8 @@ function findParsingOptimizationAdvices() {
                     if (!(key in keys)) {
                         keys[key] = {
                             "types": [],
-                            "guessType": []
+                            "guessType": [],
+                            "occurence": 0
                         }
                     }
 
@@ -162,6 +163,8 @@ function findParsingOptimizationAdvices() {
                     if (!keys[key]["types"].includes(valueType)) {
                         keys[key]["types"].push(valueType)
                     }
+
+                    keys[key]["occurence"] += 1
                 }
             }
         }
@@ -170,6 +173,7 @@ function findParsingOptimizationAdvices() {
     numberOfDateFields = 0
     dateFields = []
     badFieldNames = []
+    TimestampNotInEveryEvent = false
     for (var key in keys) {
         if(keys[key]["types"].includes("date")) {
             numberOfDateFields += 1
@@ -177,7 +181,10 @@ function findParsingOptimizationAdvices() {
         }
         if (!/^[a-zA-Z0-9_]+$/.test(key)) {
             badFieldNames.push(key)
-        }   
+        }
+        if(key == "TIMESTAMP" && keys[key]["occurence"] != logstash_output.length) {
+            TimestampNotInEveryEvent = true
+        }
     }
 
     $("#parsing_advices").empty()
@@ -210,6 +217,13 @@ function findParsingOptimizationAdvices() {
     if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
         advicesShouldBeShown = true
         str = "<li>No field <b>TIMESTAMP</b> found, while you got <b>" + numberOfDateFields + "</b> others date field(s) (" + dateFields.join(", ") + ")"
+        $("#parsing_advices").append(str);
+    }
+
+    if (TimestampNotInEveryEvent) {
+        advicesShouldBeShown = true
+        str = '<li>Your date field <a href="#output" onclick="applyFilter(\'TIMESTAMP\', true)">TIMESTAMP</a>'
+        str += " is not  present in every fields !"
         $("#parsing_advices").append(str);
     }
 
@@ -365,9 +379,13 @@ function removeLatestRunStatus() {
 
 // Apply a custom filter
 
-function applyFilter(filter) {
+function applyFilter(filter, reverse) {
     $('#filter_regex_enabled').prop('checked', false)
-    $('#filter_reverse_match_enabled').prop('checked', false)
+    reverseMatch = false
+    if (reverse != null) {
+        reverseMatch = true
+    }
+    $('#filter_reverse_match_enabled').prop('checked', reverse)
     $('#filter_display').val(filter)
 
     refreshLogstashLogDisplay()
