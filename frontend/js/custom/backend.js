@@ -131,14 +131,27 @@ function getValueType(value) {
 
 // Try do find some advices / problem in current parsing
 
-function findParsingOptimizationAdvices() {
+function findParsingOptimizationAdvices(parent, array) {
+
+    var isRootEventLevel = (parent == "")
+
+    if (isRootEventLevel) {
+        $("#parsing_advices").empty()
+        $("#parsing_advices").append("<h5>Parsing advices:</h5>")
+        $("#parsing_advices").append("<ul>")
+    }
 
     var keys = {}
+    var subEvents={}
 
-    var fieldsToSkip = ["@timestamp", "@version", "host", "message"]
+    var fieldsToSkip = []
 
-    for (var i = 0; i < logstash_output.length; i++) {
-        line = logstash_output[i]
+    if (isRootEventLevel) {
+        fieldsToSkip = ["@timestamp", "@version", "host", "message"]
+    }
+
+    for (var i = 0; i < array.length; i++) {
+        line = array[i]
         if (line.startsWith("{")) {
             obj = JSON.parse(line)
             for (var key in obj) {
@@ -150,7 +163,7 @@ function findParsingOptimizationAdvices() {
                             "occurence": 0
                         }
                     }
-
+                    
                     valueType = getValueType(obj[key])
 
                     if (valueType == "string") {
@@ -158,6 +171,11 @@ function findParsingOptimizationAdvices() {
                         if (!keys[key]["guessType"].includes(valueTypeGuessed)) {
                             keys[key]["guessType"].push(valueTypeGuessed)
                         }
+                    } else if (valueType == "object") {
+                        if (!(key in subEvents)) {
+                            subEvents[key] = []
+                        }
+                        subEvents[key].push(JSON.stringify(obj[key]))
                     }
 
                     if (!keys[key]["types"].includes(valueType)) {
@@ -168,6 +186,11 @@ function findParsingOptimizationAdvices() {
                 }
             }
         }
+    }
+
+    for(key in subEvents) {
+        fullKey = (isRootEventLevel ? "" : parent + ".") + key
+        findParsingOptimizationAdvices(fullKey, subEvents[key])
     }
 
     numberOfDateFields = 0
@@ -182,53 +205,54 @@ function findParsingOptimizationAdvices() {
         if (!/^[a-zA-Z0-9_]+$/.test(key)) {
             badFieldNames.push(key)
         }
-        if(key == "TIMESTAMP" && keys[key]["occurence"] != logstash_output.length) {
+        if(key == "TIMESTAMP" && keys[key]["occurence"] != array.length) {
             TimestampNotInEveryEvent = true
         }
     }
 
-    $("#parsing_advices").empty()
-    $("#parsing_advices").append("<h5>Parsing advices:</h5>")
-    $("#parsing_advices").append("<ul>")
-
     var advicesShouldBeShown = false
 
     for (key in keys) {
+        fieldname = (isRootEventLevel ? "" : parent + ".") + key
         if (keys[key]["types"].length > 1) {
             advicesShouldBeShown = true
-            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + key + "</a>"
+            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + fieldname + "</a>"
             str += " got <b>multiple types</b> : " + keys[key]["types"].join(", ") + "</li>"
             $("#parsing_advices").append(str);
         } else if (keys[key]["types"].length == 1 && keys[key]["guessType"].length == 1 && keys[key]["types"][0] != keys[key]["guessType"][0]) {
             advicesShouldBeShown = true
-            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + key + "</a>"
+            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + fieldname + "</a>"
             str += " of type " + keys[key]["types"][0] + " could probably be <b>convert</b> into " + keys[key]["guessType"][0] + "</li>"
             $("#parsing_advices").append(str);
         }
     }
 
     for (key in badFieldNames) {
+        fieldname = (isRootEventLevel ? "" : parent + ".") + badFieldNames[key]
         advicesShouldBeShown = true
-        str = '<li>Fieldname <a href="#output" onclick="applyFilter(\'' + badFieldNames[key] + '\')">' + badFieldNames[key] + "</a>"
+        str = '<li>Fieldname <a href="#output" onclick="applyFilter(\'' + badFieldNames[key] + '\')">' + fieldname + "</a>"
         str += " should contains only characters in range A-Z, a-z, 0-9, or _</li>"
         $("#parsing_advices").append(str);
     }
 
-    if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
-        advicesShouldBeShown = true
-        str = "<li>No field <b>TIMESTAMP</b> found, while you got <b>" + numberOfDateFields + "</b> others date field(s) (" + dateFields.join(", ") + ")"
-        $("#parsing_advices").append(str);
+    if (isRootEventLevel) { 
+        if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
+            advicesShouldBeShown = true
+            str = "<li>No field <b>TIMESTAMP</b> found, while you got <b>" + numberOfDateFields + "</b> others date field(s) (" + dateFields.join(", ") + ")"
+            $("#parsing_advices").append(str);
+        }
+    
+        if (TimestampNotInEveryEvent) {
+            advicesShouldBeShown = true
+            str = '<li>Your date field <a href="#output" onclick="applyFilter(\'TIMESTAMP\', true)">TIMESTAMP</a>'
+            str += " is not  present in every fields !"
+            $("#parsing_advices").append(str);
+        }
     }
 
-    if (TimestampNotInEveryEvent) {
-        advicesShouldBeShown = true
-        str = '<li>Your date field <a href="#output" onclick="applyFilter(\'TIMESTAMP\', true)">TIMESTAMP</a>'
-        str += " is not  present in every fields !"
-        $("#parsing_advices").append(str);
+    if (isRootEventLevel) {
+        $("#parsing_advices").append("</ul>")
     }
-
-    $("#parsing_advices").append("</ul>")
-
 
     if (advicesShouldBeShown) {
         $("#parsing_advices").removeClass("d-none")
@@ -465,7 +489,7 @@ $('#start_process').click(function () {
                 logstash_output_stderr = data.job_result.stderr
 
                 if(enableParsingAdvices) {
-                    findParsingOptimizationAdvices()
+                    findParsingOptimizationAdvices("", logstash_output)
                 }
 
                 parsingResult = logstashParsingProblem()
