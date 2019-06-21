@@ -308,9 +308,9 @@ function refreshLogstashLogDisplay() {
 
     if (res.length == 0) {
         if (logstash_output.length == 0) {
-            res = "No data to filter :("
+            res = "No data received :("
         } else {
-            res = "Nothing match :("
+            res = "Nothing match your filter :("
         }
     }
 
