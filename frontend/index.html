@@ -35,6 +35,12 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
 
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-toggle="modal" data-target="#grokDebuggerModal">
+              <i class="fas fa-wrench"> Grok debugger</i>
+            </a>
+          </li>
+
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
               <i class="fas fa-cogs"> Options</i>
@@ -251,8 +257,7 @@
             </div>
             <div class="col-lg-2">
               <div class="form-group">
-                <select class="form-control log-display" style=""
-                  id="logstash_version">
+                <select class="form-control log-display" style="" id="logstash_version">
                   <option data-value="5.6.4" selected="selected">5.6.4</option>
                   <option data-value="5.6.16">5.6.16</option>
                   <option data-value="6.7.2">6.7.2</option>
@@ -336,8 +341,9 @@
               </div>
             </div>
 
-          <div class="alert alert-info col-lg-12 d-none" id="parsing_advices"  style="margin-top: 1em; margin-bottom: 1em" role="alert">
-          </div>
+            <div class="alert alert-info col-lg-12 d-none" id="parsing_advices"
+              style="margin-top: 1em; margin-bottom: 1em" role="alert">
+            </div>
 
             <p style="margin-top: 1em" class="form-text text-muted minimalist-box">
               The data process by Logstash will be displayed here.
@@ -414,6 +420,48 @@
     </div>
   </div>
 
+  <!-- Grok Debugger modal -->
+
+  <div class="modal fade" id="grokDebuggerModal" tabindex="-1" role="dialog" aria-labelledby="grokDebuggerModalLabel"
+    aria-hidden="false">
+    <div class="modal-dialog modal-lg" role="document" style="max-width: 90%;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Grok debugger</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><bold>Enter your sample line here</bold></p>
+          <form>
+            <div class="input-group">
+              <input type="text" class="form-control log-display" value=""
+                placeholder="Your log line" id="line_sample_input">
+            </div>
+          </form>
+          <p style="margin-top: 1em"><bold>Enter your grok pattern here</bold></p>
+          <form>
+            <div class="input-group">
+              <input type="text" class="form-control log-display" value=""
+                placeholder="Your grok pattern" id="grok_pattern_input">
+            </div>
+          </form>
+          <div class="text-center" style="margin-top: 2em">
+              <button type="button" id="launch_grok_debugger" class="btn btn-primary">Launch</button>
+            </div>
+          <hr>
+          <p style="font-size: 1.2em"><bold>Results</bold></p>
+          <pre id="grok_output" class="form-control col-lg-12 log-display"
+          style="height: auto; margin-top: 1em">The result will be displayed here !</pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary static-bot" style="margin-top: 1em; padding-bottom: 0px;">
@@ -465,6 +513,7 @@
   <script src="./js/custom/form-control.js"></script>
   <script src="./js/custom/file-upload.js"></script>
   <script src="./js/custom/guess-filter.js"></script>
+  <script src="./js/custom/grok-debugger.js"></script>
   <script src="./js/custom/backend.js"></script>
   <script src="./js/custom/session.js"></script>
   <script src="./js/custom/main.js"></script>

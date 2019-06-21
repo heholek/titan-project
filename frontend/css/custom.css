@@ -46,3 +46,15 @@
 .ace-clouds .ace_string  {
   color:  rgb(4, 96, 202) !important;
 }
+
+.mark-danger {
+  background-color: #E74C3C;
+}
+
+.mark-warning {
+  background-color: #F39C12;
+}
+
+.mark-success {
+  background-color: #18BC9C;
+}

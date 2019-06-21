@@ -27,6 +27,7 @@
   roles:
     - node
     - logstash
+    - gcc
 
 # Install the frontend
 

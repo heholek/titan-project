@@ -11,6 +11,8 @@ var uniqid = require('uniqid');
 var morgan = require('morgan')
 var request = require('request');
 const NodeCache = require("node-cache");
+const NodeGrok = require("node-grok")
+
 const myMemoryCache = new NodeCache({ stdTTL: 3600, checkperiod: 120 });
 
 const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
@@ -32,6 +34,10 @@ const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const KIBANA_VERSION = process.env.KIBANA_VERSION || "6.7.0";
 const KIBANA_HOST = process.env.KIBANA_HOST || "localhost:5601";
 
+
+// Set-up the grok definition
+grok = new NodeGrok.GrokCollection()
+grok.loadSync("./data/grok-patterns")
 
 ///////////////////////////////
 // Some system util function //
@@ -258,6 +264,55 @@ app.post('/file/upload', function (req, res) {
     }
 })
 
+app.post('/grok_tester', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body.line == undefined || req.body.grok_pattern == undefined) {
+        res.status(400);
+        res.send(JSON.stringify({ "config_ok": false }));
+    } else {
+        var line = req.body.line
+        var grok_pattern = req.body.grok_pattern
+
+        res.status(200);
+
+        var results = []
+
+        // We cut the initial grok pattern
+        var re = /(%{\w+(?::\w+)?}|\(\?:[^\()]*\)|\(\?<\w+>[^\()]*\)|\\.|.)/g
+        var grok_parts = Array.from(grok_pattern.matchAll(re))
+
+        var reconstructed_grok = ""
+        if (!grok_pattern.startsWith("^")) {
+            reconstructed_grok = "^"
+        }
+
+        for (i in grok_parts) {
+            reconstructed_grok += grok_parts[i]
+            try {
+                var result = getGrokResult(reconstructed_grok, line)
+                results.push({
+                    "pattern": reconstructed_grok,
+                    "result": result
+                })
+            } catch (error) {
+                results.push({
+                    "pattern": reconstructed_grok,
+                    "result": null,
+                    "error": error
+                })
+            }
+        }
+
+        if (results.length != 0 && results[results.length - 1] != null) {
+            res.send(JSON.stringify({ "config_ok": true, "succeed": true, "results": results }));
+        } else {
+            res.send(JSON.stringify({ "config_ok": true, "succeed": false }));
+        }
+
+    }
+})
+
 // We start the server
 
 app.listen(PORT, function () {
@@ -268,6 +323,21 @@ app.listen(PORT, function () {
 //  Compute functions //
 ////////////////////////
 
+// Match all prototype
+String.prototype.matchAll = function (regexp) {
+    var matches = [];
+    this.replace(regexp, function () {
+        var arr = ([]).slice.call(arguments, 0);
+        matches.push(arr[0]);
+    });
+    return matches.length ? matches : null;
+};
+
+// Apply a grok pattern on a line
+function getGrokResult(grok_pattern, line) {
+    var pattern = grok.createPattern(grok_pattern)
+    return pattern.parseSync(line)
+}
 
 // Check if a filehash is valid or not
 function isFilehashValid(hash) {

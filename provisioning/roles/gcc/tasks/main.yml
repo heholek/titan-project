@@ -1,0 +1,5 @@
+---
+- name: Install some dependencies
+  apt:
+    name: gcc make g++
+    state: present

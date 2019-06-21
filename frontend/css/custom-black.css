@@ -27,3 +27,18 @@
 .background-highlight {
   background-color: #354e94;
 }
+
+.mark-danger {
+  background-color: #E74C3C;
+  color: black;
+}
+
+.mark-warning {
+  background-color: #F39C12;
+  color: black;
+}
+
+.mark-success {
+  background-color: #00bc8c;
+  color: black;
+}
