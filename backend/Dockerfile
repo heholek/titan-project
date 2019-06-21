@@ -25,12 +25,14 @@ RUN bash setup/install_logstash.sh 5.6.4
 RUN bash setup/install_logstash.sh 5.6.16
 RUN bash setup/install_logstash.sh 6.7.2
 RUN bash setup/install_logstash.sh 6.8.0
+RUN bash setup/install_logstash.sh 7.0.1
 RUN bash setup/install_logstash.sh 7.1.1
 
 RUN bash setup/update_logstash_plugins.sh 5.6.4; true
 RUN bash setup/update_logstash_plugins.sh 5.6.16; true
 RUN bash setup/update_logstash_plugins.sh 6.7.2; true
 RUN bash setup/update_logstash_plugins.sh 6.8.0; true
+RUN bash setup/update_logstash_plugins.sh 7.0.1; true
 RUN bash setup/update_logstash_plugins.sh 7.1.1; true
 
 # Create app directory
