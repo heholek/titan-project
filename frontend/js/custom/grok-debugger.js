@@ -4,9 +4,15 @@
 
 // Launch the grok debugger process
 function launchGrokDebugger() {
-    body = {}
-    body.line = $('#line_sample_input').val()
-    body.grok_pattern = $('#grok_pattern_input').val()
+    body = {
+        "line": $('#line_sample_input').val(),
+        "grok_pattern": $('#grok_pattern_input').val()
+    }
+
+    customPattern = $('#custom_logstash_patterns_input').val()
+    if (customPattern != "" ) {
+        body.extra_patterns = customPattern
+    }
 
     $.ajax({
         url: api_url + "/grok_tester",
@@ -41,15 +47,9 @@ function launchGrokDebugger() {
                             }
                         }
 
-                        diffValue = step.pattern
-                        if (i < steps.length - 1) {
-                            var lastPattern = steps[parseInt(i, 10) + 1]
-                            diffValue = step.pattern.slice(lastPattern.pattern.length)
-                        }
-
                         title = "<p><ins>Step " + (steps.length - i) + "</ins></p>"
                         pattern = "<p style='margin-bottom: 0px'>\"" + escapeHtml(step.pattern) + "\"</p><br/>"
-                        diff = "Diff : <mark class='" + mark_theme + "'>" + escapeHtml(diffValue) + "</mark><br/><br/>"
+                        diff = "Diff : <mark class='" + mark_theme + "'>" + escapeHtml(step.diff) + "</mark><br/><br/>"
                         res += title + pattern + diff + val + "<br/>"
                     }
                     $('#grok_output').html(res)

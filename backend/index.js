@@ -35,10 +35,6 @@ const KIBANA_VERSION = process.env.KIBANA_VERSION || "6.7.0";
 const KIBANA_HOST = process.env.KIBANA_HOST || "localhost:5601";
 
 
-// Set-up the grok definition
-grok = new NodeGrok.GrokCollection()
-grok.loadSync("./data/grok-patterns")
-
 ///////////////////////////////
 // Some system util function //
 ///////////////////////////////
@@ -278,6 +274,13 @@ app.post('/grok_tester', function (req, res) {
 
         var results = []
 
+        // We init the grok process
+        grok = new NodeGrok.GrokCollection()
+        grok.loadSync("./data/grok-patterns")
+        if (req.body.extra_patterns != undefined) {
+            addPatternsToGrok(grok, req.body.extra_patterns)
+        }
+
         // We cut the initial grok pattern
         var re = /(%{\w+(?::\w+)?}|\(\?:[^\()]*\)|\(\?<\w+>[^\()]*\)|\\.|.)/g
         var grok_parts = Array.from(grok_pattern.matchAll(re))
@@ -290,15 +293,17 @@ app.post('/grok_tester', function (req, res) {
         for (i in grok_parts) {
             reconstructed_grok += grok_parts[i]
             try {
-                var result = getGrokResult(reconstructed_grok, line)
+                var result = getGrokResult(grok, reconstructed_grok, line)
                 results.push({
                     "pattern": reconstructed_grok,
+                    "diff": grok_parts[i],
                     "result": result
                 })
             } catch (error) {
                 results.push({
                     "pattern": reconstructed_grok,
                     "result": null,
+                    "diff": grok_parts[i],
                     "error": error
                 })
             }
@@ -333,8 +338,21 @@ String.prototype.matchAll = function (regexp) {
     return matches.length ? matches : null;
 };
 
+// Add a pattern to a grok
+function addPatternsToGrok(grok, patternsLine) {
+    var patternsLineArray = patternsLine.split(/\r?\n/)
+    var splitLineRegex = /^([\w_]+)\s+(.*)/
+    for (i in patternsLineArray) {
+        patternLine = patternsLineArray[i]
+        match = splitLineRegex.exec(patternLine)
+        if (match.length == 3) {
+            grok.createPattern(match[2], match[1])
+        }
+    }
+}
+
 // Apply a grok pattern on a line
-function getGrokResult(grok_pattern, line) {
+function getGrokResult(grok, grok_pattern, line) {
     var pattern = grok.createPattern(grok_pattern)
     return pattern.parseSync(line)
 }
