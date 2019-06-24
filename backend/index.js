@@ -345,7 +345,7 @@ function addPatternsToGrok(grok, patternsLine) {
     for (i in patternsLineArray) {
         patternLine = patternsLineArray[i]
         match = splitLineRegex.exec(patternLine)
-        if (match.length == 3) {
+        if (match != null && match.length == 3) {
             grok.createPattern(match[2], match[1])
         }
     }
