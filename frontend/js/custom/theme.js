@@ -136,7 +136,7 @@ $('#change_text_wrapping').click(function () {
 
 // Parsing advices mode
 
-var enableParsingAdvices = false
+var enableParsingAdvices = true
 
 // Enable the parsing advices mode
 function enableParsingAdvicesMode() {
