@@ -46,6 +46,72 @@ function buildInputDataEditor() {
     return editor
 }
 
+// Build the ACE editor to enter the sample line for grok
+function buildInputLineGrokEditor() {
+    var editor = ace.edit("line_sample_input");
+    editor.session.setMode("ace/mode/elixir");
+
+    editor.setOptions({
+        fontSize: "12pt",
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false,
+        indentedSoftWrap: false,
+        useSoftTabs: false,
+        showPrintMargin: false,
+        enableSnippets: false,
+        navigateWithinSoftTabs: false,
+        autoScrollEditorIntoView: true,
+        minLines: 1,
+        maxLines: 1,
+        keyboardHandler: "ace/keyboard/sublime"
+    })
+
+    editor.getSession().on('change', function(e) {
+        text = editor.getSession().getValue()
+        lines = text.split("\n")
+
+        if (lines.length > 0 && text != lines[0]) {
+            editor.getSession().setValue(lines[0], -1)
+            editor.resize()
+        }
+    })
+
+    return editor
+}
+
+// Build the ACE editor to enter the sample line for grok
+function buildGrokPatternEditor() {
+    var editor = ace.edit("grok_pattern_input");
+    editor.session.setMode("ace/mode/logstash");
+
+    editor.setOptions({
+        fontSize: "12pt",
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        indentedSoftWrap: true,
+        useSoftTabs: true,
+        showPrintMargin: false,
+        enableSnippets: false,
+        navigateWithinSoftTabs: true,
+        autoScrollEditorIntoView: true,
+        minLines: 1,
+        maxLines: 1,
+        keyboardHandler: "ace/keyboard/sublime"
+    })
+
+    editor.getSession().on('change', function(e) {
+        text = editor.getSession().getValue()
+        lines = text.split("\n")
+
+        if (lines.length > 0 && text != lines[0]) {
+            editor.getSession().setValue(lines[0], -1)
+            editor.resize()
+        }
+    })
+
+    return editor
+}
+
 // Build the ACE editor to edit the Logstash configuration
 function buildFilterEditor() {
     var editor = ace.edit("logstash_filter_textarea");
@@ -139,12 +205,17 @@ function saveToFile(data, filename, filetype) {
     a.dispatchEvent(e)
 }
 
-// Create the editor that will be used by others files
+// Create the editors that will be used by others files
 var editor = buildFilterEditor()
 var inputEditor = buildInputDataEditor()
+
+var inputLineGrokEditor = buildInputLineGrokEditor()
+var grokPatternEditor = buildGrokPatternEditor()
 
 // Add this little trick to force editor to load on startup
 window.onload = () => {
     inputEditor.resize();
     editor.resize();
+    inputLineGrokEditor.resize();
+    grokPatternEditor.resize();
 }

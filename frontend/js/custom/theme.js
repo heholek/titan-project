@@ -9,6 +9,9 @@ function enableBlackTheme() {
   editor.setTheme("ace/theme/dracula");
   inputEditor.setTheme("ace/theme/dracula");
 
+  inputLineGrokEditor.setTheme("ace/theme/dracula");
+  grokPatternEditor.setTheme("ace/theme/dracula");
+
   $('#css_theme_bootstrap').attr('href', './css/bootstrap-black.min.css');
   $('#css_theme_custom').attr('href', './css/custom-black.css');
 
@@ -22,6 +25,9 @@ function enableBlackTheme() {
 function enableWhiteTheme() {
   editor.setTheme("ace/theme/clouds");
   inputEditor.setTheme("ace/theme/chrome");
+
+  inputLineGrokEditor.setTheme("ace/theme/clouds");
+  grokPatternEditor.setTheme("ace/theme/clouds");
 
   $('#css_theme_bootstrap').attr('href', './css/bootstrap.min.css');
   $('#css_theme_custom').attr('href', './css/custom.css');

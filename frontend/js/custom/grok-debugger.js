@@ -5,8 +5,8 @@
 // Launch the grok debugger process
 function launchGrokDebugger() {
     body = {
-        "line": $('#line_sample_input').val(),
-        "grok_pattern": $('#grok_pattern_input').val()
+        "line": inputLineGrokEditor.getSession().getValue(),
+        "grok_pattern": grokPatternEditor.getSession().getValue()
     }
 
     customPattern = $('#custom_logstash_patterns_input').val()

@@ -435,19 +435,11 @@
         </div>
         <div class="modal-body">
           <p><bold>Enter your sample line here</bold></p>
-          <form>
-            <div class="input-group">
-              <input type="text" class="form-control log-display" value=""
-                placeholder="Your log line" id="line_sample_input">
-            </div>
-          </form>
+          <pre id="line_sample_input" rows="10"
+              placeholder="Copy/Paste your logs file here !"></pre>
           <p style="margin-top: 1em"><bold>Enter your grok pattern here</bold></p>
-          <form>
-            <div class="input-group">
-              <input type="text" class="form-control log-display" value=""
-                placeholder="Your grok pattern" id="grok_pattern_input">
-            </div>
-          </form>
+          <pre id="grok_pattern_input" rows="10"
+              placeholder="Copy/Paste your logs file here !"></pre>
           <div class="text-center" style="margin-top: 2em">
               <button type="button" id="launch_grok_debugger" class="btn btn-primary">Launch</button>
             </div>
