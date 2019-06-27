@@ -286,9 +286,6 @@ app.post('/grok_tester', function (req, res) {
         var grok_parts = Array.from(grok_pattern.matchAll(re))
 
         var reconstructed_grok = ""
-        if (!grok_pattern.startsWith("^")) {
-            reconstructed_grok = "^"
-        }
 
         for (i in grok_parts) {
             reconstructed_grok += grok_parts[i]
