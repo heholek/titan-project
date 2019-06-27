@@ -27,6 +27,7 @@ RUN bash setup/install_logstash.sh 6.7.2 && (setup/update_logstash_plugins.sh 6.
 RUN bash setup/install_logstash.sh 6.8.1 && (setup/update_logstash_plugins.sh 6.8.1; true)
 RUN bash setup/install_logstash.sh 7.0.1 && (setup/update_logstash_plugins.sh 7.0.1; true)
 RUN bash setup/install_logstash.sh 7.1.1 && (setup/update_logstash_plugins.sh 7.1.1; true)
+RUN bash setup/install_logstash.sh 7.2.0 && (setup/update_logstash_plugins.sh 7.2.0; true)
 
 # Create app directory
 WORKDIR /usr/src/app
