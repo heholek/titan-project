@@ -434,19 +434,35 @@
           </button>
         </div>
         <div class="modal-body">
-          <p><bold>Enter your sample line here</bold></p>
-          <pre id="line_sample_input" rows="10"
-              placeholder="Copy/Paste your logs file here !"></pre>
-          <p style="margin-top: 1em"><bold>Enter your grok pattern here</bold></p>
-          <pre id="grok_pattern_input" rows="10"
-              placeholder="Copy/Paste your logs file here !"></pre>
-          <div class="text-center" style="margin-top: 2em">
-              <button type="button" id="launch_grok_debugger" class="btn btn-primary">Launch</button>
+          <div class="row col-lg-12" style="margin-top: 1em">
+            <div class="col-lg-6">
+              <p>
+                <bold>Enter your sample line here</bold>
+              </p>
             </div>
+          </div>
+
+          <pre id="line_sample_input" rows="10" placeholder="Copy/Paste your logs file here !"></pre>
+
+          <div class="row col-lg-12" style="margin-bottom: 1em; margin-top: 1em">
+            <div class="col-lg-6">
+              <bold>Enter your grok pattern here</bold>
+            </div>
+            <div class="col-lg-6 text-right" id="grok_parsing_performances">
+            </div>
+          </div>
+
+          <pre id="grok_pattern_input" rows="10" placeholder="Copy/Paste your logs file here !"></pre>
+
+          <div class="text-center" style="margin-top: 2em">
+            <button type="button" id="launch_grok_debugger" class="btn btn-primary">Launch</button>
+          </div>
           <hr>
-          <p style="font-size: 1.2em"><bold>Results</bold></p>
+          <p style="font-size: 1.2em">
+            <bold>Results</bold>
+          </p>
           <pre id="grok_output" class="form-control col-lg-12 log-display"
-          style="height: auto; margin-top: 1em">The result will be displayed here !</pre>
+            style="height: auto; margin-top: 1em">The result will be displayed here !</pre>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>

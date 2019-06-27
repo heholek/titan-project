@@ -307,7 +307,8 @@ app.post('/grok_tester', function (req, res) {
         }
 
         if (results.length != 0 && results[results.length - 1] != null) {
-            res.send(JSON.stringify({ "config_ok": true, "succeed": true, "results": results }));
+            op_per_seconds = computeGrokPerformance(grok, grok_pattern, line)
+            res.send(JSON.stringify({ "config_ok": true, "succeed": true, "results": results, "operations_per_second": op_per_seconds }));
         } else {
             res.send(JSON.stringify({ "config_ok": true, "succeed": false }));
         }
@@ -324,6 +325,22 @@ app.listen(PORT, function () {
 ////////////////////////
 //  Compute functions //
 ////////////////////////
+
+// Compute the performance (events / seconds) of the grok
+// Return the number of events / seconds processed
+function computeGrokPerformance(grok, grok_pattern, line) {
+    var loopNumber = 1000
+    var pattern = grok.createPattern(grok_pattern)
+
+    var start = new Date()
+
+    for (var i = 0; i < loopNumber; i++) {
+        var res = pattern.parseSync(line)
+    }
+
+    var end = new Date() - start
+    return Math.round(1000 / (end / loopNumber))
+}
 
 // Match all prototype
 String.prototype.matchAll = function (regexp) {

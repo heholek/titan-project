@@ -29,6 +29,7 @@ function launchGrokDebugger() {
                     res = ""
                     alreadySucceed = false
                     mark_theme = ""
+                    globalPatternSuccess = false
 
                     for (i in steps) {
                         step = steps[i]
@@ -36,6 +37,10 @@ function launchGrokDebugger() {
                             val = jsonSyntaxHighlight(step.result) + "<br/>"
                             mark_theme = "mark-success"
                             alreadySucceed = true
+
+                            if (i == 0) {
+                                globalPatternSuccess = true
+                            }
                         } else {
                             text_color = ""
                             if (alreadySucceed) {
@@ -52,7 +57,14 @@ function launchGrokDebugger() {
                         diff = "Diff : <mark class='" + mark_theme + "'>" + escapeHtml(step.diff) + "</mark><br/><br/>"
                         res += title + pattern + diff + val + "<br/>"
                     }
+
                     $('#grok_output').html(res)
+
+                    if (globalPatternSuccess && "operations_per_second" in data) {
+                        $('#grok_parsing_performances').html('<i>' + data.operations_per_second + ' events/s </i><i class="fas fa-question-circle" style="font-size: 0.7em" data-toggle="tooltip" title="This value is computed by the backend server, and is NOT REPRESENTATIVE of Logstash Grok performance. However, you can use it to compare or optimize your grok patterns, as the difference will be in the same magnitude on a real Logstash."></i>')
+                    } else {
+                        $('#grok_parsing_performances').html("")
+                    }
                 }
             } else {
                 toastr.error('There was an error while doing doing this process', 'Error')
