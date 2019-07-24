@@ -226,6 +226,11 @@ function findParsingOptimizationAdvices(parent, array) {
             str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + fieldname + "</a>"
             str += " of type " + keys[key]["types"][0] + " could probably be <b>convert</b> into " + keys[key]["guessType"][0] + "</li>"
             $("#parsing_advices").append(str);
+        } else if (keys[key]["types"].length == 1 && keys[key]["types"][0] == "array") {
+            advicesShouldBeShown = true
+            str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + fieldname + "</a>"
+            str += " is an <b>array</b>. Be aware that not many visualizations allow use of that kind of field in Kibana.</li>"
+            $("#parsing_advices").append(str);
         }
     }
 
