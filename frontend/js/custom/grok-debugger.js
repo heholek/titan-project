@@ -2,6 +2,11 @@
 // Grok debugger //
 ///////////////////
 
+$( "#grokDebuggerModal" ).on('shown.bs.modal', function(){
+    inputLineGrokEditor.resize()
+    grokPatternEditor.resize()
+});
+
 // Launch the grok debugger process
 function launchGrokDebugger() {
     body = {
