@@ -145,6 +145,7 @@ function findParsingOptimizationAdvices(parent, array) {
     var subEvents={}
 
     var fieldsToSkip = []
+    var realEventNumber = 0
 
     if (isRootEventLevel) {
         fieldsToSkip = ["@timestamp", "@version", "host", "message"]
@@ -153,6 +154,7 @@ function findParsingOptimizationAdvices(parent, array) {
     for (var i = 0; i < array.length; i++) {
         line = array[i]
         if (line.startsWith("{")) {
+            realEventNumber += 1
             obj = JSON.parse(line)
             for (var key in obj) {
                 if (!fieldsToSkip.includes(key)) {
@@ -205,7 +207,7 @@ function findParsingOptimizationAdvices(parent, array) {
         if (!/^[a-zA-Z0-9_]+$/.test(key)) {
             badFieldNames.push(key)
         }
-        if(key == "TIMESTAMP" && keys[key]["occurence"] != array.length) {
+        if(key == "TIMESTAMP" && keys[key]["occurence"] != realEventNumber) {
             TimestampNotInEveryEvent = true
         }
     }
