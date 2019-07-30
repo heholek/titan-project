@@ -20,6 +20,10 @@
 .key { color: #2b7cc4; }
 .date { color: #6a00ff; }
 
+.found-ok { color: #009f6c; }
+.found-some { color: rgb(255, 126, 94); }
+.found-none { color: #d10000; }
+
 .background-highlight {
   background-color: #fff176;
 }

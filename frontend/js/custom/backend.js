@@ -302,6 +302,7 @@ function refreshLogstashLogDisplay() {
     filter_value = $('#filter_display').val()
     filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
     filter_reverse_match_enabled = $('#filter_reverse_match_enabled').is(':checked')
+    filter_enabled = (filter_value != "")
 
     if (filter_regex_enabled && filter_value != "") {
         filter_regex = new RegExp(filter_value)
@@ -316,6 +317,7 @@ function refreshLogstashLogDisplay() {
         number_lines_display = parseInt(number_lines_display, 10)
     }
 
+    $("#number_events_displayed_container").removeClass("d-none")
 
     logstash_output_stderr_arr = logstash_output_stderr.split('\n')
     logstash_output_stderr_arr.shift() // We want to remove the first line of the stderr
@@ -324,40 +326,46 @@ function refreshLogstashLogDisplay() {
 
     stderr_errors_lines = logstash_output_stderr_arr.length
     matchNumber = 0
+    realLinesNumber = 0
     res = ""
 
     for (var i = 0; i < lines.length; i++) {
 
-        if (matchNumber >= number_lines_display) {
-            break;
-        }
-
         line = lines[i]
 
-        if (filter_value == "" || (!filter_reverse_match_enabled && line.match(filter_regex)) || (filter_reverse_match_enabled && !line.match(filter_regex))) {
+        if (line != "") {
+            realLinesNumber += 1;
+        }
+
+        if (!filter_enabled || (!filter_reverse_match_enabled && line.match(filter_regex)) || (filter_reverse_match_enabled && !line.match(filter_regex))) {
+
+            // We need that to know exactly how many lines match the pattern, if any
+            if (matchNumber < number_lines_display) {
+                if (line.startsWith("[")) {
+                    line = line.replace(/\\r\\n/g, '\n')
+                    line = line.replace(/\\n/g, '\n')
+                    line = line.replace(/\\t/g, '  ')
+                    line = escapeHtml(line)
+                } else if (line.startsWith("{") && line.endsWith("}")) {
+                    jsonDic = JSON.parse(line)
+                    jsonDic = sortDictionary(jsonDic)
+                    obj = JSON.stringify(jsonDic, null, 2);
+                    line = jsonSyntaxHighlight(obj)
+                }
+    
+                if (i < stderr_errors_lines) {
+                    line = "<span class='text-danger'>" + line + "</span>"
+                }
+    
+                if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
+                    line = hightlightMatch(line, filter_regex, filter_value)
+                }
+    
+                res += line + "\n"
+            }
+
             matchNumber += 1
-
-            if (line.startsWith("[")) {
-                line = line.replace(/\\r\\n/g, '\n')
-                line = line.replace(/\\n/g, '\n')
-                line = line.replace(/\\t/g, '  ')
-                line = escapeHtml(line)
-            } else if (line.startsWith("{") && line.endsWith("}")) {
-                jsonDic = JSON.parse(line)
-                jsonDic = sortDictionary(jsonDic)
-                obj = JSON.stringify(jsonDic, null, 2);
-                line = jsonSyntaxHighlight(obj)
-            }
-
-            if (i < stderr_errors_lines) {
-                line = "<span class='text-danger'>" + line + "</span>"
-            }
-
-            if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
-                line = hightlightMatch(line, filter_regex, filter_value)
-            }
-
-            res += line + "\n"
+            
         }
 
     }
@@ -368,6 +376,31 @@ function refreshLogstashLogDisplay() {
         } else {
             res = "Nothing match your filter :("
         }
+    }
+
+
+
+    // We display the number of events we got / we found
+
+    n = (filter_enabled ? matchNumber : number_lines_display)
+
+    if (n > realLinesNumber) {
+        n = realLinesNumber
+    }
+
+    if (filter_enabled) {
+
+        color = "found-some"
+        if (n == realLinesNumber) {
+            color = "found-ok"
+        } else if (n == 0) {
+            color = "found-none"
+        }
+
+        $('#number_events_displayed').html("<span class='" + color + "'>" + n + " / " + realLinesNumber + "</span> events <b>matched</b>")
+    } else {
+        $('#number_events_displayed').html(n + " / " + realLinesNumber + " events <b>displayed</b>")
+
     }
 
     $('#output').html(res);
