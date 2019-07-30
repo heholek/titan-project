@@ -148,7 +148,7 @@ app.post('/start_process', function (req, res) {
             logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["' + pattern_directory + '"] ')
         }
 
-        var logstash_conf = logstash_input + logstash_filter + OUTPUT_FILTER;
+        var logstash_conf = logstash_input + "\n" + logstash_filter + "\n" + OUTPUT_FILTER;
 
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
 
