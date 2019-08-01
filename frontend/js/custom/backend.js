@@ -289,15 +289,16 @@ function findParsingOptimizationAdvices(parent, array) {
         
         for(key in keys) {
             str = '<div class="col-lg-3">'
-            str += "<h5 class='text-center' style='margin-bottom: 1em; margin-top: 1em'>" + key + "</h5>"
+            str += "<h5 class='text-center' style='margin-bottom: 2em; margin-top: 2em'><u>" + key + "</u></h5>"
             str += "<p>In <b>" + parseFloat(keys[key]["occurence"]/realEventNumber*100).toFixed(2) + "&#37;</b> of events</p>"
             str += "<p>Type : <b>" + keys[key]["types"].join(", ") + "</b></p>"
 
             if (keys[key]["types"].length == 1 && (keys[key]["types"][0] == "integer" || keys[key]["types"][0] == "float")) {
-                str += "<ul>"
-                str += "<p>min : " + keys[key]["min"] + "</p>"
-                str += "<p>max : " + keys[key]["max"] + "</p>"
-                str += "<p>avg : " + keys[key]["avg"] + "</p>"
+                str += "<p>Characteristics:</p><ul>"
+                str += "<li>min : " + keys[key]["min"] + "</li>"
+                str += "<li>max : " + keys[key]["max"] + "</li>"
+                str += "<li>avg : " + keys[key]["avg"] + "</li>"
+                str += "</ul>"
             }
 
             str += "</br><p>Top 5 present values</p><ul class='list-group'>"
