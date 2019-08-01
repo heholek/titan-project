@@ -162,14 +162,20 @@ function findParsingOptimizationAdvices(parent, array) {
                         keys[key] = {
                             "types": [],
                             "guessType": [],
-                            "occurence": 0
+                            "occurence": 0,
+                            "min": 1000000,
+                            "max": -9999999,
+                            "avg": 0,
+                            "sum": 0,
+                            "values_occurences": {}
                         }
                     }
                     
-                    valueType = getValueType(obj[key])
+                    value = obj[key]
+                    valueType = getValueType(value)
 
                     if (valueType == "string") {
-                        valueTypeGuessed = guessStringType(obj[key])
+                        valueTypeGuessed = guessStringType(value)
                         if (!keys[key]["guessType"].includes(valueTypeGuessed)) {
                             keys[key]["guessType"].push(valueTypeGuessed)
                         }
@@ -177,7 +183,22 @@ function findParsingOptimizationAdvices(parent, array) {
                         if (!(key in subEvents)) {
                             subEvents[key] = []
                         }
-                        subEvents[key].push(JSON.stringify(obj[key]))
+                        subEvents[key].push(JSON.stringify(value))
+                    } else if (valueType == "integer" || valueType == "float") {
+                        if (value < keys[key]["min"]) {
+                            keys[key]["min"] = value
+                        }
+                        if (value > keys[key]["max"]) {
+                            keys[key]["max"] = value
+                        }
+                        keys[key]["sum"] = keys[key]["sum"] + value
+                    }
+
+                    if (valueType != "object") {
+                        if (!(value in keys[key]["values_occurences"])) {
+                            keys[key]["values_occurences"][value] = 0
+                        }
+                        keys[key]["values_occurences"][value] = keys[key]["values_occurences"][value]+1
                     }
 
                     if (!keys[key]["types"].includes(valueType)) {
@@ -209,6 +230,9 @@ function findParsingOptimizationAdvices(parent, array) {
         }
         if(key == "TIMESTAMP" && keys[key]["occurence"] != realEventNumber) {
             TimestampNotInEveryEvent = true
+        }
+        if (keys[key]["sum"] != 0) {
+            keys[key]["avg"] = keys[key]["sum"] / keys[key]["occurence"]
         }
     }
 
@@ -259,11 +283,58 @@ function findParsingOptimizationAdvices(parent, array) {
 
     if (isRootEventLevel) {
         $("#parsing_advices").append("</ul>")
+        
+        $("#data_explorer_container").removeClass("d-none")
+        $("#data_explorer").empty()
+        
+        for(key in keys) {
+            str = '<div class="col-lg-3">'
+            str += "<h5 class='text-center' style='margin-bottom: 1em; margin-top: 1em'>" + key + "</h5>"
+            str += "<p>In <b>" + parseFloat(keys[key]["occurence"]/realEventNumber*100).toFixed(2) + "&#37;</b> of events</p>"
+            str += "<p>Type : <b>" + keys[key]["types"].join(", ") + "</b></p>"
+
+            if (keys[key]["types"].length == 1 && (keys[key]["types"][0] == "integer" || keys[key]["types"][0] == "float")) {
+                str += "<ul>"
+                str += "<p>min : " + keys[key]["min"] + "</p>"
+                str += "<p>max : " + keys[key]["max"] + "</p>"
+                str += "<p>avg : " + keys[key]["avg"] + "</p>"
+            }
+
+            str += "</br><p>Top 5 present values</p><ul class='list-group'>"
+            values = createTop5Values(keys[key]["values_occurences"])
+            for (i in values) {
+                if (i > 5) {
+                    break
+                }
+                valueToDisplay = String(values[i][0]).substring(0, 100)
+                if (String(values[i][0]).length != valueToDisplay.length) {
+                    valueToDisplay = valueToDisplay + "..."
+                }
+                str += "<li class='list-group-item'>" + valueToDisplay + " (" + parseFloat(values[i][1]/realEventNumber*100).toFixed(2) + "%)</li>"
+            } 
+            str +="</ul>"
+
+            str += "</div>"
+
+            $("#data_explorer").append(str)
+        }
     }
 
     if (advicesShouldBeShown) {
         $("#parsing_advices").removeClass("d-none")
     }
+}
+
+function createTop5Values(dict) {
+var items = Object.keys(dict).map(function(key) {
+    return [key, dict[key]];
+  });
+  
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+  
+  return items.slice(0, 5)
 }
 
 // Escape string characters to build a Regex
