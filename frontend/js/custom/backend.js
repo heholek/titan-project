@@ -289,19 +289,23 @@ function findParsingOptimizationAdvices(parent, array) {
         
         for(key in keys) {
             str = '<div class="col-lg-3">'
-            str += "<h5 class='text-center' style='margin-bottom: 2em; margin-top: 2em'><u>" + key + "</u></h5>"
-            str += "<p>In <b>" + parseFloat(keys[key]["occurence"]/realEventNumber*100).toFixed(2) + "&#37;</b> of events</p>"
+            str += "<h5 class='text-center text-info' style='margin-bottom: 2em; margin-top: 2em'>" + key + "</h5>"
+            color = "found-some"
+            if (keys[key]["occurence"] == realEventNumber) {
+                color = "found-ok"
+            }
+            str += "<p>In <b class='" + color + "'>" + parseFloat(keys[key]["occurence"]/realEventNumber*100).toFixed(2) + "&#37;</b> of events</p>"
+
             str += "<p>Type : <b>" + keys[key]["types"].join(", ") + "</b></p>"
 
             if (keys[key]["types"].length == 1 && (keys[key]["types"][0] == "integer" || keys[key]["types"][0] == "float")) {
                 str += "<p>Characteristics:</p><ul>"
-                str += "<li>min : " + keys[key]["min"] + "</li>"
-                str += "<li>max : " + keys[key]["max"] + "</li>"
-                str += "<li>avg : " + keys[key]["avg"] + "</li>"
-                str += "</ul>"
+                str += "<p><b>min</b> : " + keys[key]["min"] + "</p>"
+                str += "<p><b>max</b> : " + keys[key]["max"] + "</p>"
+                str += "<p><b>avg</b> : " + keys[key]["avg"] + "</p>"
             }
 
-            str += "</br><p>Top 5 present values</p><ul class='list-group'>"
+            str += "</br><u><p>Top 5 values:</p></u><ul class='list-group'>"
             values = createTop5Values(keys[key]["values_occurences"])
             for (i in values) {
                 if (i > 5) {
@@ -311,7 +315,11 @@ function findParsingOptimizationAdvices(parent, array) {
                 if (String(values[i][0]).length != valueToDisplay.length) {
                     valueToDisplay = valueToDisplay + "..."
                 }
-                str += "<li class='list-group-item'>" + valueToDisplay + " (" + parseFloat(values[i][1]/realEventNumber*100).toFixed(2) + "%)</li>"
+                other_classes = ""
+                if (values.length == 1) {
+                    other_classes = " background-emphasis"
+                }
+                str += "<li class='list-group-item" + other_classes + "'>" + valueToDisplay + " (" + parseFloat(values[i][1]/realEventNumber*100).toFixed(2) + "%)</li>"
             } 
             str +="</ul>"
 

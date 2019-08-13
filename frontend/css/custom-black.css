@@ -32,6 +32,10 @@
   background-color: #354e94;
 }
 
+.background-emphasis {
+  background-color: #434c4c;
+}
+
 .mark-danger {
   background-color: #E74C3C;
   color: black;

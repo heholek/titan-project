@@ -28,6 +28,10 @@
   background-color: #fff176;
 }
 
+.background-emphasis {
+  background-color: #ececec;
+}
+
 .ace-clouds .ace_keyword  {
   color:  #e91e91 !important;
 }
