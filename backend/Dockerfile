@@ -46,6 +46,6 @@ CMD [ "npm", "start" ]
 
 # Copy the parser executable to this container
 # Comment if not needed or option disabled
-COPY --from=log-parser-builder go/src/github.com/GroupePSA/log-parser/parser /usr/local/bin/
+COPY ./parser /usr/local/bin/parser
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8081/ || exit 1
