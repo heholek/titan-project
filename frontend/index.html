@@ -374,9 +374,26 @@
               style="margin-top: 1em; margin-bottom: 1em" role="alert">
             </div>
 
-            <p style="margin-top: 1em" class="form-text text-muted minimalist-box">
-              The data process by Logstash will be displayed here.
-            </p>
+            <div class="row col-lg-12">
+              
+              <div class="col">
+                <p style="margin-top: 1em" class="form-text text-muted minimalist-box">
+                  The data process by Logstash will be displayed here.
+                </p>
+              </div>
+
+              <div class="col text-right" style="padding-right: 0em;">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle disabled" type="button" id="download_output" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Download </button>
+                  <div class="dropdown-menu" aria-labelledby="download_output">
+                    <a class="dropdown-item" href="#" onclick="saveOutputToFile('json')">JSON</a>
+                    <a class="dropdown-item" href="#" onclick="saveOutputToFile('csv')">CSV</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
           <pre id="output" class="form-control col-lg-12 log-display"

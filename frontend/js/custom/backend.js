@@ -594,6 +594,7 @@ $('#start_process').click(function () {
         $("#start_process").addClass('disabled');
         $("#latest_run_container").addClass("d-none")
         $("#parsing_advices").addClass("d-none")
+        $("#download_output").addClass('disabled');
 
         $.ajax({
             url: api_url + "/start_process",
@@ -637,6 +638,7 @@ $('#start_process').click(function () {
                 refreshLogstashLogDisplay()
                 $("#backend_response_time").text(response_time_formatted)
                 $("#start_process").removeClass('disabled');
+                $("#download_output").removeClass('disabled');
             },
             error: function () {
                 jobFailed()
@@ -646,3 +648,130 @@ $('#start_process').click(function () {
     }
 
 });
+
+
+// Escape a CSV character
+
+function escapeCSV (term) {
+   return term.toString().replace(/"/g, '""')
+}
+
+// build csv from map (key=column_names)
+
+function buildCSV(column_values) {
+    res = ""
+
+    keys = Object.keys(column_values)
+    for (var i = 0 ; i < keys.length ; i++) {
+        res = res + '"' + escapeCSV(keys[i]) + '"'
+        if (i != keys.length - 1) {
+            res = res + ","
+        } else {
+            res = res + "\n"
+        }
+    }
+
+    if (keys.length != 0) {
+        for(var i = 0 ; i < column_values[keys[0]].length ; i++) {
+            for(var j = 0 ; j < keys.length ; j++) {
+                key = keys[j]
+                console.log(escapeCSV(column_values[key][i]))
+                res = res + '"' + escapeCSV(column_values[key][i]) + '"'
+                if (j != keys.length - 1) {
+                    res = res + ","
+                } else {
+                    res = res + "\n"
+                }
+            }
+        }
+        
+    }
+
+    return res
+}
+
+// Extract JSON content for output
+
+function getLogstashOutputJson() {
+    res = ""
+    for (var i = 0; i < logstash_output.length; i++) {
+        line = logstash_output[i]
+        if (line.startsWith("{") && line.endsWith("}")) {
+            if (res != "") {
+                res = res + "\n"
+            }
+            res = res + line
+        }
+    }
+    return res
+}
+
+// Recursive function to get CSV values for an JS object
+
+function getLogstashOutputCSVStep(currentEvent, level, columns_values, currentRow) {
+    Object.keys(currentEvent).forEach(function (key) {
+        final_key = (level != "" ? level + "_" + key : key)
+
+        if (getValueType(currentEvent[key]) == "object") {
+            console.log("in")
+            getLogstashOutputCSVStep(currentEvent[key], final_key, columns_values, currentRow)
+        } else {
+            if (columns_values[final_key] == undefined) {
+                columns_values[final_key] = []
+                for (i = 0 ; i < currentRow ; i++) {
+                    columns_values[final_key][i] = ""
+                }
+            }
+            columns_values[final_key][currentRow] = currentEvent[key]
+        }
+     });
+}
+
+// Extract CSV content for output
+
+function getLogstashOutputCSV() {
+    columns_values = {}
+    rowCounter = 0;
+
+    // We parse the JSON values
+    for (var i = 0; i < logstash_output.length; i++) {
+        line = logstash_output[i]
+        if (line.startsWith("{") && line.endsWith("}")) {
+            values_event = JSON.parse(line)
+            getLogstashOutputCSVStep(values_event, "", columns_values, rowCounter)
+            rowCounter += 1;
+        }
+    }
+
+    // We complete columns that may not have the same end as others
+    for (var key in columns_values) {
+        if (columns_values[key].length != rowCounter) {
+            for(var i = columns_values[key].length; i < rowCounter ; i++) {
+                columns_values[key][i] = ""
+            }
+        }
+    }
+
+    // We set empty variable to an empty string
+    for (var key in columns_values) {
+        for(var i = 0; i < rowCounter ; i++) {
+            if (columns_values[key][i] == undefined) {
+                columns_values[key][i] = ""
+            }
+        }
+    }
+
+    return buildCSV(columns_values)
+}
+
+// Function to save the Logstash output to a file
+// Support currently JSON & CSV
+
+function saveOutputToFile(outputType) {
+    filename = "logstash-output." + outputType
+    fileMime = (outputType == "json" ? "application/json" : "text/csv")
+
+    res = (outputType == "json" ? getLogstashOutputJson() : getLogstashOutputCSV())
+
+    saveToFile(res, filename, fileMime)
+}
