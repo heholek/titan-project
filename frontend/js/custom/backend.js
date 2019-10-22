@@ -653,7 +653,7 @@ $('#start_process').click(function () {
 // Escape a CSV character
 
 function escapeCSV (term) {
-   return term.toString().replace(/"/g, '""')
+   return term.toString().replace(/"/g, '""').replace(/\n/g, ' ')
 }
 
 // build csv from map (key=column_names)
