@@ -696,7 +696,6 @@ function buildCSV(column_values) {
         for(var i = 0 ; i < column_values[keys[0]].length ; i++) {
             for(var j = 0 ; j < keys.length ; j++) {
                 key = keys[j]
-                console.log(escapeCSV(column_values[key][i]))
                 res = res + '"' + escapeCSV(column_values[key][i]) + '"'
                 if (j != keys.length - 1) {
                     res = res + ","
@@ -734,7 +733,6 @@ function getLogstashOutputCSVStep(currentEvent, level, columns_values, currentRo
         final_key = (level != "" ? level + "_" + key : key)
 
         if (getValueType(currentEvent[key]) == "object") {
-            console.log("in")
             getLogstashOutputCSVStep(currentEvent[key], final_key, columns_values, currentRow)
         } else {
             if (columns_values[final_key] == undefined) {
