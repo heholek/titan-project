@@ -31,9 +31,6 @@ const LOGFILES_TEMP_DIR = LOGFILES_DIR + "tmp/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
-const KIBANA_VERSION = process.env.KIBANA_VERSION || "6.7.0";
-const KIBANA_HOST = process.env.KIBANA_HOST || "localhost:5601";
-
 
 ///////////////////////////////
 // Some system util function //
