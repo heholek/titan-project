@@ -31,6 +31,9 @@ const LOGFILES_TEMP_DIR = LOGFILES_DIR + "tmp/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
+const JAVA_11_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-11-openjdk-amd64";
+const JAVA_8_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-8-openjdk-amd64";
+const THREAD_WORKER = process.env.THREAD_WORKER || 1;
 
 ///////////////////////////////
 // Some system util function //
@@ -392,8 +395,11 @@ function computeResult(id, res, input, instanceDirectory, logstash_version, logs
         command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
     }
 
+    var JAVA_PATH = (["5.6.4", "5.6.16"].includes(logstash_version) ? JAVA_8_JRE_HOME : JAVA_11_JRE_HOME)
+    console.log(JAVA_PATH)
+
     var logstash_temp_datadir = instanceDirectory + "temp_data"
-    var command = command_user_data + ' | LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /logstash/logstash-"' + logstash_version + '"/bin/logstash --log.level warn --path.data ' + logstash_temp_datadir + ' -f ' + logstash_conf_filepath + ' -i';
+    var command = command_user_data + ' | JAVA_HOME="' + JAVA_PATH + '" LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /logstash/logstash-"' + logstash_version + '"/bin/logstash --log.level warn --path.data ' + logstash_temp_datadir + ' -w ' + THREAD_WORKER + ' -f ' + logstash_conf_filepath + ' -i';
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT,

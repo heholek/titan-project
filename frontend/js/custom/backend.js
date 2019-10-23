@@ -47,11 +47,32 @@ function cleanLogstashStdout(stdout) {
         line = stdout_splitted[i]
         if (!/^Sending Logstash.*logs.*configured.*log4j2\.properties$/.test(line)
             && !/^\[\d+.*WARN.*logstash\.config\.source.*Ignoring.*pipelines.yml.*$/.test(line)
-            && !/^\[\d+.*WARN.*logstash\.agent.*stopping pipeline.*$/.test(line)) {
+            && !/^\[\d+.*WARN.*logstash\.agent.*stopping pipeline.*$/.test(line)
+            && !/^\[\d+.*org\.logstash\.instrument\.metrics\.gauge\.LazyDelegatingGauge.*A gauge metric.*This may result in invalid serialization.*$/.test(line)
+            && !/^The stdin plugin is now waiting for input:$/.test(line)) {
             stdout_cleaned.push(line)
         }
     }
     return stdout_cleaned
+}
+
+// We clean useless lines at start of the Logstash stderr
+
+function cleanLogstashStderr(stderr) {
+    stderr_splitted = stderr.split("\n")
+    stderr_cleaned = []
+    for (var i = 0; i < stderr_splitted.length; i++) {
+        line = stderr_splitted[i]
+        if (!/^WARNING: Illegal reflective access by com\.headius\.backport9\.modules\.Modules.*$/.test(line)
+            && !/^WARNING: Please consider reporting this to the maintainers of com\.headius\.backport9\.modules\.Modules$/.test(line)
+            && !/^WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations$/.test(line)
+            && !/^WARNING: All illegal access operations will be denied in a future release$/.test(line)
+            && !/^WARNING: An illegal reflective access operation has occurred$/.test(line)
+            && !/^Thread\.exclusive is deprecated, use Thread::Mutex$/.test(line)) {
+            stderr_cleaned.push(line)
+        }
+    }
+    return stderr_cleaned.join("\n")
 }
 
 // We check if logstash met a problems during the process
@@ -605,7 +626,7 @@ $('#start_process').click(function () {
             timeout: 60000,
             success: function (data) {
                 logstash_output = cleanLogstashStdout(data.job_result.stdout)
-                logstash_output_stderr = data.job_result.stderr
+                logstash_output_stderr = cleanLogstashStderr(data.job_result.stderr)
 
                 if(enableParsingAdvices) {
                     findParsingOptimizationAdvices("", logstash_output)
