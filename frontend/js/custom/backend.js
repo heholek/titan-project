@@ -790,7 +790,11 @@ function saveOutputToFile(outputType) {
     filename = "logstash-output." + outputType
     fileMime = (outputType == "json" ? "application/json" : "text/csv")
 
-    res = (outputType == "json" ? getLogstashOutputJson() : getLogstashOutputCSV())
-
-    saveToFile(res, filename, fileMime)
+    try {
+        res = (outputType == "json" ? getLogstashOutputJson() : getLogstashOutputCSV())
+        saveToFile(res, filename, fileMime)
+    } catch (error) {
+        toastr.error("Failed to export your data as " + outputType.toUpperCase(), "Error")
+    }
+    
 }
