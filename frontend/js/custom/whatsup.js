@@ -6,6 +6,15 @@ var whatsup = [
         news: [
             "Improved Logstash 6.x and 7.x performance"
         ]
+    },
+    {
+        version: 2,
+        date: "24 october 2019",
+        news: [
+            "Well, that window",
+            "Custom pattern box is now displayed in minimalist mode",
+            "Some warning and errors are displayed when using incompatible parameters in Grok and Translate filters"
+        ]
     }
 ]
 
