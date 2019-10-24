@@ -8,8 +8,8 @@ ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy
 
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' >> /etc/apt/apt.conf.d/01proxy \
- && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy
+#RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' >> /etc/apt/apt.conf.d/01proxy \
+# && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy
 
 # Install Nodejs 10
 RUN apt-get update \
@@ -54,6 +54,6 @@ CMD [ "npm", "start" ]
 
 # Copy the parser executable to this container
 # Comment if not needed or option disabled
-#COPY ./parser /usr/local/bin/parser
+COPY ./parser /usr/local/bin/parser
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8081/ || exit 1
