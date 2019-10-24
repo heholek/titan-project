@@ -75,6 +75,8 @@ function getConfig() {
 
 // Load session for user
 function loadSession(session) {
+    sessionFound = true
+
     if (session == undefined) {
         var session = store.get('session');
     }
@@ -113,6 +115,14 @@ function loadSession(session) {
         }
     } else {
         console.log("No cookie for session found")
+        sessionFound = false
+    }
+
+    // We only want to display what is up if user is already a titan-project user
+    if (sessionFound) {
+        showWhatsUpIfNeeded()
+    } else {
+        storeLatestVersionSeen()
     }
 }
 
