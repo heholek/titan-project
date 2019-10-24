@@ -108,8 +108,14 @@ function checkInputLogsEnding() {
 
 function userInputValid() {
   input_valid = true;
+  input_warning = false;
   redirectToLocation = null;
 
+  error_reason = "All fields need to be fill !"
+  error_title = 'Informations missings'
+  error_type = "error"
+  error_opt = {}
+  
   var input_data = inputEditor.getSession().getValue()
   var logstash_filter = editor.getSession().getValue();
 
@@ -121,7 +127,33 @@ function userInputValid() {
     $('#input_data_title').removeClass("text-danger");
   }
 
-  if (logstash_filter.length == 0) {
+
+  var logstash_filter_lines = logstash_filter.split("\n")
+  var logstashFilterError = false
+  for (var i in logstash_filter_lines) {
+    line = logstash_filter_lines[i]
+    if (/^\s*patterns_dir\s*=>/.test(line)) {
+      error_reason = "The parameter <b>patterns_dir</b> was commented into <i>Grok</i> bloc(s).<br>Please use the custom Logstash pattern box to add your customs Grok patterns."
+      error_type = "warning"
+      input_warning = true
+    } else if (/^\s*patterns_files_glob\s*=>/.test(line)) {
+      error_reason = "The parameter <b>patterns_files_glob</b> was commented into <i>Grok</i> bloc(s).<br>Please use the custom Logstash pattern box to add your customs Grok patterns."
+      error_type = "warning"
+      input_warning = true
+    } else if (/^\s*dictionary_path\s*=>/.test(line)) {
+      logstashFilterError = true
+      error_reason = "The parameter <b>dictionary_path</b> is not supported into <i>Translate</i> blocs.<br>You can either refractor you code to remove this bloc, or embed your dictionnary values into the bloc."
+    }
+  }
+
+  if(logstashFilterError || input_warning) {
+    error_title = "Non-compatible parameter"
+    error_opt = { 
+      timeOut: 10000
+    }
+  }
+
+  if (logstash_filter.length == 0 || logstashFilterError) {
     $('#logstash_filter_title').addClass("text-danger");
     redirectToLocation = "logstash_filter_textarea"
     input_valid = false;
@@ -158,7 +190,10 @@ function userInputValid() {
   }
 
   if (!input_valid) {
-    var notif = toastr.error('All fields need to be fill !', 'Informations missings')
+    var notif = toastr.error(error_reason, error_title, error_opt)
+    redirectToastrClick(notif, redirectToLocation)
+  } else if (input_warning) {
+    var notif = toastr.warning(error_reason, error_title, error_opt)
     redirectToastrClick(notif, redirectToLocation)
   }
 
