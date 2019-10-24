@@ -1,3 +1,4 @@
+// The news
 var whatsup = [
     {
         version: 1,
@@ -8,12 +9,14 @@ var whatsup = [
     }
 ]
 
+// Store latest version that user saw
 function storeLatestVersionSeen() {
     store.set("version", {
         version: whatsup[whatsup.length - 1].version
     })
 }
 
+// Show the modal to inform of user changes if needed
 function showWhatsUpIfNeeded() {
     userVersion = (store.get("version") != undefined ? store.get("version").version : 0)
     newsText = ""
@@ -43,6 +46,7 @@ function showWhatsUpIfNeeded() {
     }
 }
 
+// Trigger on modal close
 $('#whatsupModal').on('hidden.bs.modal', function () {
     storeLatestVersionSeen()
 })
