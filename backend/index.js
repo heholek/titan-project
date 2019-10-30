@@ -26,6 +26,7 @@ var OUTPUT_FILTER = "output { stdout { codec => json_lines } }";
 const PORT = process.env.PORT || 8081;
 const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 120000;
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/data/";
+const LOGSTASH_TMP_DIR = process.env.LOGSTASH_DATA_DIR || "/tmp/logstash/tmp/";
 const LOGFILES_DIR = process.env.LOGFILES_DIR || "/tmp/logstash/logfiles/";
 const LOGFILES_TEMP_DIR = LOGFILES_DIR + "tmp/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
@@ -54,6 +55,7 @@ function createDirectory(directory) {
 createDirectory(LOGSTASH_DATA_DIR)
 createDirectory(LOGFILES_DIR)
 createDirectory(LOGFILES_TEMP_DIR)
+createDirectory(LOGSTASH_TMP_DIR)
 
 // Write a string content to file
 
@@ -64,6 +66,21 @@ function writeStringToFile(id, filepath, data, callback) {
                 log.error(id + " - Unable to write data to file '" + filepath + "'");
             } else {
                 log.error("Unable to write data to file '" + filepath + "'");
+            }
+        }
+        callback()
+    });
+}
+
+// Delete a file from disk
+
+function deleteFile(id, filepath, callback) {
+    fs.unlink(filepath, function (err) {
+        if (err) {
+            if (id != undefined) {
+                log.error(id + " - Unable to delete file '" + filepath + "'");
+            } else {
+                log.error("Unable to delete file '" + filepath + "'");
             }
         }
         callback()
@@ -127,7 +144,9 @@ app.post('/start_process', function (req, res) {
         }
 
         if (input.type == "input") {
-            input.data = quote([req.body.input_data]);
+            //input.data = quote([req.body.input_data]);
+            input.tmp_filepath = LOGSTASH_TMP_DIR + id
+            writeStringToFile(id, input.tmp_filepath, req.body.input_data, function () { });
         } else {
             input.filehash = req.body.filehash;
         }
@@ -390,7 +409,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version, logs
     var command_user_data = ""
 
     if (input.type == "input") {
-        command_user_data = 'echo ' + input.data
+        command_user_data = 'cat ' + input.tmp_filepath
     } else {
         command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
     }
@@ -410,6 +429,10 @@ function computeResult(id, res, input, instanceDirectory, logstash_version, logs
     try {
         exec(command, options, (err, stdout, stderr) => {
             log.info(id + " - Ended a Logstash process");
+
+            if (input.type == "input") {
+                deleteFile(id, input.tmp_filepath, function () {})
+            }
 
             var status = 0;
 
