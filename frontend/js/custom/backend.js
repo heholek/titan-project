@@ -730,7 +730,7 @@ function getLogstashOutputJson() {
 
 function getLogstashOutputCSVStep(currentEvent, level, columns_values, currentRow) {
     Object.keys(currentEvent).forEach(function (key) {
-        final_key = (level != "" ? level + "_" + key : key)
+        final_key = (level != "" ? level + "." + key : key)
 
         if (getValueType(currentEvent[key]) == "object") {
             getLogstashOutputCSVStep(currentEvent[key], final_key, columns_values, currentRow)
