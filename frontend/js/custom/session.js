@@ -119,7 +119,7 @@ function loadSession(session) {
     }
 
     // We only want to display what is up if user is already a titan-project user
-    if (sessionFound) {
+    if (sessionFound && enable_news) {
         showWhatsUpIfNeeded()
     } else {
         storeLatestVersionSeen()
