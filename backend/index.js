@@ -32,7 +32,7 @@ const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const JAVA_11_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-11-openjdk-amd64";
-const JAVA_8_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-8-openjdk-amd64";
+const JAVA_8_JRE_HOME = process.env.JAVA_8_JRE_HOME || "/usr/lib/jvm/java-8-openjdk-amd64";
 const THREAD_WORKER = process.env.THREAD_WORKER || 1;
 
 ///////////////////////////////
