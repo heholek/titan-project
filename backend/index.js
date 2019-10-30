@@ -453,7 +453,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version, logs
         command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
     }
 
-    var JAVA_PATH = (["5.6.4", "5.6.16"].includes(logstash_version) ? JAVA_8_JRE_HOME : JAVA_11_JRE_HOME)
+    var JAVA_PATH = (logstash_version.length != 0 && logstash_version.startsWith("5") ? JAVA_8_JRE_HOME : JAVA_11_JRE_HOME)
 
     var logstash_temp_datadir = instanceDirectory + "temp_data"
     var command = command_user_data + ' | JAVA_HOME="' + JAVA_PATH + '" LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /logstash/logstash-' + logstash_version + '/bin/logstash --log.level warn --path.data ' + logstash_temp_datadir + ' -w ' + THREAD_WORKER + ' -f ' + logstash_conf_filepath + ' -i';
