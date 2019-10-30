@@ -35,6 +35,7 @@ const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const JAVA_11_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-11-openjdk-amd64";
 const JAVA_8_JRE_HOME = process.env.JAVA_8_JRE_HOME || "/usr/lib/jvm/java-8-openjdk-amd64";
 const THREAD_WORKER = process.env.THREAD_WORKER || 1;
+const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '100mb';
 
 ///////////////////////////////
 // Some system util function //
@@ -119,7 +120,7 @@ log.setLevel(LOG_LEVEL);
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json({ limit: '100mb' }))
+app.use(bodyParser.json({ limit: JSON_BODY_LIMIT }))
 app.use(morgan('combined'))
 
 // Home rooting
