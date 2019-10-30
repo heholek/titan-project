@@ -6,11 +6,9 @@ var path = require('path');
 
 const express = require('express')
 var bodyParser = require('body-parser')
-var quote = require('shell-quote').quote;
 var cors = require('cors')
 var uniqid = require('uniqid');
 var morgan = require('morgan')
-var request = require('request');
 var glob = require("glob")
 const NodeCache = require("node-cache");
 const NodeGrok = require("node-grok")
