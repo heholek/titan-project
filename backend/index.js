@@ -2,6 +2,7 @@
 
 var exec = require('child_process').exec;
 const fs = require('fs');
+var path = require('path');
 
 const express = require('express')
 var bodyParser = require('body-parser')
@@ -10,6 +11,7 @@ var cors = require('cors')
 var uniqid = require('uniqid');
 var morgan = require('morgan')
 var request = require('request');
+var glob = require("glob")
 const NodeCache = require("node-cache");
 const NodeGrok = require("node-grok")
 
@@ -128,6 +130,42 @@ app.use(morgan('combined'))
 app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "message": "Nothing here !" }));
+})
+
+// Sort version in 'real' order
+// For example, 5.6.4 is before 5.6.16
+function sortVersionArray(arr) {
+    return arr.map( a => a.split('.').map( n => +n+100000 ).join('.') ).sort()
+    .map( a => a.split('.').map( n => +n-100000 ).join('.') );
+}
+
+// Get the list of Logstash versions
+
+app.get('/logstash_versions', function (req, res) {
+
+    glob("/logstash/logstash-*/", {}, function (err, directories) {
+        if (err) {
+            res.status(400);
+            res.send(JSON.stringify({ "succeed": false }));
+        } else {
+            logstash_versions = []
+            subs_start = "logstash-".length
+
+            for(var i in directories) {
+                dir = directories[i]
+                logstash_dir_name = path.basename(dir)
+                if (logstash_dir_name.length > subs_start) {
+                    logstash_versions.push(logstash_dir_name.substring(subs_start))
+                }
+            }
+
+            logstash_versions = sortVersionArray(logstash_versions);
+
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
+        }
+      })
+
 })
 
 // Rooting for process starting
