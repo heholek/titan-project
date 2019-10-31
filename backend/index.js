@@ -279,13 +279,7 @@ app.post('/guess_config', function (req, res) {
     } else {
         if (req.body.filehash != undefined) {
             filepath = buildLocalLogFilepath(req.body.filehash)
-            guessConfig(res, filepath, function () {
-                fs.remove(filepath, err => {
-                    if (err) {
-                        log.warn("Failed to delete file '" + filepath + "'");
-                    }
-                })
-            })
+            guessConfig(res, filepath, function () {})
         } else {
             filehash = uniqid()
             filepath = LOGFILES_TEMP_DIR + filehash + ".log"
