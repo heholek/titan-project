@@ -19,31 +19,20 @@ RUN apt-get update \
     && apt-get -y install gcc g++ make \
     && apt-get install -y nodejs
 
-# Install Java
-RUN apt-get update \
-    && apt-get install tar wget openjdk-8-jre-headless openjdk-11-jre-headless -y
-
-# Install Logstash
-COPY ./setup setup
-
-RUN bash setup/install_logstash.sh 5.6.4 && (JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 setup/update_logstash_plugins.sh 5.6.4; true)
-RUN bash setup/install_logstash.sh 5.6.16 && (JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 setup/update_logstash_plugins.sh 5.6.16; true)
-RUN bash setup/install_logstash.sh 6.8.3 && (JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 setup/update_logstash_plugins.sh 6.8.3; true)
-RUN bash setup/install_logstash.sh 7.4.0 && (JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 setup/update_logstash_plugins.sh 7.4.0; true)
-
 # Create app directory
 WORKDIR /usr/src/app
 
+# Install docker client CLI
+ENV DOCKERVERSION=19.03.3
+RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKERVERSION}.tgz \
+  && tar xzvf docker-${DOCKERVERSION}.tgz --strip 1 \
+                 -C /usr/local/bin docker/docker \
+  && rm docker-${DOCKERVERSION}.tgz
+
+
 # Install app dependencies
 COPY package*.json ./
-
 RUN npm install --production
-
-# Copy the logstash jvm files
-COPY docker_ressources/jvm-jdk8.options /logstash/logstash-5.6.4/config/jvm.options
-COPY docker_ressources/jvm-jdk8.options /logstash/logstash-5.6.16/config/jvm.options
-COPY docker_ressources/jvm-jdk11.options /logstash/logstash-6.8.3/config/jvm.options
-COPY docker_ressources/jvm-jdk11.options /logstash/logstash-7.4.0/config/jvm.options
 
 # Bundle app source and conf
 COPY . .
