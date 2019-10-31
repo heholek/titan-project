@@ -1,6 +1,8 @@
 // Includes
 
 var exec = require('child_process').exec;
+const execSync = require('child_process').execSync;
+
 const fs = require('fs');
 var path = require('path');
 
@@ -9,7 +11,6 @@ var bodyParser = require('body-parser')
 var cors = require('cors')
 var uniqid = require('uniqid');
 var morgan = require('morgan')
-var glob = require("glob")
 const NodeCache = require("node-cache");
 const NodeGrok = require("node-grok")
 
@@ -32,8 +33,6 @@ const LOGFILES_TEMP_DIR = LOGFILES_DIR + "tmp/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
-const JAVA_11_JRE_HOME = process.env.JAVA_11_JRE_HOME || "/usr/lib/jvm/java-11-openjdk-amd64";
-const JAVA_8_JRE_HOME = process.env.JAVA_8_JRE_HOME || "/usr/lib/jvm/java-8-openjdk-amd64";
 const THREAD_WORKER = process.env.THREAD_WORKER || 1;
 const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '100mb';
 
@@ -137,33 +136,33 @@ function sortVersionArray(arr) {
     .map( a => a.split('.').map( n => +n-100000 ).join('.') );
 }
 
+// Get the Logstash versions available
+
+function getLogstashVersionsAvailable() {
+    var logstash_versions = []
+
+    var res = execSync('docker image list --filter "reference=titan-project-logstash" --format "{{.Tag}}"')
+
+    logstash_versions = res.toString('utf8').split('\n')
+           
+    logstash_versions = logstash_versions.filter(function( element ) {
+         return element !== undefined && element != "";
+     });
+     
+     if (logstash_versions.length == 0) {
+         console.warn("No Logstash version was found")
+     }
+
+    return logstash_versions
+}
+
+const logstash_versions = getLogstashVersionsAvailable()
+
 // Get the list of Logstash versions
 
 app.get('/logstash_versions', function (req, res) {
-
-    glob("/logstash/logstash-*/", {}, function (err, directories) {
-        if (err) {
-            res.status(400);
-            res.send(JSON.stringify({ "succeed": false }));
-        } else {
-            logstash_versions = []
-            subs_start = "logstash-".length
-
-            for(var i in directories) {
-                dir = directories[i]
-                logstash_dir_name = path.basename(dir)
-                if (logstash_dir_name.length > subs_start) {
-                    logstash_versions.push(logstash_dir_name.substring(subs_start))
-                }
-            }
-
-            logstash_versions = sortVersionArray(logstash_versions);
-
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
-        }
-      })
-
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
 })
 
 // Rooting for process starting
@@ -180,17 +179,16 @@ app.post('/start_process', function (req, res) {
             type: (req.body.input_data != null ? "input" : "file")
         }
 
+        var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
+
+        createDirectory(instanceDirectory)
+
         if (input.type == "input") {
-            //input.data = quote([req.body.input_data]);
-            input.tmp_filepath = LOGSTASH_TMP_DIR + id
+            input.tmp_filepath = instanceDirectory + "data.log"
             writeStringToFile(id, input.tmp_filepath, req.body.input_data, function () { });
         } else {
             input.filehash = req.body.filehash;
         }
-
-        var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
-
-        createDirectory(instanceDirectory)
 
         var logstash_input = buildLogstashInput(req.body.input_extra_fields, req.body['custom_codec'])
         var logstash_filter = req.body.logstash_filter;
@@ -201,7 +199,7 @@ app.post('/start_process', function (req, res) {
             var pattern_directory = instanceDirectory + "patterns/";
             createDirectory(pattern_directory)
             writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
-            logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["' + pattern_directory + '"] ')
+            logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/logstash/patterns"] ')
         }
 
         var logstash_conf = logstash_input + "\n" + logstash_filter + "\n" + OUTPUT_FILTER;
@@ -209,7 +207,7 @@ app.post('/start_process', function (req, res) {
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
 
         writeStringToFile(id, logstash_conf_filepath, logstash_conf, function () {
-            computeResult(id, res, input, instanceDirectory, logstash_version, logstash_conf_filepath);
+            computeResult(id, res, input, instanceDirectory, logstash_version);
         })
 
     }
@@ -440,21 +438,19 @@ function buildLocalLogFilepath(hash) {
 
 // Compute the logstash result
 
-function computeResult(id, res, input, instanceDirectory, logstash_version, logstash_conf_filepath) {
+function computeResult(id, res, input, instanceDirectory, logstash_version) {
     log.info(id + " - Starting logstash process");
 
-    var command_user_data = ""
+    var input_filepath = ""
 
     if (input.type == "input") {
-        command_user_data = 'cat ' + input.tmp_filepath
+        input_filepath = input.tmp_filepath
     } else {
-        command_user_data = "cat " + buildLocalLogFilepath(input.filehash)
+        input_filepath = buildLocalLogFilepath(input.filehash)
     }
 
-    var JAVA_PATH = (logstash_version.length != 0 && logstash_version.startsWith("5") ? JAVA_8_JRE_HOME : JAVA_11_JRE_HOME)
-
-    var logstash_temp_datadir = instanceDirectory + "temp_data"
-    var command = command_user_data + ' | JAVA_HOME="' + JAVA_PATH + '" LS_JAVA_OPTS="-Xms' + LOGSTASH_RAM + ' -Xmx' + LOGSTASH_RAM + '" /logstash/logstash-' + logstash_version + '/bin/logstash --log.level warn --path.data ' + logstash_temp_datadir + ' -w ' + THREAD_WORKER + ' -f ' + logstash_conf_filepath + ' -i';
+    var command_env = "-e LOGSTASH_RAM=" + LOGSTASH_RAM + " -e THREAD_WORKER=" + THREAD_WORKER
+    var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log -v " + instanceDirectory + "patterns/:/logstash/patterns/ " + command_env + " titan-project-logstash:" + logstash_version;
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT,

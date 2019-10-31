@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+
+  logstash_5.6.4:
+    image: titan-project-logstash:5.6.4
+    build: 
+      context: .
+      args:
+        LOGSTASH_VERSION: "5.6.4"
+        JDK_VERSION: "8"
+        # http_proxy: ""
+        # https_proxy: ""
+        # no_proxy: "localhost,127.0.0.1"
+
+  logstash_5.6.16:
+    image: titan-project-logstash:5.6.16
+    build: 
+      context: .
+      args:
+        LOGSTASH_VERSION: "5.6.16"
+        JDK_VERSION: "8"
+        # http_proxy: ""
+        # https_proxy: ""
+        # no_proxy: "localhost,127.0.0.1"
+
+  logstash_6.8.3:
+    image: titan-project-logstash:6.8.3
+    build: 
+      context: .
+      args:
+        LOGSTASH_VERSION: "6.8.3"
+        JDK_VERSION: "11"
+        # http_proxy: ""
+        # https_proxy: ""
+        # no_proxy: "localhost,127.0.0.1"
+  
+  logstash_7.4.0:
+    image: titan-project-logstash:7.4.0
+    build: 
+      context: .
+      args:
+        LOGSTASH_VERSION: "7.4.0"
+        JDK_VERSION: "11"
+        # http_proxy: ""
+        # https_proxy: ""
+        # no_proxy: "localhost,127.0.0.1"
