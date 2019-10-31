@@ -48,7 +48,10 @@ function fileUploadEnabled(hash, content) {
 function sendLogfileToBackend(e) {
     readSingleFile(e, (content) => {
 
-        var hash = md5(content)
+        var md = forge.md.sha512.create();
+        md.update(content);
+        var hash = md.digest().toHex()
+
         fileUploadEnabled(hash)
 
         remoteLogExists(hash, (exists) => {

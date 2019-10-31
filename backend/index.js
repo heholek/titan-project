@@ -429,7 +429,7 @@ function getGrokResult(grok, grok_pattern, line) {
 
 // Check if a filehash is valid or not
 function isFilehashValid(hash) {
-    return hash.match(/^[a-zA-Z0-9]{32}$/g)
+    return hash.match(/^[a-zA-Z0-9]{128}$/g)
 }
 
 // Build the input user filepath
