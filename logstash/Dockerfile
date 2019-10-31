@@ -38,4 +38,9 @@ ENV UPDATE_PLUGINS=$UPDATE_PLUGINS
 
 RUN /tmp/update_logstash_plugins.sh
 
+RUN useradd -ms /bin/bash logstash
+RUN chown -R logstash /logstash
+
+USER logstash
+
 ENTRYPOINT [ "/entrypoint.sh" ]

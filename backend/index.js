@@ -35,6 +35,7 @@ const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const THREAD_WORKER = process.env.THREAD_WORKER || 1;
 const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '100mb';
+const HARDEN_SECURITY = process.env.HARDEN_SECURITY || 'false';
 
 ///////////////////////////////
 // Some system util function //
@@ -450,7 +451,11 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
     }
 
     var command_env = "-e LOGSTASH_RAM=" + LOGSTASH_RAM + " -e THREAD_WORKER=" + THREAD_WORKER
-    var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log -v " + instanceDirectory + "patterns/:/logstash/patterns/ " + command_env + " titan-project-logstash:" + logstash_version;
+    var command_security = ""
+    if (HARDEN_SECURITY == "true") {
+        command_security = "--network=none --hostname localhost"
+    }
+    var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log -v " + instanceDirectory + "patterns/:/logstash/patterns/ " + command_env + " " + command_security + " titan-project-logstash:" + logstash_version;
 
     var options = {
         timeout: MAX_EXEC_TIMEOUT,
