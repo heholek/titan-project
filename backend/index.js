@@ -3,8 +3,7 @@
 var exec = require('child_process').exec;
 const execSync = require('child_process').execSync;
 
-const fs = require('fs');
-var path = require('path');
+const fs = require('fs-extra')
 
 const express = require('express')
 var bodyParser = require('body-parser')
@@ -42,22 +41,12 @@ const HARDEN_SECURITY = process.env.HARDEN_SECURITY || 'false';
 // Some system util function //
 ///////////////////////////////
 
-// Create a directory (sync)
-
-function createDirectory(directory) {
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, {
-            recursive: true
-        });
-    }
-}
-
 // We create the local directories directory
 
-createDirectory(LOGSTASH_DATA_DIR)
-createDirectory(LOGFILES_DIR)
-createDirectory(LOGFILES_TEMP_DIR)
-createDirectory(LOGSTASH_TMP_DIR)
+fs.ensureDirSync(LOGSTASH_DATA_DIR)
+fs.ensureDirSync(LOGFILES_DIR)
+fs.ensureDirSync(LOGFILES_TEMP_DIR)
+fs.ensureDirSync(LOGSTASH_TMP_DIR)
 
 // Write a string content to file
 
@@ -183,7 +172,7 @@ app.post('/start_process', function (req, res) {
 
         var instanceDirectory = LOGSTASH_DATA_DIR + id + "/"
 
-        createDirectory(instanceDirectory)
+        fs.ensureDirSync(instanceDirectory)
 
         if (input.type == "input") {
             input.tmp_filepath = instanceDirectory + "data.log"
@@ -199,7 +188,7 @@ app.post('/start_process', function (req, res) {
         if (req.body['custom_logstash_patterns'] != undefined) {
             var custom_logstash_patterns = req.body.custom_logstash_patterns;
             var pattern_directory = instanceDirectory + "patterns/";
-            createDirectory(pattern_directory)
+            fs.ensureDirSync(pattern_directory)
             writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
             logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/logstash/patterns"] ')
         }
@@ -290,12 +279,24 @@ app.post('/guess_config', function (req, res) {
     } else {
         if (req.body.filehash != undefined) {
             filepath = buildLocalLogFilepath(req.body.filehash)
-            guessConfig(res, filepath)
+            guessConfig(res, filepath, function () {
+                fs.remove(filepath, err => {
+                    if (err) {
+                        log.warn("Failed to delete file '" + filepath + "'");
+                    }
+                })
+            })
         } else {
-            filehash = uniqid() + ".log"
+            filehash = uniqid()
             filepath = LOGFILES_TEMP_DIR + filehash + ".log"
             writeStringToFile(null, filepath, req.body.input_data, () => {
-                guessConfig(res, filepath)
+                guessConfig(res, filepath, function () {
+                    fs.remove(filepath, err => {
+                        if (err) {
+                            log.warn("Failed to delete file '" + filepath + "'");
+                        }
+                    })
+                })
             })
         }
     }
@@ -486,6 +487,12 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
                 response_time: new Date() - startTime
             };
 
+            fs.remove(instanceDirectory, err => {
+                if (err) {
+                    log.warn(id + " - Failed to delete instance directory");
+                }
+            })
+
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
         });
@@ -495,23 +502,32 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
             stdout: ex.toString('utf8'),
             status: -1
         };
+
+        fs.remove(instanceDirectory, err => {
+            if (err) {
+                log.warn(id + " - Failed to delete instance directory");
+            }
+        })
+        
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({
             "config_ok": true,
             "job_result": job_result
         }));
     }
-
+        
+          
 }
 
 // Function to try to guess a config
 
-function guessConfig(res, filepath) {
+function guessConfig(res, filepath, callback) {
     res.setHeader('Content-Type', 'application/json');
 
     try {
         exec("/usr/local/bin/parser -json " + filepath, {}, (err, stdout, stderr) => {
             result = JSON.parse(stdout)
+            callback()
             res.send(result);
         });
     } catch (ex) {
@@ -520,6 +536,7 @@ function guessConfig(res, filepath) {
             stdout: ex.toString('utf8'),
             status: -1
         };
+        callback()
         res.send(JSON.stringify({
             "config_ok": true,
             "job_result": job_result,
