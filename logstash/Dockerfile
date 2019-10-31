@@ -27,4 +27,15 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
+COPY update_logstash_plugins.sh /tmp/update_logstash_plugins.sh
+
+ARG PLUGINS_TO_ADD=""
+ARG PLUGINS_TO_REMOVE=""
+ARG UPDATE_PLUGINS="false"
+ENV PLUGINS_TO_ADD=$PLUGINS_TO_ADD
+ENV PLUGINS_TO_REMOVE=$PLUGINS_TO_REMOVE
+ENV UPDATE_PLUGINS=$UPDATE_PLUGINS
+
+RUN /tmp/update_logstash_plugins.sh
+
 ENTRYPOINT [ "/entrypoint.sh" ]
