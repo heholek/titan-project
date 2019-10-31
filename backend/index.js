@@ -156,7 +156,7 @@ function getLogstashVersionsAvailable() {
     return logstash_versions
 }
 
-const logstash_versions = getLogstashVersionsAvailable()
+const logstash_versions = sortVersionArray(getLogstashVersionsAvailable())
 
 // Get the list of Logstash versions
 
