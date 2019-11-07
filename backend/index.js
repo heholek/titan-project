@@ -123,8 +123,8 @@ app.get('/', function (req, res) {
 // Sort version in 'real' order
 // For example, 5.6.4 is before 5.6.16
 function sortVersionArray(arr) {
-    return arr.map( a => a.split('.').map( n => +n+100000 ).join('.') ).sort()
-    .map( a => a.split('.').map( n => +n-100000 ).join('.') );
+    return arr.map( a => a.replace(/\d+/g, n => +n+100000 ) ).sort()
+    .map( a => a.replace(/\d+/g, n => +n-100000 ) );
 }
 
 // Get the Logstash versions available
