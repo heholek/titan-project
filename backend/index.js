@@ -12,6 +12,8 @@ var uniqid = require('uniqid');
 var morgan = require('morgan')
 const NodeCache = require("node-cache");
 const NodeGrok = require("node-grok")
+const path = require("path")
+var cron = require('node-cron');
 
 const myMemoryCache = new NodeCache({ stdTTL: 3600, checkperiod: 120 });
 
@@ -29,13 +31,15 @@ const LOGSTASH_ROOT_DIR = process.env.LOGSTASH_ROOT_DIR || "/tmp/logstash/";
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || LOGSTASH_ROOT_DIR + "data/";
 const LOGSTASH_TMP_DIR = process.env.LOGSTASH_DATA_DIR || LOGSTASH_ROOT_DIR + "tmp/";
 const LOGFILES_DIR = process.env.LOGFILES_DIR || LOGSTASH_ROOT_DIR + "logfiles/";
-const LOGFILES_TEMP_DIR = LOGFILES_DIR + "tmp/";
+const LOGFILES_TEMP_DIR = process.env.LOGFILES_TEMP_DIR || LOGSTASH_ROOT_DIR + "logfiles_tmp/";
 const LOGSTASH_RAM = process.env.LOGSTASH_RAM || "1g";
 const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const MAX_BUFFER_STDOUT = process.env.MAX_BUFFER_STDOUT || 1024 * 1024 * 1024;
 const THREAD_WORKER = process.env.THREAD_WORKER || 1;
 const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '100mb';
 const HARDEN_SECURITY = process.env.HARDEN_SECURITY || 'false';
+const CLEANUP_FILE_CRON = process.env.CLEANUP_FILE_CRON || '0 2 * * *'; // Each night at 2 am
+const CLEANUP_FILE_OLDER_THAN_MS = process.env.CLEANUP_FILE_OLDER_THAN_MS || 2592000000; // 1 month
 
 ///////////////////////////////
 // Some system util function //
@@ -75,6 +79,34 @@ function deleteFile(id, filepath, callback) {
             }
         }
         callback()
+    });
+}
+
+// Delete files older than X milliseconds
+
+function deleteFilesOlderThan(rootDirectory, duration_ms) {
+    fs.readdir(rootDirectory, function(err, files) {
+        files.forEach(function(file, index) {
+          filepath = path.join(rootDirectory, file)
+          fs.stat(filepath, function(err, stat) {
+            if (err) {
+                log.warn("Failed to get file stats '" + filepath + "' : " + err )
+            } else if (!stat.isDirectory()) {
+                now = new Date().getTime();
+                endTime = new Date(stat.ctime).getTime() + duration_ms;
+                if (now > endTime) {
+                    fs.unlink(filepath, function (err) {
+                        if(err) {
+                            log.warn("Failed to delete file '" + filepath + "' : " + err )
+                        } else {
+                            log.info("Successfully deleted file '" + filepath + "'")
+                        }
+                    });
+                }
+            }
+            
+          });
+        });
     });
 }
 
@@ -614,3 +646,12 @@ function argumentsValids(id, req, res) {
 
     return ok
 }
+
+///////////////////////
+// Others subprocess //
+///////////////////////
+
+cron.schedule(CLEANUP_FILE_CRON, () => {
+    log.info("Starting cleanup job for old files")
+    deleteFilesOlderThan(LOGFILES_DIR, CLEANUP_FILE_OLDER_THAN_MS)
+});
