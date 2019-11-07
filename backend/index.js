@@ -24,7 +24,7 @@ var OUTPUT_FILTER = "output { stdout { codec => json_lines } }";
 // Environments variables
 
 const PORT = process.env.PORT || 8081;
-const MAX_EXEC_TIMEOUT = process.env.MAX_EXEC_TIMEOUT || 120000;
+const MAX_EXEC_TIMEOUT_S = process.env.MAX_EXEC_TIMEOUT_S || 120;
 const LOGSTASH_ROOT_DIR = process.env.LOGSTASH_ROOT_DIR || "/tmp/logstash/";
 const LOGSTASH_DATA_DIR = process.env.LOGSTASH_DATA_DIR || LOGSTASH_ROOT_DIR + "data/";
 const LOGSTASH_TMP_DIR = process.env.LOGSTASH_DATA_DIR || LOGSTASH_ROOT_DIR + "tmp/";
@@ -446,7 +446,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
         input_filepath = buildLocalLogFilepath(input.filehash)
     }
 
-    var command_env = "-e LOGSTASH_RAM=" + LOGSTASH_RAM + " -e THREAD_WORKER=" + THREAD_WORKER
+    var command_env = "-e LOGSTASH_RAM=" + LOGSTASH_RAM + " -e THREAD_WORKER=" + THREAD_WORKER + " -e MAX_EXEC_TIMEOUT=" + MAX_EXEC_TIMEOUT_S 
     var command_security = ""
     if (HARDEN_SECURITY == "true") {
         command_security = "--network=none"
@@ -454,7 +454,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
     var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log -v " + instanceDirectory + "patterns/:/logstash/patterns/ --hostname localhost " + command_env + " " + command_security + " titan-project-logstash:" + logstash_version;
 
     var options = {
-        timeout: MAX_EXEC_TIMEOUT,
+        timeout: 100000, // Will be killed before in the Logstash entrypoint
         maxBuffer: MAX_BUFFER_STDOUT
     }
 

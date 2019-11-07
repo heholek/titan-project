@@ -13,19 +13,22 @@ ARG JDK_VERSION
 RUN apt-get update \
     && apt-get install openjdk-${JDK_VERSION}-jre-headless wget tar -y
 
+RUN useradd -ms /bin/bash logstash
+RUN mkdir /logstash && chown -R logstash /logstash
+
+USER logstash
+
+WORKDIR /logstash
+
 ARG LOGSTASH_VERSION
 
-RUN mkdir -p /logstash \
-    && wget -q https://artifacts.elastic.co/downloads/logstash/logstash-${LOGSTASH_VERSION}.tar.gz \
+RUN wget -q https://artifacts.elastic.co/downloads/logstash/logstash-${LOGSTASH_VERSION}.tar.gz \
     && tar -C /logstash -zxsf logstash-${LOGSTASH_VERSION}.tar.gz logstash-${LOGSTASH_VERSION}/ --strip-components=1 \
     && rm logstash-${LOGSTASH_VERSION}.tar.gz
 
 RUN echo "" > /logstash/config/logstash.yml
 
 COPY jvm-jdk-${JDK_VERSION}.options /logstash/config/jvm.options
-COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh
 
 COPY update_logstash_plugins.sh /tmp/update_logstash_plugins.sh
 
@@ -38,8 +41,11 @@ ENV UPDATE_PLUGINS=$UPDATE_PLUGINS
 
 RUN /tmp/update_logstash_plugins.sh
 
-RUN useradd -ms /bin/bash logstash
-RUN chown -R logstash /logstash
+COPY entrypoint.sh /entrypoint.sh
+
+USER root
+
+RUN chmod +x /entrypoint.sh
 
 USER logstash
 
