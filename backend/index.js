@@ -124,7 +124,7 @@ function buildLogstashInput(attributes, custom_codec) {
     }
 
     if (custom_codec != undefined) {
-        input += " codec => " + formatCustomCodec(custom_codec);
+        input += " codec => " + removeProblematicParametersFilter(custom_codec);
     }
 
     input += "}}";
@@ -222,6 +222,7 @@ app.post('/start_process', function (req, res) {
             var pattern_directory = instanceDirectory + "patterns/";
             fs.ensureDirSync(pattern_directory)
             writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
+            logstash_filter = removeProblematicParametersFilter(logstash_filter)
             logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/app/patterns"] ')
         }
 
@@ -571,18 +572,18 @@ function guessConfig(res, filepath, callback) {
     }
 }
 
-// Format the custom codec to remove options that are not accurate for this web version
-function formatCustomCodec(codec) {
-    rawCodec = codec.split('\n')
-    codecFormatted = ""
+// Remove the problematic parameters (Grok only for now)
+function removeProblematicParametersFilter(filter) {
+    rawFilter = filter.split('\n')
+    filterFormatted = ""
 
-    rawCodec.forEach(line => {
+    rawFilter.forEach(line => {
         if (!(line.includes("patterns_dir") || (line.includes("patterns_files_glob ")))) {
-            codecFormatted += line + "\n"
+            filterFormatted += line + "\n"
         }
     });
 
-    return codecFormatted
+    return filterFormatted
 }
 
 // Fail because of bad parameters
