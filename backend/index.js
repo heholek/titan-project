@@ -222,7 +222,7 @@ app.post('/start_process', function (req, res) {
             var pattern_directory = instanceDirectory + "patterns/";
             fs.ensureDirSync(pattern_directory)
             writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
-            logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/logstash/patterns"] ')
+            logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/app/patterns"] ')
         }
 
         var logstash_conf = logstash_input + "\n" + logstash_filter + "\n" + OUTPUT_FILTER;
@@ -483,7 +483,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
     if (HARDEN_SECURITY == "true") {
         command_security = "--network=none"
     }
-    var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log -v " + instanceDirectory + "patterns/:/logstash/patterns/ --hostname localhost " + command_env + " " + command_security + " titan-project-logstash:" + logstash_version;
+    var command = "docker run --rm -v " + instanceDirectory + ":/app -v " + input_filepath + ":/app/data.log --hostname localhost " + command_env + " " + command_security + " titan-project-logstash:" + logstash_version;
 
     var options = {
         timeout: 100000, // Will be killed before in the Logstash entrypoint
