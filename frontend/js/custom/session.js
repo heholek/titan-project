@@ -171,7 +171,11 @@ function shareConf() {
 
 function storeConfigBackend(config, callback) {
     configString = JSON.stringify(config)
-    hash = md5(configString)
+
+    var md = forge.md.sha512.create();
+    md.update(configString);
+    var hash = md.digest().toHex()
+
     body = {
         hash: hash,
         config: configString
