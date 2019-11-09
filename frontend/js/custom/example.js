@@ -187,7 +187,7 @@ function urlExists(url, callback){
     });
 }
 
-var extra_examples_url = "/js/custom/extra_exsamples.js"
+var extra_examples_url = "/js/custom/extra_examples.js"
 
 urlExists( extra_examples_url, function(exists) {
     if (exists) {
