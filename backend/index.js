@@ -607,6 +607,10 @@ function argumentsValids(id, req, res) {
         missing_fields.push("input_data")
         missing_fields.push("filehash")
         ok = false
+    } else if (req.body.input_data != undefined && req.body.filehash != undefined) {
+        missing_fields.push("input_data")
+        missing_fields.push("filehash")
+        ok = false
     }
 
     if (req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
