@@ -194,8 +194,11 @@ urlExists( extra_examples_url, function(exists) {
         var others_examples = null
 
         $.getScript( extra_examples_url, function( data, textStatus, jqxhr ) {
+            if (data != null) {
+                eval(data);
+            }
             if(others_examples != null) {
-            examples.push(...others_examples)
+                examples.push(...others_examples)
             }
             initExamples()
     });
