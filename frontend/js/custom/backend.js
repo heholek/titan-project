@@ -421,8 +421,6 @@ function refreshLogstashLogDisplay() {
     $("#number_events_displayed_container").removeClass("d-none")
 
     logstash_output_stderr_arr = logstash_output_stderr.split('\n')
-    logstash_output_stderr_arr.shift() // We want to remove the first line of the stderr
-    logstash_output_stderr_arr.pop() // We remove the last linen as well
     lines = logstash_output_stderr_arr.concat(logstash_output)
 
     stderr_errors_lines = logstash_output_stderr_arr.length
@@ -436,37 +434,38 @@ function refreshLogstashLogDisplay() {
 
         if (line != "") {
             realLinesNumber += 1;
-        }
+        
+            if (!filter_enabled || (!filter_reverse_match_enabled && line.match(filter_regex)) || (filter_reverse_match_enabled && !line.match(filter_regex))) {
 
-        if (!filter_enabled || (!filter_reverse_match_enabled && line.match(filter_regex)) || (filter_reverse_match_enabled && !line.match(filter_regex))) {
+                // We need that to know exactly how many lines match the pattern, if any
+                if (matchNumber < number_lines_display) {
+                    if (line.startsWith("[")) {
+                        line = line.replace(/\\r\\n/g, '\n')
+                        line = line.replace(/\\n/g, '\n')
+                        line = line.replace(/\\t/g, '  ')
+                        line = escapeHtml(line)
+                    } else if (line.startsWith("{") && line.endsWith("}")) {
+                        jsonDic = JSON.parse(line)
+                        jsonDic = sortDictionary(jsonDic)
+                        obj = JSON.stringify(jsonDic, null, 2);
+                        line = jsonSyntaxHighlight(obj)
+                    }
 
-            // We need that to know exactly how many lines match the pattern, if any
-            if (matchNumber < number_lines_display) {
-                if (line.startsWith("[")) {
-                    line = line.replace(/\\r\\n/g, '\n')
-                    line = line.replace(/\\n/g, '\n')
-                    line = line.replace(/\\t/g, '  ')
-                    line = escapeHtml(line)
-                } else if (line.startsWith("{") && line.endsWith("}")) {
-                    jsonDic = JSON.parse(line)
-                    jsonDic = sortDictionary(jsonDic)
-                    obj = JSON.stringify(jsonDic, null, 2);
-                    line = jsonSyntaxHighlight(obj)
+                    if (i < stderr_errors_lines) {
+                        line = "<span class='text-danger'>" + line + "</span>"
+                    }
+        
+                    if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
+                        line = hightlightMatch(line, filter_regex, filter_value)
+                    }
+                    
+                    res += line + "\n"
                 }
-    
-                if (i < stderr_errors_lines) {
-                    line = "<span class='text-danger'>" + line + "</span>"
-                }
-    
-                if (filter_value != "" && filter_value.length > 1 && !filter_regex_enabled) {
-                    line = hightlightMatch(line, filter_regex, filter_value)
-                }
-    
-                res += line + "\n"
+
+                matchNumber += 1
+                
             }
 
-            matchNumber += 1
-            
         }
 
     }
