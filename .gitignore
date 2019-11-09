@@ -34,11 +34,16 @@ provisioning/roles/node/*
 ###############
 
 # Docker compose backup files
-docker-compose-old.yml
-docker-compose-latest.yml
+docker-compose-*.yml
 
 ##########
 # Parser #
 ##########
 
 /backend/parser
+
+################
+# Project part #
+################
+
+/logstash-*
