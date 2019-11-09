@@ -1,47 +1,3 @@
-//////////////////////////
-// Example form filling //
-//////////////////////////
-
-// Factory method to generate examples
-function exampleFactory(conf) {
-
-    if (conf.input_data_filepath != undefined) {
-        $.ajax({
-            url: conf.input_data_filepath,
-            success: function (data) {
-                inputEditor.getSession().setValue(data, -1)
-            }
-        });
-    }
-
-    if (conf.filter_filepath != undefined) {
-        $.ajax({
-            url: conf.filter_filepath,
-            success: function (data) {
-                editor.getSession().setValue(data, -1);
-            }
-        });
-    }
-
-    if (conf.input_data_attributes != undefined) {
-        applyFieldsAttributes(conf.input_data_attributes)
-    }
-
-    if (conf.custom_codec_filepath != undefined) {
-        $.ajax({
-            url: conf.custom_codec_filepath,
-            success: function (data) {
-                enableMultilineCodec(data)
-            }
-        });
-    } else {
-        disableMultilineCodec()
-    }
-
-    fileUploadDisabled()
-
-}
-
 // We define here the examples we want to show
 var examples = [
     // Simple examples
@@ -136,6 +92,45 @@ var examples = [
 
 ]
 
+// Factory method to generate examples
+function exampleFactory(conf) {
+    if (conf.input_data_filepath != undefined) {
+        $.ajax({
+            url: conf.input_data_filepath,
+            success: function (data) {
+                inputEditor.getSession().setValue(data, -1)
+            }
+        });
+    }
+
+    if (conf.filter_filepath != undefined) {
+        $.ajax({
+            url: conf.filter_filepath,
+            success: function (data) {
+                editor.getSession().setValue(data, -1);
+            }
+        });
+    }
+
+    if (conf.input_data_attributes != undefined) {
+        applyFieldsAttributes(conf.input_data_attributes)
+    }
+
+    if (conf.custom_codec_filepath != undefined) {
+        $.ajax({
+            url: conf.custom_codec_filepath,
+            success: function (data) {
+                enableMultilineCodec(data)
+            }
+        });
+    } else {
+        disableMultilineCodec()
+    }
+
+    fileUploadDisabled()
+
+}
+
 // Init display of examples
 function initExamples() {
     $('#examples_select').empty();
@@ -178,7 +173,37 @@ function updateExamplesDescription() {
     }
 }
 
-initExamples()
+// Check if an url exists
+function urlExists(url, callback){
+    $.ajax({
+      type: 'HEAD',
+      url: url,
+      success: function(){
+        callback(true);
+      },
+      error: function() {
+        callback(false);
+      }
+    });
+}
+
+var extra_examples_url = "/js/custom/extra_exsamples.js"
+
+urlExists( extra_examples_url, function(exists) {
+    if (exists) {
+        var others_examples = null
+
+        $.getScript( extra_examples_url, function( data, textStatus, jqxhr ) {
+            if(others_examples != null) {
+            examples.push(...others_examples)
+            }
+            initExamples()
+    });
+    } else {
+        console.log("No extra examples found")
+        initExamples()
+    }
+})
 
 // We update the description on example change
 $("#examples_select").change(function () {
