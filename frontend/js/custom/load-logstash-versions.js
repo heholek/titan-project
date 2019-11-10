@@ -5,7 +5,7 @@
 // Launch the grok debugger process
 function loadLogstashVersions(callback) {
     $.ajax({
-        url: api_url + "/logstash_versions",
+        url: api_url + "/logstash/versions",
         type: "GET",
         contentType: "application/json",
         success: function (data) {

@@ -617,7 +617,7 @@ $('#start_process').click(function () {
         $("#download_output").addClass('disabled');
 
         $.ajax({
-            url: api_url + "/start_process",
+            url: api_url + "/logstash/start",
             type: "POST",
             data: JSON.stringify(body),
             contentType: "application/json",

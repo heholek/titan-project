@@ -183,14 +183,14 @@ const logstash_versions = sortVersionArray(getLogstashVersionsAvailable())
 
 // Get the list of Logstash versions
 
-app.get('/logstash_versions', function (req, res) {
+app.get('/logstash/versions', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
 })
 
 // Rooting for process starting
 
-app.post('/start_process', function (req, res) {
+app.post('/logstash/start', function (req, res) {
 
     var id = uniqid()
 
