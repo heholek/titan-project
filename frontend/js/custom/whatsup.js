@@ -28,7 +28,6 @@ function storeLatestVersionSeen() {
 function showWhatsUpIfNeeded() {
     userVersion = (store.get("version") != undefined ? store.get("version").version : 0)
     newsText = ""
-    console.log(userVersion)
 
     shouldBeDisplayed = false
 
