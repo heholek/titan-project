@@ -87,7 +87,11 @@ router.post('/start', function (req, res) {
 
         if (input.type == "input") {
             input.tmp_filepath = instanceDirectory + "data.log"
-            system.writeStringToFile(id, input.tmp_filepath, req.body.input_data, function () { });
+            input_data = req.body.input_data
+            if(!input_data.endsWith("\n")) {
+                input_data = input_data + "\n"
+            }
+            system.writeStringToFile(id, input.tmp_filepath, input_data, function () { });
         } else {
             input.filehash = req.body.filehash;
         }
