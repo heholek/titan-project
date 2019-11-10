@@ -244,15 +244,15 @@ app.post('/file/exists', function (req, res) {
 
     if (req.body.hash == undefined) {
         res.status(400);
-        res.send(JSON.stringify({ "config_ok": false }));
+        res.send(JSON.stringify({ "config_ok": false, "succeed": false }));
     } else {
         res.status(200);
         filepath = buildLocalLogFilepath(req.body.hash)
         fs.access(filepath, fs.F_OK, (err) => {
             if (err) {
-                res.send(JSON.stringify({ "config_ok": true, "exists": false }));
+                res.send(JSON.stringify({ "config_ok": true, "exists": false, "succeed": true }));
             } else {
-                res.send(JSON.stringify({ "config_ok": true, "exists": true }));
+                res.send(JSON.stringify({ "config_ok": true, "exists": true, "succeed": true }));
             }
         })
     }
@@ -349,7 +349,7 @@ app.post('/grok_tester', function (req, res) {
 
     if (req.body.line == undefined || req.body.grok_pattern == undefined) {
         res.status(400);
-        res.send(JSON.stringify({ "config_ok": false }));
+        res.send(JSON.stringify({ "config_ok": false, "succeed": false }));
     } else {
         var line = req.body.line
         var grok_pattern = req.body.grok_pattern
@@ -521,7 +521,7 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
             })
 
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ "config_ok": true, "job_result": job_result }));
+            res.send(JSON.stringify({ "config_ok": true, "job_result": job_result, "succeed": true }));
         });
     } catch (ex) {
         var job_result = {
@@ -539,7 +539,8 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({
             "config_ok": true,
-            "job_result": job_result
+            "job_result": job_result,
+            "succeed": false
         }));
     }
         
@@ -555,6 +556,7 @@ function guessConfig(res, filepath, callback) {
         exec("/usr/local/bin/parser -json " + filepath, {}, (err, stdout, stderr) => {
             result = JSON.parse(stdout)
             callback()
+            result['config_ok'] = true
             res.send(result);
         });
     } catch (ex) {
@@ -593,7 +595,7 @@ function failBadParameters(id, res, missing_fields) {
 
     res.setHeader('Content-Type', 'application/json');
     res.status(400);
-    res.send(JSON.stringify({ "config_ok": false, "missing_fields": missing_fields }));
+    res.send(JSON.stringify({ "config_ok": false, "missing_fields": missing_fields, "succeed": false }));
 }
 
 // Check if provided arguments are valids
