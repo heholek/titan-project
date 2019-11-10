@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "test": "mocha-parallel-tests ./tests --recursive",
-    "nodemon": "nodemon -L ./index.js"
+    "nodemon": "nodemon -L ./app.js"
   },
   "author": "",
   "license": "MIT",
