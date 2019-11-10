@@ -67,6 +67,7 @@ function cleanLogstashStderr(stderr) {
             && !/^WARNING: Please consider reporting this to the maintainers of com\.headius\.backport9\.modules\.Modules$/.test(line)
             && !/^WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations$/.test(line)
             && !/^WARNING: All illegal access operations will be denied in a future release$/.test(line)
+            && !/^OpenJDK 64-Bit Server VM warning: Using the ParNew young collector with the Serial old collector is deprecated and will likely be removed in a future release$/.test(line)
             && !/^WARNING: An illegal reflective access operation has occurred$/.test(line)
             && !/^Thread\.exclusive is deprecated, use Thread::Mutex$/.test(line)) {
             stderr_cleaned.push(line)
