@@ -6,7 +6,7 @@ const MAX_TIMEOUT = 30000;
 var enable_slow_tests = process.env.SLOW_TEST || "true";
 enable_slow_tests = (["false", "f", "no"].includes(enable_slow_tests.toLowerCase()) ? false : true)
 
-const defaultLogstashVersion = "6.8.X"
+const logstashVersion = process.env.LOGSTASH_VERSION || "6.8.3";
 
 describe("API Testing", function () {
 
@@ -41,7 +41,7 @@ describe("API Testing", function () {
           input_data: "hi\nho\nha\nhou\nlol",
           logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}",
           input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: "6.8.3"
+          logstash_version: logstashVersion
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -62,7 +62,7 @@ describe("API Testing", function () {
           custom_logstash_patterns: "STR_UPPER [A-Z]*\n",
           logstash_filter: 'filter{ grok { match => { "message" => "%{STR_UPPER:test}" } }}',
           input_extra_fields: [],
-          logstash_version: "6.8.3"
+          logstash_version: logstashVersion
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -86,7 +86,7 @@ describe("API Testing", function () {
           input_data: "hi\nho\nha\nhou\nlol",
           logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
           input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: "6.8.3"
+          logstash_version: logstashVersion
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -115,7 +115,7 @@ describe("API Testing", function () {
             filehash: filehash,
             logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
             input_extra_fields: [{attribute: "type", value: "superTest"}],
-            logstash_version: "6.8.3"
+            logstash_version: logstashVersion
           }
           request.post({ url: url, body: formData, json: true }, function (error, response, body) {
             expect(body.config_ok).to.equal(true);
@@ -137,7 +137,7 @@ describe("API Testing", function () {
           logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
           custom_codec: 'multiline { pattern => "^\\s" what => "previous" }',
           input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: "6.8.3"
+          logstash_version: logstashVersion
         }
         request.post({ url: url, body: formData, json: true }, function (error, response, body) {
           expect(body.config_ok).to.equal(true);
@@ -218,7 +218,7 @@ describe("API Testing", function () {
           expect(response.statusCode).to.equal(200);
           expect(body.succeed).to.equal(true);
           expect(body.versions.length).to.not.equal(0);
-          expect(body.versions).to.contain("6.8.3");
+          expect(body.versions).to.contain(logstashVersion);
           done();
         });
       });
