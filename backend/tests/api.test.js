@@ -8,7 +8,7 @@ enable_slow_tests = (["false", "f", "no"].includes(enable_slow_tests.toLowerCase
 
 describe("API Testing", function () {
 
-  this.slow(20)
+  this.slow(100)
 
   describe("/", function () {
 
