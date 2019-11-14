@@ -71,9 +71,8 @@ describe("API Testing", function () {
           expect(body.job_result.status).to.equal(0);
           expect(body.job_result.stdout).to.match(/HAHA/);
           expect(body.job_result.stdout).to.match(/HOHO/);
+          expect(body.job_result.stdout).to.match(/HUHU/);
           expect(body.job_result.stdout).to.match(/test/);
-
-          expect(body.job_result.stdout).not.to.match(/HUHU/);
 
           done();
         });
@@ -96,9 +95,8 @@ describe("API Testing", function () {
           expect(body.job_result.status).to.equal(0);
           expect(body.job_result.stdout).to.match(/HAHA/);
           expect(body.job_result.stdout).to.match(/HOHO/);
+          expect(body.job_result.stdout).to.match(/HUHU/);
           expect(body.job_result.stdout).to.match(/test/);
-
-          expect(body.job_result.stdout).not.to.match(/HUHU/);
 
           done();
         });
