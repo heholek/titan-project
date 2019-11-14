@@ -1,10 +1,13 @@
 const cron = require("node-cron")
-const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
+const log = require('pino')();
 
 var system = require("../utils/system")
 const constants = require("../utils/constants")
+const logger = require("../utils/logger").logger
 
 cron.schedule(constants.CLEANUP_FILE_CRON, () => {
-    log.info("Starting cleanup job for old files")
+    log.info({
+        "action": "start_cleanup"
+    }, "Starting cleanup job for old files")
     system.deleteFilesOlderThan(constants.LOGFILES_DIR, constants.CLEANUP_FILE_OLDER_THAN_MS)
 });

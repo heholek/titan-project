@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
 var exec = require('child_process').exec;
 var uniqid = require('uniqid');
 const fs = require('fs-extra')
 
 var system = require("../utils/system")
 const constants = require("../utils/constants")
+const log = require('../utils/logger').logger;
 
 
 // Try to guess the config using the Kibana Machine Learning API
@@ -29,7 +29,11 @@ router.post('/', function (req, res) {
                 guessConfig(res, filepath, function () {
                     fs.remove(filepath, err => {
                         if (err) {
-                            log.warn("Failed to delete file '" + filepath + "'");
+                            log.warn({
+                                "action": "file_deletion",
+                                "state": "failed",
+                                "path": filepath
+                            }, "Failed to delete file '" + filepath + "'")
                         }
                     })
                 })

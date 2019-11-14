@@ -4,8 +4,8 @@ const fs = require('fs-extra')
 const express = require('express')
 var bodyParser = require('body-parser')
 var cors = require('cors')
-var morgan = require('morgan')
-const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
+const pinoExpress = require("./utils/logger").pinoExpress
+const log = require("./utils/logger").logger
 
 const constants = require("./utils/constants")
 
@@ -37,12 +37,10 @@ fs.ensureDirSync(constants.LOGSTASH_TMP_DIR)
 
 // Some init definitions
 
-log.setLevel(constants.LOG_LEVEL);
-
 const app = express()
 app.use(cors())
 app.use(bodyParser.json({ limit: constants.JSON_BODY_LIMIT }))
-app.use(morgan('combined'))
+app.use(pinoExpress)
 
 app.use('/', indexRouter);
 app.use('/config', configRouter);
@@ -54,5 +52,8 @@ app.use('/logstash', logstashRouter);
 // We start the server
 
 app.listen(constants.PORT, function () {
-    log.info('App listening on port ' + constants.PORT);
+    log.info({
+        "action": "application_start",
+        "port": constants.PORT
+    }, "Application started on port " + constants.PORT);
 })

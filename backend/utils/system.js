@@ -1,6 +1,8 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+const logger = require("./logger").logger;
+
 const constants = require("./constants")
 
 // Check if a filehash is valid or not
@@ -11,14 +13,16 @@ function isFilehashValid(hash) {
 
 // Write a string content to file
 
-function writeStringToFile(id, filepath, data, callback) {
+function writeStringToFile(log, filepath, data, callback) {
     fs.writeFile(filepath, data, function (err) {
         if (err) {
-            if (id != undefined) {
-                log.error(id + " - Unable to write data to file '" + filepath + "'");
-            } else {
-                log.error("Unable to write data to file '" + filepath + "'");
+            if(log == null) {
+                log = logger
             }
+            log.error({
+                "action": "file_write",
+                "state": "failed"
+            }, "Unable to write data to file '" + filepath + "'");
         }
         callback()
     });
@@ -26,14 +30,17 @@ function writeStringToFile(id, filepath, data, callback) {
 
 // Delete a file from disk
 
-function deleteFile(id, filepath, callback) {
+function deleteFile(log, filepath, callback) {
     fs.unlink(filepath, function (err) {
         if (err) {
-            if (id != undefined) {
-                log.error(id + " - Unable to delete file '" + filepath + "'");
-            } else {
-                log.error("Unable to delete file '" + filepath + "'");
+            if(log == null) {
+                log = logger
             }
+            log.error({
+                "action": "file_deletion",
+                "state": "failed",
+                "path": filepath
+            }, "Unable to delete file '" + filepath + "'");
         }
         callback()
     });
@@ -47,16 +54,27 @@ function deleteFilesOlderThan(rootDirectory, duration_ms) {
           filepath = path.join(rootDirectory, file)
           fs.stat(filepath, function(err, stat) {
             if (err) {
-                log.warn("Failed to get file stats '" + filepath + "' : " + err )
+                logger.warn({
+                    "action": "file_stats",
+                    "state": "failed"
+                }, "Failed to get file stats '" + filepath + "' : " + err )
             } else if (!stat.isDirectory()) {
                 now = new Date().getTime();
                 endTime = new Date(stat.ctime).getTime() + duration_ms;
                 if (now > endTime) {
                     fs.unlink(filepath, function (err) {
                         if(err) {
-                            log.warn("Failed to delete file '" + filepath + "' : " + err )
+                            logger.warn({
+                                "action": "file_deletion",
+                                "state": "failed",
+                                "path": filepath
+                            },"Failed to delete file '" + filepath + "' : " + err )
                         } else {
-                            log.info("Successfully deleted file '" + filepath + "'")
+                            logger.debug({
+                                "action": "file_deletion",
+                                "state": "success",
+                                "path": filepath
+                            }, "Successfully deleted file '" + filepath + "'")
                         }
                     });
                 }

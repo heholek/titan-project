@@ -6,7 +6,7 @@ var exec = require('child_process').exec;
 const execSync = require('child_process').execSync;
 const fs = require('fs-extra')
 var uniqid = require('uniqid');
-const log = require('simple-node-logger').createSimpleLogger({ timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS' });
+const logger = require('../utils/logger').logger;
 
 var system = require("../utils/system")
 const constants = require("../utils/constants")
@@ -73,9 +73,18 @@ router.post('/start', function (req, res) {
 
     var id = uniqid()
 
-    log.info(id + " - Start a Logstash process");
+    log = logger.child({ 
+        "scope": "logstash",
+        "id": id 
+    })
 
-    if (argumentsValids(id, req, res)) {
+
+    log.info({
+            "action": "ask_start_process"
+        }, id + " - Asked to start Logstash process"
+    );
+
+    if (argumentsValids(log, id, req, res)) {
 
         var input = {
             type: (req.body.input_data != null ? "input" : "file")
@@ -91,7 +100,7 @@ router.post('/start', function (req, res) {
             if(!input_data.endsWith("\n")) {
                 input_data = input_data + "\n"
             }
-            system.writeStringToFile(id, input.tmp_filepath, input_data, function () { });
+            system.writeStringToFile(log, input.tmp_filepath, input_data, function () { });
         } else {
             input.filehash = req.body.filehash;
         }
@@ -104,7 +113,7 @@ router.post('/start', function (req, res) {
             var custom_logstash_patterns = req.body.custom_logstash_patterns;
             var pattern_directory = instanceDirectory + "patterns/";
             fs.ensureDirSync(pattern_directory)
-            system.writeStringToFile(id, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
+            system.writeStringToFile(log, pattern_directory + "custom_patterns", custom_logstash_patterns, function () { });
             logstash_filter = removeProblematicParametersFilter(logstash_filter)
             logstash_filter = logstash_filter.replace(/grok\s*{/gi, ' grok { patterns_dir => ["/app/patterns"] ')
         }
@@ -113,8 +122,8 @@ router.post('/start', function (req, res) {
 
         var logstash_conf_filepath = instanceDirectory + "logstash.conf"
 
-        system.writeStringToFile(id, logstash_conf_filepath, logstash_conf, function () {
-            computeResult(id, res, input, instanceDirectory, logstash_version);
+        system.writeStringToFile(log, logstash_conf_filepath, logstash_conf, function () {
+            computeResult(log, id, res, input, instanceDirectory, logstash_version);
         })
 
     }
@@ -132,8 +141,10 @@ function isFilehashValid(hash) {
 
 // Compute the logstash result
 
-function computeResult(id, res, input, instanceDirectory, logstash_version) {
-    log.info(id + " - Starting logstash process");
+function computeResult(log, id, res, input, instanceDirectory, logstash_version) {
+    log.info({
+        "action": "start_process"
+    }, id + " - Starting logstash process");
 
     var input_filepath = ""
 
@@ -159,10 +170,15 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
 
     try {
         exec(command, options, (err, stdout, stderr) => {
-            log.info(id + " - Ended a Logstash process");
+            var process_duration = new Date() - startTime
+
+            log.info({
+                "action": "ended_process",
+                "duration": process_duration
+            }, id + " - Ended a Logstash process");
 
             if (input.type == "input") {
-                system.deleteFile(id, input.tmp_filepath, function () {})
+                system.deleteFile(log, input.tmp_filepath, function () {})
             }
 
             var status = 0;
@@ -175,12 +191,16 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
                 stdout: stdout.toString('utf8'),
                 stderr: stderr.toString('utf8'),
                 status: status,
-                response_time: new Date() - startTime
+                response_time: process_duration
             };
 
             fs.remove(instanceDirectory, err => {
                 if (err) {
-                    log.warn(id + " - Failed to delete instance directory");
+                    log.warn({
+                        "action": "file_deletion",
+                        "state": "failed",
+                        "path": instanceDirectory
+                    }, id + " - Failed to delete instance directory");
                 }
             })
 
@@ -196,7 +216,11 @@ function computeResult(id, res, input, instanceDirectory, logstash_version) {
 
         fs.remove(instanceDirectory, err => {
             if (err) {
-                log.warn(id + " - Failed to delete instance directory");
+                log.warn({
+                    "action": "file_deletion",
+                    "state": "failed",
+                    "path": instanceDirectory
+                },id + " - Failed to delete instance directory");
             }
         })
         
@@ -228,8 +252,11 @@ function removeProblematicParametersFilter(filter) {
 
 // Fail because of bad parameters
 
-function failBadParameters(id, res, missing_fields) {
-    log.warn(id + " - Bad parameters for request");
+function failBadParameters(log, id, res, missing_fields) {
+    log.warn({
+        "action": "user_input_validation",
+        "state": "invalid"
+    },id + " - Bad parameters for request");
 
     res.setHeader('Content-Type', 'application/json');
     res.status(400);
@@ -238,7 +265,7 @@ function failBadParameters(id, res, missing_fields) {
 
 // Check if provided arguments are valids
 
-function argumentsValids(id, req, res) {
+function argumentsValids(log, id, req, res) {
     var ok = true
 
     var missing_fields = []
@@ -286,7 +313,7 @@ function argumentsValids(id, req, res) {
     }
 
     if (!ok) {
-        failBadParameters(id, res, missing_fields)
+        failBadParameters(log, id, res, missing_fields)
     }
 
     return ok
