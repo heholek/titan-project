@@ -1,12 +1,7 @@
 var expect = require("chai").expect;
 var request = require("request");
 
-const MAX_TIMEOUT = 30000;
-
-var enable_slow_tests = process.env.SLOW_TEST || "true";
-enable_slow_tests = (["false", "f", "no"].includes(enable_slow_tests.toLowerCase()) ? false : true)
-
-const logstashVersion = process.env.LOGSTASH_VERSION || "6.8.3";
+const config = require("./logstash/config")
 
 describe("API Testing", function () {
 
@@ -29,157 +24,8 @@ describe("API Testing", function () {
   describe("/logstash", function () {
 
     describe("/start", function () {
-      this.timeout(MAX_TIMEOUT);
 
       var url = "http://localhost:8081/logstash/start";
-
-
-      it("with bad logstash filter", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        formData = {
-          input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter mutate{add_field=>{'test'=> 'test2'}}}",
-          input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: logstashVersion
-        }
-        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.config_ok).to.equal(true);
-          expect(body.succeed).to.equal(true);
-          expect(response.statusCode).to.equal(200);
-          expect(body.job_result.status).not.to.equal(0);
-          expect(body.job_result.stdout).not.to.match(/hou/);
-          expect(body.job_result.stdout).not.to.match(/test2/);
-          done();
-        });
-      });
-
-      it("should work with custom pattern", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        formData = {
-          input_data: "HAHA\nHOHO\nHUHU",
-          custom_logstash_patterns: "STR_UPPER [A-Z]*\n",
-          logstash_filter: 'filter{ grok { match => { "message" => "%{STR_UPPER:test}" } }}',
-          input_extra_fields: [],
-          logstash_version: logstashVersion
-        }
-        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.config_ok).to.equal(true);
-          expect(body.succeed).to.equal(true);
-          expect(response.statusCode).to.equal(200);
-          expect(body.job_result.status).to.equal(0);
-          expect(body.job_result.stdout).to.match(/HAHA/);
-          expect(body.job_result.stdout).to.match(/HOHO/);
-          expect(body.job_result.stdout).to.match(/HUHU/);
-          expect(body.job_result.stdout).to.match(/test/);
-
-          done();
-        });
-      });
-
-      it("should work with custom pattern and disabled grok pattern configuration", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        formData = {
-          input_data: "HAHA\nHOHO\nHUHU",
-          custom_logstash_patterns: "STR_UPPER [A-Z]*\n",
-          logstash_filter: "filter {\n  grok {\n    match => {\n      'message' => '%{STR_UPPER:test}'\n    }\n    patterns_dir => '/idontexists'\n    patterns_files_glob => '*.fake_extension'\n  }\n}",
-          input_extra_fields: [],
-          logstash_version: logstashVersion
-        }
-        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.config_ok).to.equal(true);
-          expect(body.succeed).to.equal(true);
-          expect(response.statusCode).to.equal(200);
-          expect(body.job_result.status).to.equal(0);
-          expect(body.job_result.stdout).to.match(/HAHA/);
-          expect(body.job_result.stdout).to.match(/HOHO/);
-          expect(body.job_result.stdout).to.match(/HUHU/);
-          expect(body.job_result.stdout).to.match(/test/);
-
-          done();
-        });
-      });
-
-      it("should work with basic parameters", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        formData = {
-          input_data: "hi\nho\nha\nhou\nlol",
-          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
-          input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: logstashVersion
-        }
-        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.config_ok).to.equal(true);
-          expect(body.succeed).to.equal(true);
-          expect(response.statusCode).to.equal(200);
-          expect(body.config_ok).to.equal(true);
-          expect(body.job_result.stdout).to.match(/hou/);
-          expect(body.job_result.stdout).to.match(/ha/);
-          done();
-        });
-      });
-
-      it("should work with basic parameters on uploaded file", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        var filehash = "CCC720F871674C18E5FECFF61D92C1355CD4BFAC25699FB7DDFE7717C9669B4D085193982402156122DFAA706885FD64741704649795C65B2A5BDEC40347E28A";
-
-        formDataInitial = {
-          hash: filehash,
-          file_content: "hi\nho\nha\nhou\nlol"
-        }
-        request.post({ url: "http://localhost:8081/file/upload", body: formDataInitial, json: true }, function (error, response, body) {
-          expect(error).to.equal(null)
-
-          formData = {
-            filehash: filehash,
-            logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
-            input_extra_fields: [{attribute: "type", value: "superTest"}],
-            logstash_version: logstashVersion
-          }
-          request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-            expect(body.config_ok).to.equal(true);
-            expect(body.succeed).to.equal(true);
-            expect(response.statusCode).to.equal(200);
-            expect(body.job_result.stdout).to.match(/hou/);
-            expect(body.job_result.stdout).to.match(/ha/);
-            done();
-          });
-        });
-        
-      });
-
-      it("should work with multiline codec", function (done) {
-        if (!enable_slow_tests) this.skip()
-
-        formData = {
-          input_data: "hi\n ho\n ha\nhou\ lol",
-          logstash_filter: "filter{mutate{add_field=>{'test'=> 'test2'}}}",
-          custom_codec: 'multiline { pattern => "^\\s" what => "previous" }',
-          input_extra_fields: [{attribute: "type", value: "superTest"}],
-          logstash_version: logstashVersion
-        }
-        request.post({ url: url, body: formData, json: true }, function (error, response, body) {
-          expect(body.config_ok).to.equal(true);
-          expect(body.succeed).to.equal(true);
-          expect(response.statusCode).to.equal(200);
-          expect(body.job_result.status).to.equal(0);
-          var accolade_left_number = (body.job_result.stdout.match(/{/g) || []).length
-          var accolade_right_number = (body.job_result.stdout.match(/{/g) || []).length
-          expect(accolade_left_number).to.equal(1);
-          expect(accolade_right_number).to.equal(1);
-          expect(body.job_result.stdout).to.match(/hi/);
-          expect(body.job_result.stdout).to.match(/ho/);
-          expect(body.job_result.stdout).to.match(/superTest/);
-          expect(body.job_result.stdout).not.to.match(/hou/);
-          expect(body.job_result.stdout).not.to.match(/lol/);
-
-          done();
-        });
-      });
 
       it("without parameters", function (done) {
         formData = {
@@ -241,7 +87,7 @@ describe("API Testing", function () {
           expect(response.statusCode).to.equal(200);
           expect(body.succeed).to.equal(true);
           expect(body.versions.length).to.not.equal(0);
-          expect(body.versions).to.contain(logstashVersion);
+          expect(body.versions).to.contain(config.logstashVersion);
           done();
         });
       });
