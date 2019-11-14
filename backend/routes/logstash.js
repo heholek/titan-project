@@ -52,17 +52,32 @@ function getLogstashVersionsAvailable() {
      });
      
      if (logstash_versions.length == 0) {
-         console.warn("No Logstash version was found")
+         logger.warn({
+            "action": "get_logstash_versions",
+            "state": "failed"
+         }, "No Logstash versions was found")
      }
 
     return logstash_versions
 }
 
-const logstash_versions = sortVersionArray(getLogstashVersionsAvailable())
+const logstash_versions_fallback = sortVersionArray(getLogstashVersionsAvailable())
+
+if (logstash_versions_fallback) {
+    if (logstash_versions_fallback.length == 0) {
+        logger.error({
+           "action": "no_logstash_found"
+        }, "No Logstash versions was found, program is unable to operate as expected")
+    }
+}
 
 // Get the list of Logstash versions
 
 router.get('/versions', function (req, res) {
+    var logstash_versions = getLogstashVersionsAvailable()
+    if (logstash_versions.length == 0) {
+        logstash_versions = logstash_versions_fallback
+    }
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
 })
