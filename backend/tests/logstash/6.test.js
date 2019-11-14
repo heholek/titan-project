@@ -26,8 +26,8 @@ describe("Logstash testing", function () {
       expect(body.job_result.status).to.equal(0);
       var accolade_left_number = (body.job_result.stdout.match(/{/g) || []).length
       var accolade_right_number = (body.job_result.stdout.match(/{/g) || []).length
-      expect(accolade_left_number).to.equal(1);
-      expect(accolade_right_number).to.equal(1);
+      expect(accolade_left_number).not.to.equal(0);
+      expect(accolade_right_number).not.to.equal(0);
       expect(body.job_result.stdout).to.match(/hi/);
       expect(body.job_result.stdout).to.match(/ho/);
       expect(body.job_result.stdout).to.match(/superTest/);
