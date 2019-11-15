@@ -6,10 +6,6 @@ services:
     restart: always
     build: 
       context: .
-     # args:
-      #  http_proxy: ""
-      #  https_proxy: ""
-      #  no_proxy: ""
     environment:
       - LOGSTASH_ROOT_DIR=/tmp/logstash/
     ports:

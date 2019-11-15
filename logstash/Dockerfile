@@ -1,13 +1,5 @@
 FROM ubuntu:bionic
 
-# Add proxy variable on build if needed
-ARG http_proxy=""
-ARG https_proxy=""
-ARG no_proxy="127.0.0.1,localhost"
-ENV http_proxy=$http_proxy
-ENV https_proxy=$https_proxy
-ENV no_proxy=$no_proxy
-
 ARG JDK_VERSION
 
 RUN apt-get update \
