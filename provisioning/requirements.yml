@@ -1,9 +1,9 @@
 - src: geerlingguy.nginx
-  version: 2.6.2
+  version: 2.7.0
   name: nginx
 - src: geerlingguy.docker
-  version: 2.5.2
+  version: 2.5.3
   name: docker
 - src: geerlingguy.nodejs
-  version: 4.2.2
+  version: 5.0.0
   name: node

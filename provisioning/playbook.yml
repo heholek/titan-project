@@ -17,6 +17,18 @@
   roles:
     - system-utils
 
+# Install for both frontend and backend
+
+- name: Installing communs
+  hosts: frontend:backend
+  become: true
+  vars:
+    docker_users:
+      - "{{ lookup('env','USER') }}"
+    docker_install_compose: false
+  roles:
+    - docker
+
 # Install the backend
 
 - name: Installing backend
@@ -24,10 +36,14 @@
   become: true
   vars:
     nodejs_version: "10.x"
+    python_pip_modules:
+      - docker-compose
+      - docker
   roles:
     - node
-    - logstash
+    - python
     - gcc
+    - logstash
 
 # Install the frontend
 
@@ -43,14 +59,3 @@
           state: "present"
   roles:
     - nginx
-
-# Install for both frontend and backend
-
-- name: Installing communs
-  hosts: frontend:backend
-  become: true
-  vars:
-    docker_users:
-      - "{{ lookup('env','USER') }}"
-  roles:
-    - docker

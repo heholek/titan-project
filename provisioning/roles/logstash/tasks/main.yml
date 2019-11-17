@@ -1,4 +1,7 @@
 ---
-- name: "Install Logstash"
-  include_tasks: install_logstash.yml
-  with_items: "{{ logstash_versions }}"
+- name: Build Logstash images
+  become: false
+  docker_compose:
+    project_src: /vagrant/logstash
+    state: present
+    build: yes
