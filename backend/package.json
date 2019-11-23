@@ -7,7 +7,7 @@
     "start": "node app.js",
     "test": "mocha-parallel-tests ./tests --recursive",
     "testAll": "./tests/test_all.sh",
-    "nodemon": "nodemon -L ./app.js"
+    "nodemon": "nodemon -L ./app.js | pino-pretty -c -t"
   },
   "author": "",
   "license": "MIT",
@@ -21,7 +21,6 @@
     "node-cron": "^2.0.3",
     "node-grok": "^2.0.3",
     "pino": "^5.13.6",
-    "pino-pretty": "^3.3.0",
     "shell-quote": "^1.6.1",
     "uniqid": "^5.0.3"
   },
@@ -30,6 +29,7 @@
     "mocha": "^6.2.2",
     "mocha-parallel-tests": "^2.2.2",
     "nodemon": "^1.18.11",
+    "pino-pretty": "^3.4.0",
     "request": "^2.88.0"
   },
   "nodemonConfig": {

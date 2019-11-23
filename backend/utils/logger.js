@@ -1,17 +1,7 @@
 const constants = require("./constants")
 
-const pinoConfiguration = {
-    prettyPrint: { 
-        colorize: true,
-        translateTime: true
-    }
-}
-
-const prettyDisplay = constants.PRETTY_LOG == "true"
-
-const pinoExpress = require('express-pino-logger')(prettyDisplay ? pinoConfiguration : {})
-const logger = require('pino')(prettyDisplay ? pinoConfiguration : {});
-
+const pinoExpress = require('express-pino-logger')({})
+const logger = require('pino')({});
 
 module.exports = {
     pinoExpress: pinoExpress,
