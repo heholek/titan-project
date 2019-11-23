@@ -57,37 +57,6 @@ var examples = [
                 custom_codec_filepath: undefined
             },
         ]
-    },
-
-    // Empty templates
-    {
-        category: "Templates",
-        examples: [
-            // Single line empty template
-            {
-                name: "Single line input",
-                description: "This simple template is a base prototype that you may use for your single-lines input files. It will not override your current logfile data.",
-                input_data_filepath: undefined,
-                filter_filepath: "./sample/template-single-line/filter.conf",
-                input_data_attributes: [
-                    { attribute: "pilote", value: "my-pilote" },
-                    { attribute: "type", value: "my-type" }
-                ],
-                custom_codec_filepath: undefined
-            },
-            // Multiline empty template
-            {
-                name: "Multiline input",
-                description: "This simple template is a base prototype that you may use for your multiline input files. It will not override your current logfile data.",
-                input_data_filepath: undefined,
-                filter_filepath: "./sample/template-multiline/filter.conf",
-                input_data_attributes: [
-                    { attribute: "pilote", value: "my-pilote" },
-                    { attribute: "type", value: "my-type" }
-                ],
-                custom_codec_filepath: "./sample/template-multiline/multiline.codec"
-            }
-        ]
     }
 
 ]

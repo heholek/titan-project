@@ -288,21 +288,6 @@ function findParsingOptimizationAdvices(parent, array) {
         $("#parsing_advices").append(str);
     }
 
-    if (isRootEventLevel) { 
-        if (numberOfDateFields != 0 && !("TIMESTAMP" in keys)) {
-            advicesShouldBeShown = true
-            str = "<li>No field <b>TIMESTAMP</b> found, while you got <b>" + numberOfDateFields + "</b> others date field(s) (" + dateFields.join(", ") + ")"
-            $("#parsing_advices").append(str);
-        }
-    
-        if (TimestampNotInEveryEvent) {
-            advicesShouldBeShown = true
-            str = '<li>Your date field <a href="#output" onclick="applyFilter(\'TIMESTAMP\', true)">TIMESTAMP</a>'
-            str += " is not  present in every fields !"
-            $("#parsing_advices").append(str);
-        }
-    }
-
     if (isRootEventLevel) {
         $("#parsing_advices").append("</ul>")
         
