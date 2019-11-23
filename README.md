@@ -16,19 +16,32 @@ Current instance is located here :
 
 ### Docker
 
+> Windows is not supported at that time, use the Vagrant part into developpement if you're still willing to use it
+
 The **easier way to deploy** this application is via the [docker-compose](docker-compose.yml) file associated with this project.
 
 You will need to install :
 - [Docker](https://www.docker.com/)
 - [Docker compose](https://docs.docker.com/compose/)
+    - **Current user should have full docker access (eg. `docker ps` should work**)
 
 Once the requirements met, you need to build on your Docker host the [log-parser](https://github.com/GroupePSA/log-parser) builder image for the **parser** executable, as descript here :
 
 > https://github.com/GroupePSA/log-parser#log-parser
 
-And then just type in a terminal, once this project is downloaded :
+Then, build the Logstash images :
 
 ```bash
+cd titan-project/logstash
+docker-compose build
+```
+
+> You can customize the image to set-up by modifying the file [logstash/docker-compose.yml](logstash/docker-compose.yml)
+
+And then deploy the web part !
+
+```bash
+cd titan-project/
 docker-compose up -d
 ```
 
@@ -38,9 +51,14 @@ docker-compose up -d
 
 As we use a **real Logstash** to test the parsing of our logs, and he is a little **CPU hungry**, if this application is intended to be use by **multiple persons at the same time**, you should :
 - Use a **dedicated machine**
-- Each job parsing will use 1~2.5 CPU for about 15s, so **the more CPU the better**
+- Each job parsing will use 1 cpu for about 15-30s, so **the more CPU the better**
 - **RAM isn't a huge requirements**, it will use at max 1Go / job
 
+If you also want to **improve process time**, then :
+- The higher the **CPU speed** is, the **faster** tasks will finish
+- **SSD** may speed up the process too. To check if your hard drive bound your performances, run (after having downloading the Docker hello-world image) :
+    > time docker run hello-world
+  - A total time < 1s should be ok
 
 ## Development
 
@@ -57,11 +75,40 @@ Once done, go into a command-line and launch the VM:
 ```bash
 # Create and boot the machine
 vagrant up
+
+# Connect to the machine
+vagrant ssh
+
+# Go into the backend directory
+cd /vagrant/backend
+
+# Install npm requirements
+npm install
+
+# Run the backend
+npm run nodemon
 ```
 
 You will then have the access to :
 - The **frontend** at http://localhost:8080
 - The **backend** at http://localhost:8081
+
+## F.A.Q.
+
+### Why this project ?
+
+In our team, we're all working some part of our time on doing Logstash configuration stuff. 
+But fact is that conceive a Logstash configuration file may be pretty hard & annoying, and require to have some Logstash instances dedicated. And newcomers need to learn how to build filter from Scratch.
+
+So I made this little prototype, that we now use in prod for more than 6 month. It's not some great code, but it just work :)
+
+It permit up to speed-up our developement process by more than 5x time, and wouldn't know where to start again without it.
+
+### Are my data safe ?
+
+First of all, you should **never assume your data are safe on the internet**. You've been warn.
+Then, I put some effort to minimise security problems, by isolating each process into one container, that contains (only) user data. All configuration files (input log, configuration, etc.) is deleted after the job is done.
+If you found a security issues, please contact me at *valentin.bourdier at mail.com*, so we can fix that ASAP.
 
 ## Contributing
 
