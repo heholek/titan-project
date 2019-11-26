@@ -55,7 +55,7 @@ function getLogstashVersionsAvailable() {
          logger.warn({
             "action": "get_logstash_versions",
             "state": "failed"
-         }, "No Logstash versions was found")
+         }, "No Logstash versions were found")
      }
 
     return logstash_versions
@@ -67,7 +67,7 @@ if (logstash_versions_fallback) {
     if (logstash_versions_fallback.length == 0) {
         logger.error({
            "action": "no_logstash_found"
-        }, "No Logstash versions was found, program is unable to operate as expected")
+        }, "No Logstash versions were found, program is unable to operate as expected")
     }
 }
 

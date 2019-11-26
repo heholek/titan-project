@@ -24,6 +24,7 @@ You will need to install :
 - [Docker](https://www.docker.com/)
 - [Docker compose](https://docs.docker.com/compose/)
     - **Current user should have full docker access (eg. `docker ps` should work**)
+    - **Currently only work with Docker Unix socket**
 
 Once the requirements met, you need to build on your Docker host the [log-parser](https://github.com/GroupePSA/log-parser) builder image for the **parser** executable, as descript here :
 
@@ -78,6 +79,10 @@ vagrant up
 
 # Connect to the machine
 vagrant ssh
+
+# Build the Logstash images
+cd /vagrant/logstash
+docker-compose build
 
 # Go into the backend directory
 cd /vagrant/backend

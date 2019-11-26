@@ -1,7 +1,0 @@
----
-- name: Build Logstash images
-  become: false
-  docker_compose:
-    project_src: /vagrant/logstash
-    state: present
-    build: yes

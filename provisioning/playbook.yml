@@ -25,7 +25,7 @@
   vars:
     docker_users:
       - "{{ lookup('env','USER') }}"
-    docker_install_compose: false
+    docker_install_compose: true
   roles:
     - docker
 
@@ -36,14 +36,9 @@
   become: true
   vars:
     nodejs_version: "10.x"
-    python_pip_modules:
-      - docker-compose
-      - docker
   roles:
     - node
-    - python
     - gcc
-    - logstash
 
 # Install the frontend
 
