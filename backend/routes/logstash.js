@@ -149,11 +149,6 @@ router.post('/start', function (req, res) {
 //  Compute functions //
 ////////////////////////
 
-// Check if a filehash is valid or not
-function isFilehashValid(hash) {
-    return hash.match(/^[a-zA-Z0-9]{128}$/g)
-}
-
 // Compute the logstash result
 
 function computeResult(log, id, res, input, instanceDirectory, logstash_version) {
@@ -295,7 +290,7 @@ function argumentsValids(log, id, req, res) {
         ok = false
     }
 
-    if (req.body.filehash != undefined && !isFilehashValid(req.body.filehash)) {
+    if (req.body.filehash != undefined && !system.isFilehashValid(req.body.filehash)) {
         missing_fields.push("filehash_format")
         ok = false
     }
