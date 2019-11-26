@@ -65,14 +65,14 @@ function launchGrokDebugger() {
 
                     $('#grok_output').html(res)
 
-                    if (globalPatternSuccess && "operations_per_second" in data) {
+                    if (globalPatternSuccess && "operations_per_second" in data && data.operations_per_second != undefined) {
                         $('#grok_parsing_performances').html('<i>' + data.operations_per_second + ' events/s </i><i class="fas fa-question-circle" style="font-size: 0.7em" data-toggle="tooltip" title="This value is computed by the backend server, and is NOT REPRESENTATIVE of Logstash Grok performance. However, you can use it to compare or optimize your grok patterns, as the difference will be in the same magnitude on a real Logstash."></i>')
                     } else {
                         $('#grok_parsing_performances').html("")
                     }
                 }
             } else {
-                toastr.error('There was an error while doing doing this process', 'Error')
+                toastr.error('There was an error while doing this process', 'Error')
             }
         },
         error: function () {

@@ -12,7 +12,7 @@ function loadLogstashVersions(callback) {
             if (data.succeed) {
                
                 if(data.versions.length == 0) {
-                    toastr.error('No Logstash binaries were detected.</br>That`s a big problem.</br>We\'re unable to work.', 'Logstash(s) not found')
+                    toastr.error('No Logstash versions were detected.</br>That`s a big problem.</br>We\'re unable to work.', 'Logstash(s) not found')
                 } else {
                     opt = ""
                     for(var i in data.versions) {
@@ -23,7 +23,7 @@ function loadLogstashVersions(callback) {
                 }
 
             } else {
-                toastr.error('There was an error while doing doing this process', 'Error')
+                toastr.error('There was an error while getting Logstash versions', 'Error')
             }
             callback()
         },

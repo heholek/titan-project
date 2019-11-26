@@ -571,6 +571,11 @@ function manageResultLogstashProcess(code, type, message) {
 
 $('#start_process').click(function () {
 
+    if($('#start_process').hasClass("disabled")) {
+        toastr.info("Current process isn't yet finished", 'Please wait')
+        return
+    }
+
     $('#backend_response_time').text("0")
     saveSession()
 
