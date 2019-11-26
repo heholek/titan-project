@@ -12,12 +12,12 @@ RUN rm -rf /var/lib/apt/lists/*
 
 COPY . /usr/share/nginx/html
 
-ARG BACKENDHOST="localhost:8081"
+ARG BACKENDHOST="http://localhost:8081"
 ARG ENABLE_NEWS="true"
 ARG ENABLE_FILE_UPLOAD="true"
 ARG ENABLE_GUESS_FILE="true"
 
-RUN sed -i '1s/.*/const api_url="http:\/\/'"$BACKENDHOST"'";/' /usr/share/nginx/html/js/custom/main.js
+RUN sed -i '1s!.*!const api_url="'$BACKENDHOST'";!' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '2s/.*/const enable_news = '$ENABLE_NEWS';/' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '3s/.*/const enable_file_upload = '$ENABLE_FILE_UPLOAD';/' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '4s/.*/const enable_guess_file = '$ENABLE_GUESS_FILE';/' /usr/share/nginx/html/js/custom/main.js

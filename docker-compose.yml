@@ -7,7 +7,7 @@ services:
     build: 
       context: ./frontend
       args:
-        BACKENDHOST: "localhost:8081"
+        BACKENDHOST: "http://localhost:8081"
     ports:
      - "8080:80"
 
