@@ -93,7 +93,7 @@ You will then have the access to :
 - The **frontend** at http://localhost:8080
 - The **backend** at http://localhost:8081
 
-## F.A.Q.
+## F.A.Q.
 
 ### Why this project ?
 
@@ -104,7 +104,7 @@ So I made this little prototype, that we now use in prod for more than 6 month. 
 
 It permit up to speed-up our developement process by more than 5x time, and wouldn't know where to start again without it.
 
-### Are my data safe ?
+### Are my data safe ?
 
 First of all, you should **never assume your data are safe on the internet**. You've been warn.
 Then, I put some effort to minimise security problems, by isolating each process into one container, that contains (only) user data. All configuration files (input log, configuration, etc.) is deleted after the job is done.
