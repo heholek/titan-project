@@ -33,8 +33,9 @@ COPY . .
 EXPOSE 8081
 CMD [ "npm", "start" ]
 
-# Copy the parser executable to this container
-# Comment if not needed or option disabled
-COPY ./parser /usr/local/bin/parser
+# Add the parser executable to this container
+ENV PARSER_VERSION=v0.0.1
+RUN curl -Ls https://github.com/GroupePSA/log-parser/releases/download/${PARSER_VERSION}/parser --output /usr/local/bin/parser \
+  && chmod +x /usr/local/bin/parser
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8081/ || exit 1
