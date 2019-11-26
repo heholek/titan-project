@@ -48,19 +48,6 @@ docker-compose up -d
 
 **Application** will then be available at http://localhost:8080/
 
-## Deployment considerations
-
-As we use a **real Logstash** to test the parsing of our logs, and he is a little **CPU hungry**, if this application is intended to be use by **multiple persons at the same time**, you should :
-- Use a **dedicated machine**
-- Each job parsing will use 1 cpu for about 15-30s, so **the more CPU the better**
-- **RAM isn't a huge requirements**, it will use at max 1Go / job
-
-If you also want to **improve process time**, then :
-- The higher the **CPU speed** is, the **faster** tasks will finish
-- **SSD** may speed up the process too. To check if your hard drive bound your performances, run (after having downloading the Docker hello-world image) :
-    > time docker run hello-world
-  - A total time < 1s should be ok
-
 ## Development
 
 If you want to participate to this project, you can use the [Vagrantfile](Vagrantfile) present in this project.
