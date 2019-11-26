@@ -16,10 +16,12 @@ ARG BACKENDHOST="http://localhost:8081"
 ARG ENABLE_NEWS="true"
 ARG ENABLE_FILE_UPLOAD="true"
 ARG ENABLE_GUESS_FILE="true"
+ARG ENABLE_SHARE_CONF="true"
 
 RUN sed -i '1s!.*!const api_url="'$BACKENDHOST'";!' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '2s/.*/const enable_news = '$ENABLE_NEWS';/' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '3s/.*/const enable_file_upload = '$ENABLE_FILE_UPLOAD';/' /usr/share/nginx/html/js/custom/main.js
 RUN sed -i '4s/.*/const enable_guess_file = '$ENABLE_GUESS_FILE';/' /usr/share/nginx/html/js/custom/main.js
+RUN sed -i '5s/.*/const enable_share_conf = '$ENABLE_SHARE_CONF';/' /usr/share/nginx/html/js/custom/main.js
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/ || exit 1
