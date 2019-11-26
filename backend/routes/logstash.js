@@ -77,7 +77,10 @@ router.get('/versions', function (req, res) {
     var logstash_versions = getLogstashVersionsAvailable()
     if (logstash_versions.length == 0) {
         logstash_versions = logstash_versions_fallback
+    } else {
+        logstash_versions = sortVersionArray(logstash_versions)
     }
+    
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ "versions": logstash_versions, "succeed": true }));
 })
