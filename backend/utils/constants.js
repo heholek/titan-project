@@ -13,7 +13,6 @@ const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '100mb';
 const HARDEN_SECURITY = process.env.HARDEN_SECURITY || 'false';
 const CLEANUP_FILE_CRON = process.env.CLEANUP_FILE_CRON || '0 2 * * *'; // Each night at 2 am
 const CLEANUP_FILE_OLDER_THAN_MS = process.env.CLEANUP_FILE_OLDER_THAN_MS || 2592000000; // 1 month
-const PRETTY_LOG = process.env.PRETTY_LOG || "false"; // 1 month
 
 module.exports = {
     PORT: PORT,
@@ -30,6 +29,5 @@ module.exports = {
     JSON_BODY_LIMIT: JSON_BODY_LIMIT,
     HARDEN_SECURITY: HARDEN_SECURITY,
     CLEANUP_FILE_CRON: CLEANUP_FILE_CRON,
-    CLEANUP_FILE_OLDER_THAN_MS: CLEANUP_FILE_OLDER_THAN_MS,
-    PRETTY_LOG: PRETTY_LOG
+    CLEANUP_FILE_OLDER_THAN_MS: CLEANUP_FILE_OLDER_THAN_MS
 }
