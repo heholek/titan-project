@@ -26,10 +26,6 @@ You will need to install :
     - **Current user should have full docker access (eg. `docker ps` should work**)
     - **Currently only work with Docker Unix socket**
 
-Once the requirements met, you need to build on your Docker host the [log-parser](https://github.com/GroupePSA/log-parser) builder image for the **parser** executable, as descript here :
-
-> https://github.com/GroupePSA/log-parser#log-parser
-
 Then, build the Logstash images :
 
 ```bash
