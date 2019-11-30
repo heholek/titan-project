@@ -4,7 +4,7 @@
 
 // Launch the guess process
 function tryToGuessFilter() {
-    body = {}
+    var body = {}
     if (remote_file_hash == undefined) {
         body.input_data = inputEditor.getSession().getValue()
     } else {

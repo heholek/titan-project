@@ -53,7 +53,7 @@ function getFieldsAttributesValues() {
 
 // Delete a field attribute
 function deleteFieldAttribute(i) {
-  attributes = getFieldsAttributesValues()
+  var attributes = getFieldsAttributesValues()
   attributes.splice(i, 1)
   applyFieldsAttributes(attributes)
 }
@@ -107,14 +107,13 @@ function checkInputLogsEnding() {
 // Validate the user input
 
 function userInputValid() {
-  input_valid = true;
-  input_warning = false;
-  redirectToLocation = null;
+  var input_valid = true;
+  var input_warning = false;
+  var redirectToLocation = null;
 
-  error_reason = "All fields need to be fill !"
-  error_title = 'Informations missings'
-  error_type = "error"
-  error_opt = {}
+  var error_reason = "All fields need to be fill !"
+  var error_title = 'Informations missings'
+  var error_opt = {}
   
   var input_data = inputEditor.getSession().getValue()
   var logstash_filter = editor.getSession().getValue();
@@ -131,14 +130,12 @@ function userInputValid() {
   var logstash_filter_lines = logstash_filter.split("\n")
   var logstashFilterError = false
   for (var i in logstash_filter_lines) {
-    line = logstash_filter_lines[i]
+    var line = logstash_filter_lines[i]
     if (/^\s*patterns_dir\s*=>/.test(line)) {
       error_reason = "The parameter <b>patterns_dir</b> was commented into <i>Grok</i> bloc(s).<br>Please use the custom Logstash pattern box to add your customs Grok patterns."
-      error_type = "warning"
       input_warning = true
     } else if (/^\s*patterns_files_glob\s*=>/.test(line)) {
       error_reason = "The parameter <b>patterns_files_glob</b> was commented into <i>Grok</i> bloc(s).<br>Please use the custom Logstash pattern box to add your customs Grok patterns."
-      error_type = "warning"
       input_warning = true
     } else if (/^\s*dictionary_path\s*=>/.test(line)) {
       logstashFilterError = true
@@ -161,11 +158,11 @@ function userInputValid() {
     $('#logstash_filter_title').removeClass("text-danger");
   }
 
-  fieldsAttributes = getFieldsAttributesValues()
-  fieldsAttributesValids = true
+  var fieldsAttributes = getFieldsAttributesValues()
+  var fieldsAttributesValids = true
 
-  for (var i = 0; i < fieldsAttributes.length; i++) {
-    if (fieldsAttributes[i].attribute == "" || fieldsAttributes[i].value == "") {
+  for (var j = 0; j < fieldsAttributes.length; j++) {
+    if (fieldsAttributes[j].attribute == "" || fieldsAttributes[j].value == "") {
       input_valid = false;
       fieldsAttributesValids = false;
       $('#input_extra_attributes').addClass("text-danger");
@@ -190,11 +187,11 @@ function userInputValid() {
   }
 
   if (!input_valid) {
-    var notif = toastr.error(error_reason, error_title, error_opt)
-    redirectToastrClick(notif, redirectToLocation)
+    var notifError = toastr.error(error_reason, error_title, error_opt)
+    redirectToastrClick(notifError, redirectToLocation)
   } else if (input_warning) {
-    var notif = toastr.warning(error_reason, error_title, error_opt)
-    redirectToastrClick(notif, redirectToLocation)
+    var notifWarning = toastr.warning(error_reason, error_title, error_opt)
+    redirectToastrClick(notifWarning, redirectToLocation)
   }
 
   checkInputLogsEnding()

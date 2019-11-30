@@ -9,12 +9,12 @@ $( "#grokDebuggerModal" ).on('shown.bs.modal', function(){
 
 // Launch the grok debugger process
 function launchGrokDebugger() {
-    body = {
+    var body = {
         "line": inputLineGrokEditor.getSession().getValue(),
         "grok_pattern": grokPatternEditor.getSession().getValue()
     }
 
-    customPattern = $('#custom_logstash_patterns_input').val()
+    var customPattern = $('#custom_logstash_patterns_input').val()
     if (customPattern != "" ) {
         body.extra_patterns = customPattern
     }
@@ -30,16 +30,16 @@ function launchGrokDebugger() {
                 if (data.results.length == 0) {
                     $('#grok_output').text("Nothing was received :(")
                 } else {
-                    steps = data.results.reverse()
-                    res = ""
-                    alreadySucceed = false
-                    mark_theme = ""
-                    globalPatternSuccess = false
+                    var steps = data.results.reverse()
+                    var res = ""
+                    var alreadySucceed = false
+                    var mark_theme = ""
+                    var globalPatternSuccess = false
 
-                    for (i in steps) {
-                        step = steps[i]
+                    for (var i in steps) {
+                        var step = steps[i]
                         if (step.result != null) {
-                            val = jsonSyntaxHighlight(step.result) + "<br/>"
+                            var val = jsonSyntaxHighlight(step.result) + "<br/>"
                             mark_theme = "mark-success"
                             alreadySucceed = true
 
@@ -47,7 +47,6 @@ function launchGrokDebugger() {
                                 globalPatternSuccess = true
                             }
                         } else {
-                            text_color = ""
                             if (alreadySucceed) {
                                 mark_theme = "mark-warning"
                                 val = "<p class='text-warning'>Doesn't seems to match here, probably not important <br/>as it succeed in the following steps</p>"
@@ -57,9 +56,9 @@ function launchGrokDebugger() {
                             }
                         }
 
-                        title = "<p><ins>Step " + (steps.length - i) + "</ins></p>"
-                        pattern = "<p style='margin-bottom: 0px'>\"" + escapeHtml(step.pattern) + "\"</p><br/>"
-                        diff = "Diff : <mark class='" + mark_theme + "'>" + escapeHtml(step.diff) + "</mark><br/><br/>"
+                        var title = "<p><ins>Step " + (steps.length - i) + "</ins></p>"
+                        var pattern = "<p style='margin-bottom: 0px'>\"" + escapeHtml(step.pattern) + "\"</p><br/>"
+                        var diff = "Diff : <mark class='" + mark_theme + "'>" + escapeHtml(step.diff) + "</mark><br/><br/>"
                         res += title + pattern + diff + val + "<br/>"
                     }
 

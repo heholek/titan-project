@@ -114,7 +114,7 @@ router.post('/start', function (req, res) {
 
         if (input.type == "input") {
             input.tmp_filepath = instanceDirectory + "data.log"
-            input_data = req.body.input_data
+            var input_data = req.body.input_data
             if(!input_data.endsWith("\n")) {
                 input_data = input_data + "\n"
             }
@@ -251,8 +251,8 @@ function computeResult(log, id, res, input, instanceDirectory, logstash_version)
 
 // Remove the problematic parameters (Grok only for now)
 function removeProblematicParametersFilter(filter) {
-    rawFilter = filter.split('\n')
-    filterFormatted = ""
+    var rawFilter = filter.split('\n')
+    var filterFormatted = ""
 
     rawFilter.forEach(line => {
         if (!(line.includes("patterns_dir") || (line.includes("patterns_files_glob ")))) {
@@ -283,11 +283,7 @@ function argumentsValids(log, id, req, res) {
 
     var missing_fields = []
 
-    if (req.body.input_data == undefined && req.body.filehash == undefined) {
-        missing_fields.push("input_data")
-        missing_fields.push("filehash")
-        ok = false
-    } else if (req.body.input_data != undefined && req.body.filehash != undefined) {
+    if ((req.body.input_data == undefined && req.body.filehash == undefined) || (req.body.input_data != undefined && req.body.filehash != undefined)) {
         missing_fields.push("input_data")
         missing_fields.push("filehash")
         ok = false

@@ -41,10 +41,10 @@ function jsonSyntaxHighlight(json) {
 // We clean useless lines at start of the Logstash stdout
 
 function cleanLogstashStdout(stdout) {
-    stdout_splitted = stdout.split("\n")
-    stdout_cleaned = []
+    var stdout_splitted = stdout.split("\n")
+    var stdout_cleaned = []
     for (var i = 0; i < stdout_splitted.length; i++) {
-        line = stdout_splitted[i]
+        var line = stdout_splitted[i]
         if (!/^Sending Logstash.*logs.*configured.*log4j2\.properties$/.test(line)
             && !/^\[\d+.*WARN.*logstash\.config\.source.*Ignoring.*pipelines.yml.*$/.test(line)
             && !/^\[\d+.*WARN.*logstash\.agent.*stopping pipeline.*$/.test(line)
@@ -59,10 +59,10 @@ function cleanLogstashStdout(stdout) {
 // We clean useless lines at start of the Logstash stderr
 
 function cleanLogstashStderr(stderr) {
-    stderr_splitted = stderr.split("\n")
-    stderr_cleaned = []
+    var stderr_splitted = stderr.split("\n")
+    var stderr_cleaned = []
     for (var i = 0; i < stderr_splitted.length; i++) {
-        line = stderr_splitted[i]
+        var line = stderr_splitted[i]
         if (!/^WARNING: Illegal reflective access by com\.headius\.backport9\.modules\.Modules.*$/.test(line)
             && !/^WARNING: Please consider reporting this to the maintainers of com\.headius\.backport9\.modules\.Modules$/.test(line)
             && !/^WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations$/.test(line)
@@ -80,7 +80,7 @@ function cleanLogstashStderr(stderr) {
 
 function logstashParsingProblem() {
     for (var i = 0; i < logstash_output.length; i++) {
-        line = logstash_output[i]
+        var line = logstash_output[i]
         if (line.startsWith("[ERROR]")) {
             return { isProblem: true, cause: "logstash", filter: "[ERROR]" }
         }
@@ -88,10 +88,10 @@ function logstashParsingProblem() {
             return { isProblem: true, cause: "logstash", filter: "[ERROR" }
         }
         if (line.startsWith("{")) {
-            values = JSON.parse(line)
+            var values = JSON.parse(line)
             if ("tags" in values) {
-                for (j in values.tags) {
-                    tag = values.tags[j]
+                for (var j in values.tags) {
+                    var tag = values.tags[j]
                     if (tag.indexOf("failure") != -1) {
                         return { isProblem: true, cause: "failure", filter: "failure" }
                     }
@@ -174,10 +174,10 @@ function findParsingOptimizationAdvices(parent, array) {
     }
 
     for (var i = 0; i < array.length; i++) {
-        line = array[i]
+        var line = array[i]
         if (line.startsWith("{")) {
             realEventNumber += 1
-            obj = JSON.parse(line)
+            var obj = JSON.parse(line)
             for (var key in obj) {
                 if (!fieldsToSkip.includes(key)) {
                     if (!(key in keys)) {
@@ -193,11 +193,11 @@ function findParsingOptimizationAdvices(parent, array) {
                         }
                     }
                     
-                    value = obj[key]
-                    valueType = getValueType(value)
+                    var value = obj[key]
+                    var valueType = getValueType(value)
 
                     if (valueType == "string") {
-                        valueTypeGuessed = guessStringType(value)
+                        var valueTypeGuessed = guessStringType(value)
                         if (!keys[key]["guessType"].includes(valueTypeGuessed)) {
                             keys[key]["guessType"].push(valueTypeGuessed)
                         }
@@ -234,34 +234,25 @@ function findParsingOptimizationAdvices(parent, array) {
     }
 
     for(key in subEvents) {
-        fullKey = (isRootEventLevel ? "" : parent + ".") + key
+        var fullKey = (isRootEventLevel ? "" : parent + ".") + key
         findParsingOptimizationAdvices(fullKey, subEvents[key])
     }
 
-    numberOfDateFields = 0
-    dateFields = []
-    badFieldNames = []
-    TimestampNotInEveryEvent = false
-    for (var key in keys) {
-        if(keys[key]["types"].includes("date")) {
-            numberOfDateFields += 1
-            dateFields.push(key)
+    var badFieldNames = []
+    for (var key2 in keys) {
+        if (!/^[a-zA-Z0-9_]+$/.test(key2)) {
+            badFieldNames.push(key2)
         }
-        if (!/^[a-zA-Z0-9_]+$/.test(key)) {
-            badFieldNames.push(key)
-        }
-        if(key == "TIMESTAMP" && keys[key]["occurence"] != realEventNumber) {
-            TimestampNotInEveryEvent = true
-        }
-        if (keys[key]["sum"] != 0) {
-            keys[key]["avg"] = keys[key]["sum"] / keys[key]["occurence"]
+        if (keys[key2]["sum"] != 0) {
+            keys[key2]["avg"] = keys[key2]["sum"] / keys[key2]["occurence"]
         }
     }
 
     var advicesShouldBeShown = false
 
     for (key in keys) {
-        fieldname = (isRootEventLevel ? "" : parent + ".") + key
+        var fieldname = (isRootEventLevel ? "" : parent + ".") + key
+        var str = ""
         if (keys[key]["types"].length > 1) {
             advicesShouldBeShown = true
             str = '<li>Field <a href="#output" onclick="applyFilter(\'' + key + '\')">' + fieldname + "</a>"
@@ -297,7 +288,7 @@ function findParsingOptimizationAdvices(parent, array) {
         for(key in keys) {
             str = '<div class="col-lg-3">'
             str += "<h5 class='text-center text-info' style='margin-bottom: 2em; margin-top: 2em'>" + key + "</h5>"
-            color = "found-some"
+            var color = "found-some"
             if (keys[key]["occurence"] == realEventNumber) {
                 color = "found-ok"
             }
@@ -313,16 +304,16 @@ function findParsingOptimizationAdvices(parent, array) {
             }
 
             str += "</br><u><p>Top 5 values:</p></u><ul class='list-group'>"
-            values = createTop5Values(keys[key]["values_occurences"])
+            var values = createTop5Values(keys[key]["values_occurences"])
             for (i in values) {
                 if (i > 5) {
                     break
                 }
-                valueToDisplay = String(values[i][0]).substring(0, 100)
+                var valueToDisplay = String(values[i][0]).substring(0, 100)
                 if (String(values[i][0]).length != valueToDisplay.length) {
                     valueToDisplay = valueToDisplay + "..."
                 }
-                other_classes = ""
+                var other_classes = ""
                 if (values.length == 1) {
                     other_classes = " background-emphasis"
                 }
@@ -386,18 +377,18 @@ function sortDictionary(dict) {
 // Display logstash log with formatting
 
 function refreshLogstashLogDisplay() {
-    filter_value = $('#filter_display').val()
-    filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
-    filter_reverse_match_enabled = $('#filter_reverse_match_enabled').is(':checked')
-    filter_enabled = (filter_value != "")
+    var filter_value = $('#filter_display').val()
+    var filter_regex_enabled = $('#filter_regex_enabled').is(':checked')
+    var filter_reverse_match_enabled = $('#filter_reverse_match_enabled').is(':checked')
+    var filter_enabled = (filter_value != "")
 
     if (filter_regex_enabled && filter_value != "") {
-        filter_regex = new RegExp(filter_value)
+        var filter_regex = new RegExp(filter_value)
     } else {
         filter_regex = new RegExp(escapeRegExp(filter_value))
     }
 
-    number_lines_display = $("#number_lines_display").val()
+    var number_lines_display = $("#number_lines_display").val()
     if (number_lines_display == "unlimited") {
         number_lines_display = 100000;
     } else {
@@ -406,17 +397,17 @@ function refreshLogstashLogDisplay() {
 
     $("#number_events_displayed_container").removeClass("d-none")
 
-    logstash_output_stderr_arr = logstash_output_stderr.split('\n')
-    lines = logstash_output_stderr_arr.concat(logstash_output)
+    var logstash_output_stderr_arr = logstash_output_stderr.split('\n')
+    var lines = logstash_output_stderr_arr.concat(logstash_output)
 
-    stderr_errors_lines = logstash_output_stderr_arr.length
-    matchNumber = 0
-    realLinesNumber = 0
-    res = ""
+    var stderr_errors_lines = logstash_output_stderr_arr.length
+    var matchNumber = 0
+    var realLinesNumber = 0
+    var res = ""
 
     for (var i = 0; i < lines.length; i++) {
 
-        line = lines[i]
+        var line = lines[i]
 
         if (line != "") {
             realLinesNumber += 1;
@@ -431,9 +422,9 @@ function refreshLogstashLogDisplay() {
                         line = line.replace(/\\t/g, '  ')
                         line = escapeHtml(line)
                     } else if (line.startsWith("{") && line.endsWith("}")) {
-                        jsonDic = JSON.parse(line)
+                        var jsonDic = JSON.parse(line)
                         jsonDic = sortDictionary(jsonDic)
-                        obj = JSON.stringify(jsonDic, null, 2);
+                        var obj = JSON.stringify(jsonDic, null, 2);
                         line = jsonSyntaxHighlight(obj)
                     }
 
@@ -474,7 +465,7 @@ function refreshLogstashLogDisplay() {
             matchNumber = realLinesNumber
         }
 
-        color = "found-some"
+        var color = "found-some"
         if (matchNumber == realLinesNumber) {
             color = "found-ok"
         } else if (matchNumber == 0) {
@@ -529,10 +520,6 @@ function removeLatestRunStatus() {
 
 function applyFilter(filter, reverse) {
     $('#filter_regex_enabled').prop('checked', false)
-    reverseMatch = false
-    if (reverse != null) {
-        reverseMatch = true
-    }
     $('#filter_reverse_match_enabled').prop('checked', reverse)
     $('#filter_display').val(filter)
 
@@ -622,25 +609,27 @@ $('#start_process').click(function () {
                     findParsingOptimizationAdvices("", logstash_output)
                 }
 
-                parsingResult = logstashParsingProblem()
+                var parsingResult = logstashParsingProblem()
+
+                var notif;
 
                 if (data.job_result.status == -1) {
                     manageResultLogstashProcess('error', 'Error', 'Unable to execute the process on remote server.')
                 } else if (data.job_result.status != 0 || parsingResult.isProblem) {
                     if (data.job_result.status != 0 || parsingResult.cause == "logstash") {
-                        var notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">your configuration</a>.')
+                        notif = manageResultLogstashProcess('error', 'Error', 'There was a problem in <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">your configuration</a>.')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     } else {
-                        var notif = manageResultLogstashProcess('warning', 'Parsing problems', 'Logstash <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">failed to parse</a> some of your events')
+                        notif = manageResultLogstashProcess('warning', 'Parsing problems', 'Logstash <a class="alert-link" href="#output" onclick="applyFilter(\'' + parsingResult.filter + '\')">failed to parse</a> some of your events')
                         redirectToastrClick(notif, "logstash_filter_textarea")
                     }
                 } else {
-                    var notif = manageResultLogstashProcess('success', 'Success', 'Configuration parsing is done !')
+                    notif = manageResultLogstashProcess('success', 'Success', 'Configuration parsing is done !')
                     redirectToastrClick(notif, "output")
                 }
 
                 if (!data.config_ok) {
-                    var notif = manageResultLogstashProcess('error', 'Informations missings', 'All fields need to be fill !')
+                    notif = manageResultLogstashProcess('error', 'Informations missings', 'All fields need to be fill !')
                     redirectToastrClick(notif, "input_extra_attributes")
                 }
 
@@ -670,9 +659,9 @@ function escapeCSV (term) {
 // build csv from map (key=column_names)
 
 function buildCSV(column_values) {
-    res = ""
+    var res = ""
 
-    keys = Object.keys(column_values)
+    var keys = Object.keys(column_values)
     for (var i = 0 ; i < keys.length ; i++) {
         res = res + '"' + escapeCSV(keys[i]) + '"'
         if (i != keys.length - 1) {
@@ -683,11 +672,11 @@ function buildCSV(column_values) {
     }
 
     if (keys.length != 0) {
-        for(var i = 0 ; i < column_values[keys[0]].length ; i++) {
-            for(var j = 0 ; j < keys.length ; j++) {
-                key = keys[j]
-                res = res + '"' + escapeCSV(column_values[key][i]) + '"'
-                if (j != keys.length - 1) {
+        for(var j = 0 ; j < column_values[keys[0]].length ; j++) {
+            for(var k = 0 ; k < keys.length ; k++) {
+                var key = keys[k]
+                res = res + '"' + escapeCSV(column_values[key][j]) + '"'
+                if (k != keys.length - 1) {
                     res = res + ","
                 } else {
                     res = res + "\n"
@@ -703,9 +692,9 @@ function buildCSV(column_values) {
 // Extract JSON content for output
 
 function getLogstashOutputJson() {
-    res = ""
+    var res = ""
     for (var i = 0; i < logstash_output.length; i++) {
-        line = logstash_output[i]
+        var line = logstash_output[i]
         if (line.startsWith("{") && line.endsWith("}")) {
             if (res != "") {
                 res = res + "\n"
@@ -720,14 +709,14 @@ function getLogstashOutputJson() {
 
 function getLogstashOutputCSVStep(currentEvent, level, columns_values, currentRow) {
     Object.keys(currentEvent).forEach(function (key) {
-        final_key = (level != "" ? level + "." + key : key)
+        var final_key = (level != "" ? level + "." + key : key)
 
         if (getValueType(currentEvent[key]) == "object") {
             getLogstashOutputCSVStep(currentEvent[key], final_key, columns_values, currentRow)
         } else {
             if (columns_values[final_key] == undefined) {
                 columns_values[final_key] = []
-                for (i = 0 ; i < currentRow ; i++) {
+                for (var i = 0 ; i < currentRow ; i++) {
                     columns_values[final_key][i] = ""
                 }
             }
@@ -739,14 +728,14 @@ function getLogstashOutputCSVStep(currentEvent, level, columns_values, currentRo
 // Extract CSV content for output
 
 function getLogstashOutputCSV() {
-    columns_values = {}
-    rowCounter = 0;
+    var columns_values = {}
+    var rowCounter = 0;
 
     // We parse the JSON values
     for (var i = 0; i < logstash_output.length; i++) {
-        line = logstash_output[i]
+        var line = logstash_output[i]
         if (line.startsWith("{") && line.endsWith("}")) {
-            values_event = JSON.parse(line)
+            var values_event = JSON.parse(line)
             getLogstashOutputCSVStep(values_event, "", columns_values, rowCounter)
             rowCounter += 1;
         }
@@ -755,17 +744,17 @@ function getLogstashOutputCSV() {
     // We complete columns that may not have the same end as others
     for (var key in columns_values) {
         if (columns_values[key].length != rowCounter) {
-            for(var i = columns_values[key].length; i < rowCounter ; i++) {
-                columns_values[key][i] = ""
+            for(var j = columns_values[key].length; j < rowCounter ; j++) {
+                columns_values[key][j] = ""
             }
         }
     }
 
     // We set empty variable to an empty string
-    for (var key in columns_values) {
-        for(var i = 0; i < rowCounter ; i++) {
-            if (columns_values[key][i] == undefined) {
-                columns_values[key][i] = ""
+    for (var key2 in columns_values) {
+        for(var k = 0; k < rowCounter ; k++) {
+            if (columns_values[key2][k] == undefined) {
+                columns_values[key2][k] = ""
             }
         }
     }
@@ -777,11 +766,11 @@ function getLogstashOutputCSV() {
 // Support currently JSON & CSV
 
 function saveOutputToFile(outputType) {
-    filename = "logstash-output." + outputType
-    fileMime = (outputType == "json" ? "application/json" : "text/csv")
+    var filename = "logstash-output." + outputType
+    var fileMime = (outputType == "json" ? "application/json" : "text/csv")
 
     try {
-        res = (outputType == "json" ? getLogstashOutputJson() : getLogstashOutputCSV())
+        var res = (outputType == "json" ? getLogstashOutputJson() : getLogstashOutputCSV())
         saveToFile(res, filename, fileMime)
     } catch (error) {
         toastr.error("Failed to export your data as " + outputType.toUpperCase(), "Error")

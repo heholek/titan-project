@@ -75,10 +75,10 @@ function getConfig() {
 
 // Load session for user
 function loadSession(session) {
-    sessionFound = true
+    var sessionFound = true
 
     if (session == undefined) {
-        var session = store.get('session');
+        session = store.get('session');
     }
     if (session != undefined) {
         console.log("Loading user session")
@@ -158,7 +158,7 @@ function shareConf() {
     saveSession()
     storeConfigBackend(getConfig(), (result) => {
         if (result.succeed) {
-            url = window.location.protocol + "//" + window.location.host + "?conf=" + result.hash
+            var url = window.location.protocol + "//" + window.location.host + "?conf=" + result.hash
             $('#shareLinkModal').modal('show');
             $('#share-link-input').val(url);
         } else {
@@ -170,13 +170,13 @@ function shareConf() {
 // Store the config on backend
 
 function storeConfigBackend(config, callback) {
-    configString = JSON.stringify(config)
+    var configString = JSON.stringify(config)
 
     var md = forge.md.sha512.create();
     md.update(configString);
     var hash = md.digest().toHex()
 
-    body = {
+    var body = {
         hash: hash,
         config: configString
     }
@@ -198,7 +198,7 @@ function storeConfigBackend(config, callback) {
 // Load the user config if it is being shared
 
 function loadShareConfigIfNeeded() {
-    search = window.location.search
+    var search = window.location.search
     if (search.length != 0) {
         const urlParams = new URLSearchParams(window.location.search);
         const confHash = urlParams.get('conf');
@@ -220,7 +220,7 @@ function loadShareConfigIfNeeded() {
 // Get the config stored on backend
 
 function getConfigBackend(hash, callback) {
-    body = {
+    var body = {
         hash: hash
     }
     $.ajax({

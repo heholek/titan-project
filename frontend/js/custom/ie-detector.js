@@ -8,11 +8,7 @@ function isIE() {
 }
 
 
-//function to show alert if it's IE
-function ShowIEAlert(){
-    if(isIE()){
-       alert("Due to his old age, Internet Explorer is no more supported. Please use Firefox or Chrome with this website.");
-    }
-}
-
-ShowIEAlert()
+// Show alert if it's IE
+if(isIE()){
+    alert("Due to his old age, Internet Explorer is no more supported. Please use Firefox or Chrome with this website.");
+ }

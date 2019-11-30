@@ -20,10 +20,10 @@ router.post('/', function (req, res) {
         res.send(JSON.stringify({ "config_ok": false }));
     } else {
         if (req.body.filehash != undefined) {
-            filepath = system.buildLocalLogFilepath(req.body.filehash)
+            var filepath = system.buildLocalLogFilepath(req.body.filehash)
             guessConfig(res, filepath, function () {})
         } else {
-            filehash = uniqid()
+            var filehash = uniqid()
             filepath = constants.LOGFILES_TEMP_DIR + filehash + ".log"
             system.writeStringToFile(null, filepath, req.body.input_data, () => {
                 guessConfig(res, filepath, function () {
@@ -50,7 +50,7 @@ function guessConfig(res, filepath, callback) {
 
     try {
         exec("/usr/local/bin/parser -json " + filepath, {}, (err, stdout, stderr) => {
-            result = JSON.parse(stdout)
+            var result = JSON.parse(stdout)
             callback()
             result['config_ok'] = true
             res.send(result);

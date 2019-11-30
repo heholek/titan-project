@@ -7,7 +7,6 @@ function fileUploadDisabled() {
     $('#upload_logfile').val("")
     $('#upload_logfile').show()
     $('#upload_logfile_cancel').hide()
-    remote_file_hash = undefined
     inputEditor.setReadOnly(false)
     saveSession()
 }
@@ -22,19 +21,18 @@ function fileUploadDisabledClean() {
 function fileUploadEnabled(hash, content) {
     $('#upload_logfile').hide()
     $('#upload_logfile_cancel').show()
-    remote_file_hash = hash
     inputEditor.setReadOnly(true)
 
     if (content != undefined) {
-        logfile_content_cut = "<-- Only the first 50 lines of your log file are displayed here -->\n"
+        var logfile_content_cut = "<-- Only the first 50 lines of your log file are displayed here -->\n"
 
-        all_lines = content.split('\n')
-        lines_sliced = all_lines.slice(0, 50)
+        var all_lines = content.split('\n')
+        var lines_sliced = all_lines.slice(0, 50)
 
         logfile_content_cut += lines_sliced.join('\n')
 
-        total_lines_number = all_lines.length
-        total_lines_displayed = lines_sliced.length
+        var total_lines_number = all_lines.length
+        var total_lines_displayed = lines_sliced.length
 
         var go_to_line = logfile_content_cut.endsWith('\n') ? "" : '\n'
         logfile_content_cut += go_to_line + "<-- Displayed " + total_lines_displayed + "/" + total_lines_number + " lines of your log file -->"
@@ -58,13 +56,13 @@ function sendLogfileToBackend(e) {
             if (!exists) {
                 uploadLogFile(hash, content, (succeed) => {
                     if (!succeed) {
-                        var notif = toastr.error('Unable to upload your log file', 'Error')
+                        var notifError = toastr.error('Unable to upload your log file', 'Error')
                         fileUploadDisabledClean()
-                        redirectToastrClick(notif, "input_data_title")
+                        redirectToastrClick(notifError, "input_data_title")
                     } else {
-                        var notif = toastr.success('Your log file is now stored on the server', 'Success')
+                        var notifSuccess = toastr.success('Your log file is now stored on the server', 'Success')
                         fileUploadEnabled(hash, content)
-                        redirectToastrClick(notif, "input_data_textarea")
+                        redirectToastrClick(notifSuccess, "input_data_textarea")
                     }
                 })
             } else {
@@ -79,7 +77,7 @@ function sendLogfileToBackend(e) {
 
 // Upload a log file
 function uploadLogFile(hash, content, callback) {
-    body = {
+    var body = {
         hash: hash,
         file_content: content
     }
@@ -101,7 +99,7 @@ function uploadLogFile(hash, content, callback) {
 
 // Check if a Logfile exists on remote server, send result in callback
 function remoteLogExists(hash, callback) {
-    body = {
+    var body = {
         hash: hash
     }
     $.ajax({

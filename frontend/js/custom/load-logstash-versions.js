@@ -14,7 +14,7 @@ function loadLogstashVersions(callback) {
                 if(data.versions.length == 0) {
                     toastr.error('No Logstash versions were detected.</br>That`s a big problem.</br>We\'re unable to work.', 'Logstash(s) not found')
                 } else {
-                    opt = ""
+                    var opt = ""
                     for(var i in data.versions) {
                         version = data.versions[i]
                         opt = opt + '<option data-value="' + version + '" selected="selected">' + version + '</option>'

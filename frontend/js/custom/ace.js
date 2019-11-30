@@ -4,16 +4,16 @@
 
 // We want to incldue externals languages
 ace.require("ace/ext/language_tools");
-beautify = ace.require("ace/ext/beautify");
+var beautify = ace.require("ace/ext/beautify");
 
 // Find and replace text in editor
 
 function findAndReplaceTextEditor(ed, pattern, value) {
-    logstash_filter = ed.getValue()
-    lines = logstash_filter.split('\n')
+    var logstash_filter = ed.getValue()
+    var lines = logstash_filter.split('\n')
 
     for (var i = 0; i < lines.length; i++) {
-        line = lines[i]
+        var line = lines[i]
 
         lines[i] = line.replace(pattern, value)
 
@@ -67,8 +67,8 @@ function buildInputLineGrokEditor() {
     })
 
     editor.getSession().on('change', function(e) {
-        text = editor.getSession().getValue()
-        lines = text.split("\n")
+        var text = editor.getSession().getValue()
+        var lines = text.split("\n")
 
         if (lines.length > 0 && text != lines[0]) {
             editor.getSession().setValue(lines[0], -1)
@@ -100,8 +100,8 @@ function buildGrokPatternEditor() {
     })
 
     editor.getSession().on('change', function(e) {
-        text = editor.getSession().getValue()
-        lines = text.split("\n")
+        var text = editor.getSession().getValue()
+        var lines = text.split("\n")
 
         if (lines.length > 0 && text != lines[0]) {
             editor.getSession().setValue(lines[0], -1)
@@ -139,7 +139,7 @@ function buildFilterEditor() {
         name: 'save',
         bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
         exec: function (editor) {
-            data = editor.session.getValue()
+            var data = editor.session.getValue()
             saveToFile(data, "logstash_filter.conf")
         }
     })

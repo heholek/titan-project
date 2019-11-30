@@ -15,7 +15,7 @@ router.post('/exists', function (req, res) {
         res.send(JSON.stringify({ "config_ok": false, "succeed": false }));
     } else {
         res.status(200);
-        filepath = system.buildLocalLogFilepath(req.body.hash)
+        var filepath = system.buildLocalLogFilepath(req.body.hash)
         fs.access(filepath, fs.F_OK, (err) => {
             if (err) {
                 res.send(JSON.stringify({ "config_ok": true, "exists": false, "succeed": true }));
@@ -36,7 +36,7 @@ router.post('/upload', function (req, res) {
         res.send(JSON.stringify({ "config_ok": false }));
     } else {
         res.status(200);
-        filepath = constants.LOGFILES_DIR + req.body.hash + ".log"
+        var filepath = constants.LOGFILES_DIR + req.body.hash + ".log"
         system.writeStringToFile(null, filepath, req.body.file_content, () => {
             res.send(JSON.stringify({ "config_ok": true, "succeed": true }));
         })

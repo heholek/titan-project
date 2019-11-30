@@ -103,12 +103,11 @@ function exampleFactory(conf) {
 // Init display of examples
 function initExamples() {
     $('#examples_select').empty();
-    previousCategory = "None"
-    for (categoryId in examples) {
-        category = examples[categoryId].category
+    for (var categoryId in examples) {
+        var category = examples[categoryId].category
         $('#examples_select').append("<optgroup label='" + category + "'>")
-        for (exampleId in examples[categoryId].examples) {
-            example = examples[categoryId].examples[exampleId]
+        for (var exampleId in examples[categoryId].examples) {
+            var example = examples[categoryId].examples[exampleId]
             $('#examples_select').append("<option>" + example.name + "</option>")
         }
         $('#examples_select').append("</optgroup>")
@@ -118,11 +117,11 @@ function initExamples() {
 
 // Get current selected example
 function getSelectedExample() {
-    selectedText = $('#examples_select :selected').text();
+    var selectedText = $('#examples_select :selected').text();
 
-    for (categoryId in examples) {
-        for (exampleId in examples[categoryId].examples) {
-            example = examples[categoryId].examples[exampleId]
+    for (var categoryId in examples) {
+        for (var exampleId in examples[categoryId].examples) {
+            var example = examples[categoryId].examples[exampleId]
             if (example.name == selectedText) {
                 return example
             }
@@ -133,7 +132,7 @@ function getSelectedExample() {
 
 // Show the current description of the example
 function updateExamplesDescription() {
-    example = getSelectedExample()
+    var example = getSelectedExample()
 
     if(example != undefined) {
         $("#example_description").text(example.description)
@@ -184,7 +183,7 @@ $("#examples_select").change(function () {
 
 // We set-up a trigger to apply examples
 $("#show_example").click(function () {
-    example = getSelectedExample()
+    var example = getSelectedExample()
 
     if(example != undefined) {
         exampleFactory(example)
